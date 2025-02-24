@@ -1,19 +1,21 @@
 package machine;
 
-import java.util.List;
+import java.util.Scanner;
 
 public class CoffeeMachine {
-  public static final List<String> STEPS =
-      List.of(
-          "Starting to make a coffee",
-          "Grinding coffee beans",
-          "Boiling water",
-          "Mixing boiled water with crushed coffee beans",
-          "Pouring coffee into the cup",
-          "Pouring some milk into the cup",
-          "Coffee is ready!");
+  private static final int WATER_PER_CUP = 200;
+  private static final int MILK_PER_CUP = 50;
+  private static final int BEANS_PER_CUP = 15;
 
   public static void main(String[] args) {
-    STEPS.forEach(System.out::println);
+    System.out.println("Write how many cups of coffee you will need:");
+    System.out.print("> ");
+    try (Scanner in = new Scanner(System.in)) {
+      int cups = in.nextInt();
+      System.out.println("For " + cups + " cups of coffee you will need:");
+      System.out.println(WATER_PER_CUP * cups + " ml of water");
+      System.out.println(MILK_PER_CUP * cups + " ml of milk");
+      System.out.println(BEANS_PER_CUP * cups + " g of coffee beans");
+    }
   }
 }

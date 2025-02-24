@@ -5,3 +5,7 @@ plugins {
 application {
     mainClass = 'machine.CoffeeMachine'
 }
+
+run {
+    standardInput = System.in
+}

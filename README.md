@@ -6,4 +6,5 @@ When I started this course, I already had a fair amount of experience with Java,
 
 ## The Projects
 
+- [Cinema Room Manager](https://hyperskill.org/projects/133)
 - [Coffee Machine Simulator](https://hyperskill.org/projects/33)

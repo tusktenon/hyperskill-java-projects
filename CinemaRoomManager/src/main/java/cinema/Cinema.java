@@ -11,9 +11,7 @@ public class Cinema {
     IntStream.rangeClosed(1, SEATS_PER_ROW).forEach(i -> headerRowBuilder.append(" " + i));
     String headerRow = headerRowBuilder.toString();
 
-    StringBuilder rowBuilder = new StringBuilder();
-    IntStream.rangeClosed(1, SEATS_PER_ROW).forEach(i -> rowBuilder.append(" S"));
-    String row = rowBuilder.toString();
+    String row = " S".repeat(SEATS_PER_ROW);
 
     System.out.println("Cinema:");
     System.out.println(" " + headerRow);

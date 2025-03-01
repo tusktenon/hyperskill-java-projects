@@ -1,20 +1,23 @@
 package cinema;
 
-import java.util.stream.IntStream;
+import java.util.Scanner;
 
 public class Cinema {
-  public static final int ROWS = 7;
-  public static final int SEATS_PER_ROW = 8;
 
   public static void main(String[] args) {
-    StringBuilder headerRowBuilder = new StringBuilder();
-    IntStream.rangeClosed(1, SEATS_PER_ROW).forEach(i -> headerRowBuilder.append(" " + i));
-    String headerRow = headerRowBuilder.toString();
+    try (Scanner in = new Scanner(System.in)) {
+      System.out.println("Enter the number of rows:");
+      System.out.print("> ");
+      int rows = in.nextInt();
 
-    String row = " S".repeat(SEATS_PER_ROW);
+      System.out.println("Enter the number of seats in each row:");
+      System.out.print("> ");
+      int seats = in.nextInt();
 
-    System.out.println("Cinema:");
-    System.out.println(" " + headerRow);
-    IntStream.rangeClosed(1, ROWS).forEach(i -> System.out.println(i + row));
+      int profit =
+          rows * seats > 60 ? ((rows / 2) * 10 + (rows - rows / 2) * 8) * seats : rows * seats * 10;
+      System.out.println("Total income:");
+      System.out.println("$" + profit);
+    }
   }
 }

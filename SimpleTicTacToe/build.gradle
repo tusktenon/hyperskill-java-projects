@@ -6,3 +6,6 @@ application {
     mainClass = 'tictactoe.Main'
 }
 
+run {
+    standardInput = System.in
+}

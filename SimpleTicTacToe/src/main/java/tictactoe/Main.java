@@ -22,11 +22,56 @@ public class Main {
         + "---------\n";
   }
 
+  String state() {
+    if (!isValid()) return "Impossible";
+    if (xWins()) return "X wins";
+    if (oWins()) return "O wins";
+    if (isFull()) return "Draw";
+    return "Game not finished";
+  }
+
+  private boolean xWins() {
+    return hasThreeInARow('X');
+  }
+
+  private boolean oWins() {
+    return hasThreeInARow('O');
+  }
+
+  private boolean isFull() {
+    return count('_') == 0;
+  }
+
+  private boolean isValid() {
+    return !(xWins() && oWins()) && Math.abs(count('X') - count('O')) < 2;
+  }
+
+  private boolean hasThreeInARow(char c) {
+    int[][] threeInARowIndexes = {
+      {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}
+    };
+    for (int[] triplet : threeInARowIndexes) {
+      if (c == squares[triplet[0]] && c == squares[triplet[1]] && c == squares[triplet[2]]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private int count(char c) {
+    int result = 0;
+    for (char cell : squares) {
+      if (cell == c) result++;
+    }
+    return result;
+  }
+
   public static void main(String[] args) {
     System.out.print("> ");
     try (Scanner in = new Scanner(System.in)) {
       Main game = new Main(in.nextLine());
       System.out.println(game.grid());
+      System.out.println(game.state());
     } catch (IllegalArgumentException e) {
       System.err.println(e.getMessage());
     }

@@ -8,3 +8,4 @@ When I started this course, I already had a fair amount of experience with Java,
 
 - [Cinema Room Manager](https://hyperskill.org/projects/133)
 - [Coffee Machine Simulator](https://hyperskill.org/projects/33)
+- [Simple Tic-Tac-Toe](https://hyperskill.org/projects/48)

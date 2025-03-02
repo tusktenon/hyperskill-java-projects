@@ -8,31 +8,38 @@ public class CoffeeMachine {
   private static final int MILK_PER_CUP = 50;
   private static final int BEANS_PER_CUP = 15;
 
+  private int water;
+  private int milk;
+  private int beans;
+
+  public int cupsPossible() {
+    return IntStream.of(water / WATER_PER_CUP, milk / MILK_PER_CUP, beans / BEANS_PER_CUP)
+        .min()
+        .getAsInt();
+  }
+
+  public String message(int needed) {
+    int possible = cupsPossible();
+    return possible > needed
+        ? "Yes, I can make that amount of coffee (and even %d more than that)\n"
+            .formatted(possible - needed)
+        : possible == needed
+            ? "Yes, I can make that amount of coffee"
+            : "No, I can make only %d cup(s) of coffee".formatted(possible);
+  }
+
   public static void main(String[] args) {
+    CoffeeMachine machine = new CoffeeMachine();
     try (Scanner in = new Scanner(System.in)) {
       System.out.print("Write how many ml of water the coffee machine has:\n> ");
-      int water = in.nextInt();
+      machine.water = in.nextInt();
       System.out.print("Write how many ml of milk the coffee machine has:\n> ");
-      int milk = in.nextInt();
+      machine.milk = in.nextInt();
       System.out.print("Write how many grams of coffee beans the coffee machine has:\n> ");
-      int beans = in.nextInt();
+      machine.beans = in.nextInt();
       System.out.print("Write how many cups of coffee you will need:\n> ");
       int cupsNeeded = in.nextInt();
-
-      int cupsPossible =
-          IntStream.of(water / WATER_PER_CUP, milk / MILK_PER_CUP, beans / BEANS_PER_CUP)
-              .min()
-              .getAsInt();
-
-      if (cupsPossible > cupsNeeded) {
-        System.out.printf(
-            "Yes, I can make that amount of coffee (and even %d more than that)\n",
-            cupsPossible - cupsNeeded);
-      } else if (cupsPossible == cupsNeeded) {
-        System.out.println("Yes, I can make that amount of coffee");
-      } else {
-        System.out.printf("No, I can make only %d cup(s) of coffee", cupsPossible);
-      }
+      System.out.println(machine.message(cupsNeeded));
     }
   }
 }

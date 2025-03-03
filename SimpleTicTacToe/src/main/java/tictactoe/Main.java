@@ -1,18 +1,38 @@
 package tictactoe;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /* The class name `Main` is required by the exercise; otherwise, I'd prefer `Game`. */
 public class Main {
-  private char[] squares;
+  private char[] squares = new char[9];
+  private boolean isXsMove = true;
 
-  Main(String state) {
-    if (!Pattern.matches("[XO_]{9}", state)) {
-      throw new IllegalArgumentException("Invalid game-state string");
+  Main() {
+    Arrays.fill(squares, ' ');
+  }
+
+  void play() {
+    try (Scanner in = new Scanner(System.in)) {
+      while (true) {
+        System.out.println(grid());
+        if (xWins()) {
+          System.out.println("X wins");
+          return;
+        }
+        if (oWins()) {
+          System.out.println("O wins");
+          return;
+        }
+        if (isFull()) {
+          System.out.println("Draw");
+          return;
+        }
+        getNextMove(in);
+        isXsMove = !isXsMove;
+      }
     }
-    squares = state.toCharArray();
   }
 
   String grid() {
@@ -23,14 +43,6 @@ public class Main {
         + "---------\n";
   }
 
-  String state() {
-    if (!isValid()) return "Impossible";
-    if (xWins()) return "X wins";
-    if (oWins()) return "O wins";
-    if (isFull()) return "Draw";
-    return "Game not finished";
-  }
-
   private void getNextMove(Scanner in) {
     while (true) {
       System.out.print("> ");
@@ -39,10 +51,11 @@ public class Main {
         int col = in.nextInt();
         if (row < 1 || row > 3 || col < 1 || col > 3) {
           System.out.println("Coordinates should be from 1 to 3!");
-        } else if (squares[(row - 1) * 3 + (col - 1)] != '_') {
+        } else if (squares[(row - 1) * 3 + (col - 1)] != ' ') {
           System.out.println("This cell is occupied! Choose another one!");
         } else {
-          squares[(row - 1) * 3 + (col - 1)] = 'X';
+          char mark = isXsMove ? 'X' : 'O';
+          squares[(row - 1) * 3 + (col - 1)] = mark;
           break;
         }
       } catch (NoSuchElementException e) {
@@ -61,42 +74,24 @@ public class Main {
   }
 
   private boolean isFull() {
-    return count('_') == 0;
-  }
-
-  private boolean isValid() {
-    return !(xWins() && oWins()) && Math.abs(count('X') - count('O')) < 2;
+    for (char cell : squares) {
+      if (cell == ' ') return false;
+    }
+    return true;
   }
 
   private boolean hasThreeInARow(char c) {
     int[][] threeInARowIndexes = {
       {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}
     };
-    for (int[] triplet : threeInARowIndexes) {
-      if (c == squares[triplet[0]] && c == squares[triplet[1]] && c == squares[triplet[2]]) {
-        return true;
-      }
+    for (int[] i : threeInARowIndexes) {
+      if (squares[i[0]] == c && squares[i[1]] == c && squares[i[2]] == c) return true;
     }
     return false;
   }
 
-  private int count(char c) {
-    int result = 0;
-    for (char cell : squares) {
-      if (cell == c) result++;
-    }
-    return result;
-  }
-
   public static void main(String[] args) {
-    System.out.print("> ");
-    try (Scanner in = new Scanner(System.in)) {
-      Main game = new Main(in.nextLine());
-      System.out.println(game.grid());
-      game.getNextMove(in);
-      System.out.println(game.grid());
-    } catch (IllegalArgumentException e) {
-      System.err.println(e.getMessage());
-    }
+    Main game = new Main();
+    game.play();
   }
 }

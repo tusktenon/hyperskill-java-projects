@@ -1,5 +1,6 @@
 package tictactoe;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,27 @@ public class Main {
     if (oWins()) return "O wins";
     if (isFull()) return "Draw";
     return "Game not finished";
+  }
+
+  private void getNextMove(Scanner in) {
+    while (true) {
+      System.out.print("> ");
+      try {
+        int row = in.nextInt();
+        int col = in.nextInt();
+        if (row < 1 || row > 3 || col < 1 || col > 3) {
+          System.out.println("Coordinates should be from 1 to 3!");
+        } else if (squares[(row - 1) * 3 + (col - 1)] != '_') {
+          System.out.println("This cell is occupied! Choose another one!");
+        } else {
+          squares[(row - 1) * 3 + (col - 1)] = 'X';
+          break;
+        }
+      } catch (NoSuchElementException e) {
+        in.nextLine(); // clear current input before next loop
+        System.out.println("You should enter numbers!");
+      }
+    }
   }
 
   private boolean xWins() {
@@ -71,7 +93,8 @@ public class Main {
     try (Scanner in = new Scanner(System.in)) {
       Main game = new Main(in.nextLine());
       System.out.println(game.grid());
-      System.out.println(game.state());
+      game.getNextMove(in);
+      System.out.println(game.grid());
     } catch (IllegalArgumentException e) {
       System.err.println(e.getMessage());
     }

@@ -17,14 +17,26 @@ public class Cinema {
 
   private final int rows, seatsPerRow;
   private final BitSet reserved;
+  private final Scanner in;
 
-  Cinema(int rows, int seatsPerRow) {
+  Cinema(int rows, int seatsPerRow, Scanner in) {
     this.rows = rows;
     this.seatsPerRow = seatsPerRow;
+    this.in = in;
     reserved = new BitSet(rows * seatsPerRow);
   }
 
-  void run(Scanner in) {
+  static Cinema setup(Scanner in) {
+    System.out.print("Enter the number of rows:\n> ");
+    int rows = in.nextInt();
+
+    System.out.print("Enter the number of seats in each row:\n> ");
+    int seatsPerRow = in.nextInt();
+
+    return new Cinema(rows, seatsPerRow, in);
+  }
+
+  void run() {
     while (true) {
       System.out.print(menu);
       try {
@@ -80,14 +92,8 @@ public class Cinema {
 
   public static void main(String[] args) {
     try (Scanner in = new Scanner(System.in)) {
-      System.out.print("Enter the number of rows:\n> ");
-      int rows = in.nextInt();
-
-      System.out.print("Enter the number of seats in each row:\n> ");
-      int seatsPerRow = in.nextInt();
-
-      Cinema cinema = new Cinema(rows, seatsPerRow);
-      cinema.run(in);
+      Cinema cinema = Cinema.setup(in);
+      cinema.run();
     }
   }
 }

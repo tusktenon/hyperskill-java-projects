@@ -5,8 +5,54 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
+interface TicketPricer {
+  int ticketPrice(int row, int seat);
+
+  int maxIncome();
+}
+
+class FixedTicketPricer implements TicketPricer {
+  static final int PRICE = 10;
+  final int seats;
+
+  FixedTicketPricer(int seats) {
+    this.seats = seats;
+  }
+
+  @Override
+  public int ticketPrice(int row, int seat) {
+    return PRICE;
+  }
+
+  @Override
+  public int maxIncome() {
+    return PRICE * seats;
+  }
+}
+
+class RowBasedTicketPricer implements TicketPricer {
+  static final int FRONT_PRICE = 10;
+  static final int BACK_PRICE = 8;
+  final int rows, seatsPerRow;
+
+  RowBasedTicketPricer(int rows, int seatsPerRow) {
+    this.rows = rows;
+    this.seatsPerRow = seatsPerRow;
+  }
+
+  @Override
+  public int ticketPrice(int row, int seat) {
+    return row <= rows / 2 ? FRONT_PRICE : BACK_PRICE;
+  }
+
+  @Override
+  public int maxIncome() {
+    return (FRONT_PRICE * (rows / 2) + BACK_PRICE * (rows - rows / 2)) * seatsPerRow;
+  }
+}
+
 public class Cinema {
-  private static final String menu =
+  private static final String MENU =
       """
 
       1. Show the seats
@@ -18,6 +64,7 @@ public class Cinema {
 
   private final int rows, seatsPerRow;
   private final BitSet reserved;
+  private final TicketPricer pricer;
   private int ticketsSold;
   private int income;
   private final int maxIncome;
@@ -27,11 +74,13 @@ public class Cinema {
     this.rows = rows;
     this.seatsPerRow = seatsPerRow;
     this.in = in;
-    reserved = new BitSet(rows * seatsPerRow);
-    this.maxIncome =
-        rows * seatsPerRow > 60
-            ? (10 * (rows / 2) + 8 * (rows - rows / 2)) * seatsPerRow
-            : 10 * rows * seatsPerRow;
+    int totalSeats = rows * seatsPerRow;
+    reserved = new BitSet(totalSeats);
+    pricer =
+        totalSeats > 60
+            ? new RowBasedTicketPricer(rows, seatsPerRow)
+            : new FixedTicketPricer(totalSeats);
+    maxIncome = pricer.maxIncome();
   }
 
   static Cinema setup(Scanner in) {
@@ -46,7 +95,7 @@ public class Cinema {
 
   void run() {
     while (true) {
-      System.out.print(menu);
+      System.out.print(MENU);
       try {
         int selection = in.nextInt();
         switch (selection) {
@@ -92,7 +141,7 @@ public class Cinema {
   private int reserve(int row, int seat) {
     reserved.set((row - 1) * seatsPerRow + (seat - 1));
     ticketsSold++;
-    int price = ticketPrice(row);
+    int price = pricer.ticketPrice(row, seat);
     income += price;
     return price;
   }
@@ -117,10 +166,6 @@ public class Cinema {
   String statistics() {
     return "\nNumber of purchased tickets: %d\nPercentage: %.2f%%\nCurrent income: $%d\nTotal income: $%d"
         .formatted(ticketsSold, 100.0 * ticketsSold / (rows * seatsPerRow), income, maxIncome);
-  }
-
-  int ticketPrice(int row) {
-    return rows * seatsPerRow > 60 && row > rows / 2 ? 8 : 10;
   }
 
   public static void main(String[] args) {

@@ -6,8 +6,12 @@ When I started this course, I already had a fair amount of experience with Java,
 
 All the of projects so far are CLI applications, and can be started by running `gradle run --console=plain` from the project's root folder.
 
-## The Projects
+## Easy Projects
 
 - [Cinema Room Manager](https://hyperskill.org/projects/133)
 - [Coffee Machine Simulator](https://hyperskill.org/projects/33)
 - [Simple Tic-Tac-Toe](https://hyperskill.org/projects/48)
+
+## Medium Projects
+
+- [Tic-Tac-Toe with AI](https://hyperskill.org/projects/81)

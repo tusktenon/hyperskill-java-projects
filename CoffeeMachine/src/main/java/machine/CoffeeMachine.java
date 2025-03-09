@@ -8,8 +8,9 @@ public class CoffeeMachine {
   private static final Coffee ESPRESSO = new Coffee(250, 0, 16, 4);
   private static final Coffee LATTE = new Coffee(350, 75, 20, 7);
   private static final Coffee CAPPUCCINO = new Coffee(200, 100, 12, 6);
+  private static final int MAX_USES_BETWEEN_CLEANINGS = 10;
 
-  private int water, milk, beans, cups, money;
+  private int water, milk, beans, cups, money, usesSinceCleaning;
   private Scanner in;
 
   CoffeeMachine(int water, int milk, int beans, int cups, int money, Scanner in) {
@@ -23,11 +24,12 @@ public class CoffeeMachine {
 
   void run() {
     while (true) {
-      System.out.print("\nWrite action (buy, fill, take, remaining, exit):\n> ");
+      System.out.print("\nWrite action (buy, fill, take, clean, remaining, exit):\n> ");
       switch (in.nextLine()) {
         case "buy" -> sell();
         case "fill" -> refill();
         case "take" -> emptyMoney();
+        case "clean" -> clean();
         case "remaining" -> printStatus();
         case "exit" -> {
           return;
@@ -45,6 +47,10 @@ public class CoffeeMachine {
   }
 
   private void sell() {
+    if (usesSinceCleaning >= MAX_USES_BETWEEN_CLEANINGS) {
+      System.out.println("I need cleaning!");
+      return;
+    }
     System.out.print(
         "\nWhat do you want to buy? "
             + "1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu:\n> ");
@@ -93,6 +99,7 @@ public class CoffeeMachine {
     beans -= coffee.beans();
     cups--;
     money += coffee.price();
+    usesSinceCleaning++;
   }
 
   private void refill() {
@@ -111,6 +118,11 @@ public class CoffeeMachine {
     int withdrawn = money;
     money = 0;
     System.out.println("\nI gave you $" + withdrawn);
+  }
+
+  private void clean() {
+    usesSinceCleaning = 0;
+    System.out.println("I have been cleaned!");
   }
 
   public static void main(String[] args) {

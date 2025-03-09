@@ -4,6 +4,8 @@ These are the projects I completed as part of the [Java Backend Developer (Sprin
 
 When I started this course, I already had a fair amount of experience with Java, but none with Java build tools. To get as much practice as possible, I decided to use Gradle for even the simplest of projects.
 
+All the of projects so far are CLI applications, and can be started by running `gradle run --console=plain` from the project's root folder.
+
 ## The Projects
 
 - [Cinema Room Manager](https://hyperskill.org/projects/133)

@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.random.RandomGenerator;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 class Game {
@@ -45,60 +44,13 @@ class Game {
   private final Square[] squares;
   private State state = State.ACTIVE;
   private boolean isXsMove = true;
-  private final Scanner in;
-
-  // The `RandomGenerator.getDefault()` factory method is preferred in modern Java,
-  // but the Hyperskill tests do not support it.
   private final RandomGenerator rng = new Random();
+  private final Scanner in;
 
   Game(Scanner in) {
     this.in = in;
     squares = new Square[9];
     Arrays.fill(squares, Square.EMPTY);
-  }
-
-  /* For use in the `withInitialState` factory method. */
-  private Game(Scanner in, Square[] squares) {
-    this.squares = squares;
-    this.in = in;
-  }
-
-  /* Not used in Stage 2. */
-  static Game withInitialState(Scanner in) {
-    System.out.print("Enter the cells: > ");
-    String initialState = in.nextLine();
-
-    if (!Pattern.matches("[XO_]{9}", initialState)) {
-      throw new IllegalArgumentException("Invalid initial game state");
-    }
-
-    Square[] squares = new Square[9];
-    int xoDiff = 0;
-    for (int i = 0; i < 9; i++) {
-      switch (initialState.charAt(i)) {
-        case 'X' -> {
-          squares[i] = Square.X;
-          xoDiff++;
-        }
-        case 'O' -> {
-          squares[i] = Square.O;
-          xoDiff--;
-        }
-        default -> squares[i] = Square.EMPTY;
-      }
-    }
-
-    boolean isXsMove =
-        switch (xoDiff) {
-          case 0 -> true;
-          case 1 -> false;
-          default -> throw new IllegalArgumentException("Invalid initial game state");
-        };
-
-    Game game = new Game(in, squares);
-    game.updateState();
-    game.isXsMove = isXsMove;
-    return game;
   }
 
   void play() {

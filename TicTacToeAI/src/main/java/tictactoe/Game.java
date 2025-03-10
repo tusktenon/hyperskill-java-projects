@@ -1,8 +1,12 @@
 package tictactoe;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.random.RandomGenerator;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 class Game {
   enum Square {
@@ -28,13 +32,39 @@ class Game {
     }
   }
 
-  private final Square[] squares = new Square[9];
-  private State state;
-  private boolean isXsMove;
+  enum Level {
+    EASY;
+
+    @Override
+    public String toString() {
+      return this.name().toLowerCase();
+    }
+  }
+
+  private final Level level = Level.EASY;
+  private final Square[] squares;
+  private State state = State.ACTIVE;
+  private boolean isXsMove = true;
   private final Scanner in;
+
+  // The `RandomGenerator.getDefault()` factory method is preferred in modern Java,
+  // but the Hyperskill tests do not support it.
+  private final RandomGenerator rng = new Random();
 
   Game(Scanner in) {
     this.in = in;
+    squares = new Square[9];
+    Arrays.fill(squares, Square.EMPTY);
+  }
+
+  /* For use in the `withInitialState` factory method. */
+  private Game(Scanner in, Square[] squares) {
+    this.squares = squares;
+    this.in = in;
+  }
+
+  /* Not used in Stage 2. */
+  static Game withInitialState(Scanner in) {
     System.out.print("Enter the cells: > ");
     String initialState = in.nextLine();
 
@@ -42,6 +72,7 @@ class Game {
       throw new IllegalArgumentException("Invalid initial game state");
     }
 
+    Square[] squares = new Square[9];
     int xoDiff = 0;
     for (int i = 0; i < 9; i++) {
       switch (initialState.charAt(i)) {
@@ -57,21 +88,27 @@ class Game {
       }
     }
 
-    isXsMove =
+    boolean isXsMove =
         switch (xoDiff) {
           case 0 -> true;
           case 1 -> false;
           default -> throw new IllegalArgumentException("Invalid initial game state");
         };
 
-    updateState();
+    Game game = new Game(in, squares);
+    game.updateState();
+    game.isXsMove = isXsMove;
+    return game;
   }
 
   void play() {
-    System.out.println(table());
-    getNextMove();
-    isXsMove = !isXsMove;
-    updateState();
+    while (state == State.ACTIVE) {
+      System.out.println(table());
+      if (isXsMove) movePlayer();
+      else moveAI();
+      isXsMove = !isXsMove;
+      updateState();
+    }
     System.out.println(table());
     System.out.println(state);
   }
@@ -94,7 +131,7 @@ class Game {
         + "---------";
   }
 
-  private void getNextMove() {
+  private void movePlayer() {
     while (true) {
       System.out.print("Enter the coordinates: > ");
       try {
@@ -114,6 +151,12 @@ class Game {
         System.out.println("You should enter numbers!");
       }
     }
+  }
+
+  private void moveAI() {
+    int[] available = IntStream.range(0, 9).filter(i -> squares[i] == Square.EMPTY).toArray();
+    squares[available[rng.nextInt(available.length)]] = Square.O;
+    System.out.printf("Making move level \"%s\"\n", level);
   }
 
   private void updateState() {

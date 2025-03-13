@@ -15,3 +15,4 @@ All the of projects so far are CLI applications, and can be started by running `
 ## Medium Projects
 
 - [Tic-Tac-Toe with AI](https://hyperskill.org/projects/81)
+- [Traffic Light Simulator](https://hyperskill.org/projects/288)

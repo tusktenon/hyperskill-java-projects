@@ -6,6 +6,8 @@ When I started this course, I already had a fair amount of experience with Java,
 
 All the of projects so far are CLI applications, and can be started by running `gradle run --console=plain` from the project's root folder.
 
+*A note on code style.* I have a slight preference for Google Java Style over Oracle Java Conventions, and used the former for my first four projects (Cinema Room Manager, Coffee Machine Simulator, Simple Tic-Tac-Toe, and Tic-Tac-Toe with AI). I switched to Oracle style for the remaining projects, to be consistent with Hyperskill.
+
 ## Easy Projects
 
 - [Cinema Room Manager](https://hyperskill.org/projects/133)

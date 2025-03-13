@@ -5,3 +5,7 @@ plugins {
 application {
     mainClass = 'traffic.Main'
 }
+
+run {
+    standardInput = System.in
+}

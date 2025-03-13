@@ -13,20 +13,10 @@ class Table {
 
   @Override
   public String toString() {
-    char[] cells = new char[9];
-    for (int i = 0; i < 9; i++) {
-      cells[i] =
-          switch (squares[i]) {
-            case X -> 'X';
-            case O -> 'O';
-            case EMPTY -> ' ';
-          };
-    }
-
     return "---------\n"
-        + "| %c %c %c |\n".formatted(cells[0], cells[1], cells[2])
-        + "| %c %c %c |\n".formatted(cells[3], cells[4], cells[5])
-        + "| %c %c %c |\n".formatted(cells[6], cells[7], cells[8])
+        + "| %s %s %s |\n".formatted(squares[0], squares[1], squares[2])
+        + "| %s %s %s |\n".formatted(squares[3], squares[4], squares[5])
+        + "| %s %s %s |\n".formatted(squares[6], squares[7], squares[8])
         + "---------";
   }
 
@@ -49,16 +39,11 @@ class Table {
     int[][] threeInARowIndexes = {
       {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}
     };
-    for (int[] i : threeInARowIndexes) {
-      if (squares[i[0]] == s && squares[i[1]] == s && squares[i[2]] == s) return true;
-    }
-    return false;
+    return Arrays.stream(threeInARowIndexes)
+        .anyMatch(i -> squares[i[0]] == s && squares[i[1]] == s && squares[i[2]] == s);
   }
 
   boolean isFull() {
-    for (Square cell : squares) {
-      if (cell == Square.EMPTY) return false;
-    }
-    return true;
+    return !Arrays.stream(squares).anyMatch(s -> s == Square.EMPTY);
   }
 }

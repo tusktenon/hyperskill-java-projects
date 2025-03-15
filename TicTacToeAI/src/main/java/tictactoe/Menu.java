@@ -35,6 +35,7 @@ class Menu {
     return switch (playerType) {
       case "user" -> new User(playingAs, table, in);
       case "easy" -> new EasyAI(playingAs, table);
+      case "medium" -> new MediumAI(playingAs, table);
       default -> throw new IllegalArgumentException("Invalid player type");
     };
   }

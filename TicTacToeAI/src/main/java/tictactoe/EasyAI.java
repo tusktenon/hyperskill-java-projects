@@ -15,8 +15,8 @@ class EasyAI implements Player {
 
   @Override
   public void move() {
+    System.out.println("Making move level \"easy\"");
     int[] available = table.availableCells();
     table.set(available[rng.nextInt(available.length)], playingAs);
-    System.out.println("Making move level \"easy\"");
   }
 }

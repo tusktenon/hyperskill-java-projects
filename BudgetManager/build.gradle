@@ -5,3 +5,7 @@ plugins {
 application {
     mainClass = 'budget.Main'
 }
+
+run {
+    standardInput = System.in
+}

@@ -6,6 +6,7 @@ class Menu {
     private final Ledger ledger;
     private final Reports reports;
     private final Scanner scanner;
+    private final String dataFile;
 
     private static final String MAIN_MENU = """
             
@@ -14,6 +15,8 @@ class Menu {
             2) Add purchase
             3) Show list of purchases
             4) Balance
+            5) Save
+            6) Load
             0) Exit""";
 
     // For efficiency, keep a static copy of the array of Category instances
@@ -41,10 +44,11 @@ class Menu {
         LIST_PURCHASES_MENU = listPurchasesMenu.toString();
     }
 
-    Menu(Ledger ledger, Scanner scanner) {
+    Menu(Ledger ledger, Scanner scanner, String dataFile) {
         this.ledger = ledger;
         this.reports = new Reports(ledger);
         this.scanner = scanner;
+        this.dataFile = dataFile;
     }
 
     void run() {
@@ -54,7 +58,15 @@ class Menu {
                 case "1" -> addIncome();
                 case "2" -> runAddPurchaseMenu();
                 case "3" -> runListPurchasesMenu();
-                case "4" -> showBalance();
+                case "4" -> System.out.printf("\nBalance: $%.2f\n", ledger.balance());
+                case "5" -> {
+                    FileOps.save(ledger, dataFile);
+                    System.out.println("\nPurchases were saved!");
+                }
+                case "6" -> {
+                    FileOps.load(ledger, dataFile);
+                    System.out.println("\nPurchases were loaded!");
+                }
                 case "0" -> {
                     System.out.println("\nBye!");
                     return;
@@ -140,9 +152,5 @@ class Menu {
     void showAllPurchases() {
         System.out.println("\nAll:");
         reports.allPurchases();
-    }
-
-    void showBalance() {
-        System.out.printf("\nBalance: $%.2f\n", ledger.balance());
     }
 }

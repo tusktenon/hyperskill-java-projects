@@ -12,16 +12,24 @@ class Ledger {
         return balance;
     }
 
-    Stream<Purchase> purchases() {
-        return purchases.stream();
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     void addIncome(double amount) {
         balance += amount;
     }
 
-    void addPurchase(Category category, String description, double amount) {
+    Stream<Purchase> purchases() {
+        return purchases.stream();
+    }
+
+    void addPurchaseWithoutBalanceAdjustment(Category category, String description, double amount) {
         purchases.add(new Purchase(category, description, amount));
+    }
+
+    void addPurchase(Category category, String description, double amount) {
+        addPurchaseWithoutBalanceAdjustment(category, description, amount);
         balance = Math.max(balance - amount, 0);
     }
 

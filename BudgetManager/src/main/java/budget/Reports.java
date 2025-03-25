@@ -3,21 +3,15 @@ package budget;
 import java.util.function.Predicate;
 
 public class Reports {
-    private final Ledger ledger;
-
-    Reports(Ledger ledger) {
-        this.ledger = ledger;
+    static void allPurchases(Ledger ledger) {
+        purchasesByCondition(ledger, purchase -> true);
     }
 
-    void allPurchases() {
-        purchasesByCondition(purchase -> true);
+    static void purchasesForCategory(Ledger ledger, Category category) {
+        purchasesByCondition(ledger, purchase -> purchase.category() == category);
     }
 
-    void purchasesForCategory(Category category) {
-        purchasesByCondition(purchase -> purchase.category() == category);
-    }
-
-    private void purchasesByCondition(Predicate<Purchase> condition) {
+    static private void purchasesByCondition(Ledger ledger, Predicate<Purchase> condition) {
         ledger.purchases()
                 .filter(condition)
                 .forEach(purchase -> System.out.printf(

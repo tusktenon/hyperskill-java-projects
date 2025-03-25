@@ -8,6 +8,7 @@ class MainMenu extends Menu {
     private final String dataFile;
     private final AddPurchaseMenu addPurchaseMenu;
     private final ListPurchasesMenu listPurchasesMenu;
+    private final AnalyzeMenu analyzeMenu;
 
     private static final String MENU_TEXT = """
             
@@ -18,6 +19,7 @@ class MainMenu extends Menu {
             4) Balance
             5) Save
             6) Load
+            7) Analyze (Sort)
             0) Exit""";
 
     MainMenu(Scanner scanner, Ledger ledger, String dataFile) {
@@ -26,6 +28,7 @@ class MainMenu extends Menu {
         this.dataFile = dataFile;
         this.addPurchaseMenu = new AddPurchaseMenu(scanner, ledger);
         this.listPurchasesMenu = new ListPurchasesMenu(scanner, ledger);
+        this.analyzeMenu = new AnalyzeMenu(scanner, ledger);
     }
 
     @Override
@@ -51,11 +54,12 @@ class MainMenu extends Menu {
                 FileOps.load(ledger, dataFile);
                 System.out.println("\nPurchases were loaded!");
             }
+            case "7" -> analyzeMenu.run();
             case "0" -> {
                 System.out.println("\nBye!");
                 return true;
             }
-            default -> System.out.println("\nPlease enter a number between 0 and 4");
+            default -> System.out.println("\nPlease enter a number between 0 and 7");
         }
         return false;
     }

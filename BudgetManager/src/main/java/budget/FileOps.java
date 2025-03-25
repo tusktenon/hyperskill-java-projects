@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 class FileOps {
+
     static final String DELIMITER = ",";
 
     static void load(Ledger ledger, String source) {

@@ -6,20 +6,12 @@ class AddPurchaseMenu extends Menu {
 
     private final Ledger ledger;
 
-    private static final String MENU_TEXT;
-    private static final String INPUT_ERROR_MESSAGE;
-
     // For efficiency, keep a static copy of the array of Category instances
     private static final Category[] CATEGORIES = Category.values();
 
-    static {
-        MENU_TEXT = "\nChoose the type of purchase\n"
-                + categoriesMenuSection()
-                + "%d) Back".formatted(CATEGORIES.length + 1);
-
-        INPUT_ERROR_MESSAGE =
-                "\nPlease enter a number between 1 and %d".formatted(CATEGORIES.length + 1);
-    }
+    private static final String MENU_TEXT = "\nChoose the type of purchase\n"
+            + categoriesMenuSection()
+            + "%d) Back".formatted(CATEGORIES.length + 1);
 
     AddPurchaseMenu(Scanner scanner, Ledger ledger) {
         super(scanner);
@@ -35,14 +27,12 @@ class AddPurchaseMenu extends Menu {
     boolean processUserInput(String input) {
         try {
             int selection = Integer.parseInt(input);
-            if (1 <= selection && selection <= CATEGORIES.length)
-                addPurchase(CATEGORIES[selection - 1]);
-            else if (selection == CATEGORIES.length + 1)
+            if (selection == CATEGORIES.length + 1)
                 return true;
             else
-                System.out.println(INPUT_ERROR_MESSAGE);
-        } catch (NumberFormatException e) {
-            System.out.println(INPUT_ERROR_MESSAGE);
+                addPurchase(CATEGORIES[selection - 1]);
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            System.out.println("\nPlease enter a number between 1 and " + (CATEGORIES.length + 1));
         }
         return false;
     }

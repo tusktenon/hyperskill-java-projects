@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 class Ledger {
+
     private final List<Purchase> purchases = new ArrayList<>();
     private double balance = 0;
 

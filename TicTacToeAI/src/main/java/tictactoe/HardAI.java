@@ -18,6 +18,8 @@ class HardAI implements Player {
     int bestScore = Integer.MIN_VALUE;
     for (int i : table.availableCells()) {
       table.set(i, playingAs);
+      // It is now the opposing (minimizing) player's turn, so make the initial
+      // call to minimax with maximizingPlayer = false
       int score = minimax(table, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
       if (score == 1) return;
       table.set(i, Square.EMPTY);

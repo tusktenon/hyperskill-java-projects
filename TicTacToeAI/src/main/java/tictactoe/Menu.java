@@ -11,7 +11,7 @@ class Menu {
 
   void run() {
     while (true) {
-      System.out.print("Input command: > ");
+      System.out.print("Input command: ");
       String[] command = in.nextLine().split("\\s+");
       if (command.length == 1 && "exit".equals(command[0])) return;
       if (command.length == 3 && "start".equals(command[0])) newGame(command[1], command[2]);
@@ -36,6 +36,7 @@ class Menu {
       case "user" -> new User(playingAs, table, in);
       case "easy" -> new EasyAI(playingAs, table);
       case "medium" -> new MediumAI(playingAs, table);
+      case "hard" -> new HardAI(playingAs, table);
       default -> throw new IllegalArgumentException("Invalid player type");
     };
   }

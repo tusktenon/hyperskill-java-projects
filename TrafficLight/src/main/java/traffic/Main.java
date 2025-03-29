@@ -1,9 +1,9 @@
 package traffic;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
+
     private static final String greeting = "Welcome to the traffic management system!";
     private static final String menu = """
             Menu:
@@ -13,50 +13,46 @@ public class Main {
             0. Quit
             """;
 
-    private static void clearConsole() {
-        try {
-            var clearCommand = System.getProperty("os.name").contains("Windows")
-                    ? new ProcessBuilder("cmd", "/c", "cls")
-                    : new ProcessBuilder("clear");
-            clearCommand.inheritIO().start().waitFor();
-        } catch (IOException | InterruptedException ignored) {}
-    }
-
-    private static int getPositiveInteger(Scanner in) {
-        while (true) {
-            String input = in.nextLine();
-            try {
-                int value = Integer.parseInt(input);
-                if (value > 0) return value;
-                else throw new IllegalArgumentException();
-            } catch (IllegalArgumentException e) {
-                System.out.print("Incorrect input. Try again: ");
-            }
-        }
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.println(greeting);
         try (Scanner in = new Scanner(System.in)) {
             System.out.print("Input the number of roads: ");
-            getPositiveInteger(in);
+            int roads = ConsoleUtils.getPositiveInteger(in);
             System.out.print("Input the interval: ");
-            getPositiveInteger(in);
+            int interval = ConsoleUtils.getPositiveInteger(in);
+
+            QueueThread thread = new QueueThread(roads, interval);
+            thread.setName("QueueThread");
+            thread.start();
 
             while (true) {
-                clearConsole();
+                ConsoleUtils.clearConsole();
                 System.out.print(menu);
                 switch (in.nextLine()) {
-                    case "1" -> System.out.println("Road added");
-                    case "2" -> System.out.println("Road deleted");
-                    case "3" -> System.out.println("System opened");
+                    case "1" -> {
+                        System.out.println("Road added");
+                        in.nextLine();
+                    }
+                    case "2" -> {
+                        System.out.println("Road deleted");
+                        in.nextLine();
+                    }
+                    case "3" -> {
+                        thread.displaySystemState(true);
+                        in.nextLine();
+                        thread.displaySystemState(false);
+                    }
                     case "0" -> {
+                        thread.shutdown();
+                        thread.join();
                         System.out.println("Bye!");
                         return;
                     }
-                    default -> System.out.println("Incorrect option");
+                    default -> {
+                        System.out.println("Incorrect option");
+                        in.nextLine();
+                    }
                 }
-                in.nextLine();
             }
         }
     }

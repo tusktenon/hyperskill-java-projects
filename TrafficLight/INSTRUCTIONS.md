@@ -128,7 +128,7 @@ To complete this stage, your program must comply with the following requirements
 
 **Note:** From this stage and beyond, the example will contain the gif representation of program running and an attached transcription block that contains the most important information. Text that starts with `//` is a comment, the greater-than symbol followed by a space `> ` represents the user input.
 
-![Example](resources/Stage3Example.gif)
+![](resources/Stage3Example.gif)
 
 <details>
 <summary>Transcription</summary>
@@ -234,7 +234,7 @@ When the user provided an empty input, the program should switch back to the Men
 
 ### Example
 
-![Example](resources/Stage4Example.gif)
+![](resources/Stage4Example.gif)
 
 <details>
 <summary>Transcription</summary>
@@ -297,6 +297,267 @@ Menu:
 2. Delete road
 3. Open system
 0. Quit
+> 0
+Bye!
+```
+</details>
+
+
+## Stage 5/6: Over and over again
+
+### Description
+
+Expand the created stopwatch into a road management system. Implement the circular queue that contains roads and add functionality to the remaining options in the menu.
+
+### Objectives
+
+In this stage, we will add functionality to the `Add road` and the `Delete road` options. Expand the `QueueThread` system by implementing a circular queue, where the maximum number of roads is the value provided in users' settings.
+
+When the user selects `1` as an option, print a line containing the `input` substring, followed by an input for a new element.
+
+- If the queue is full, the program should inform the user about that with the `queue is full` substring
+- Otherwise, add this element to the end of a queue and inform users with the `add` substring and the element's name
+
+When the user selects `2` as an option:
+
+- If the queue is empty, the program should inform users with the `queue is empty` substring
+- Otherwise, delete the element from the start of the queue and inform users with the `delete` substring and the element's name.
+
+Also, expand the output of the system information. If the queue is not empty, print all the elements' names line by line in the queue from front to rear, just like in the example.
+
+### Examples
+
+**Example 1**
+
+![](resources/Stage5Example1.gif)
+
+<details>
+<summary>Transcription</summary>
+```text
+# To shrink the transcription each thread's output sequence will be collapsed like this:
+# ! Xs. have passed since system startup !
+# ! Number of roads: 5 !
+# ! Interval: 3 !
+# *roads*
+# ! Press "Enter" to open menu !
+
+Welcome to the traffic management system!
+Input the number of roads: > 5
+Input the interval: > 3
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadA
+RoadA Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadA
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadB
+RoadB Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadA
+RoadB
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadC
+RoadC Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadA
+RoadB
+RoadC
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+RoadA deleted!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadB
+RoadC
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadD
+RoadD Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+RoadB deleted!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+RoadC deleted!
+>
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadD
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 0
+Bye!
+```
+</details>
+
+**Example 2**
+
+![](resources/Stage5Example2.gif)
+
+<details>
+<summary>Transcription</summary>
+```text
+# To shrink the output each thread's message sequence will be collapsed like this:
+# ! THREAD_INFO_HEADER !
+# 
+# ! THREAD_INFO_FOOTER !
+
+# And each menu output will be collapsed like this:
+# ! MENU_INFO !
+
+Welcome to the traffic management system!
+Input the number of roads: > 2
+Input the interval: > 2
+! MENU_INFO !
+> 1
+Input road name: > RoadA 
+RoadA Added!
+> 
+! MENU_INFO !
+> 1
+Input road name: > RoadB 
+RoadB Added!
+> 
+! MENU_INFO !
+> 1
+Input road name: > RoadC 
+Queue is full
+> 
+! MENU_INFO !
+> 3
+! THREAD_INFO_HEADER !
+
+RoadA
+RoadB
+
+! THREAD_INFO_FOOTER !
+>
+! MENU_INFO !
+> 2
+RoadA deleted!
+>
+! MENU_INFO !
+> 2
+RoadB deleted!
+>
+! MENU_INFO !
+> 3
+! THREAD_INFO_HEADER !
+
+
+! THREAD_INFO_FOOTER !
+>
+! MENU_INFO !
+> 2
+Queue is empty
+>
+! MENU_INFO !
+> 1
+Input road name: > RoadD 
+RoadD Added!
+> 
+! MENU_INFO !
+> 3
+! THREAD_INFO_HEADER !
+
+RoadD
+
+! THREAD_INFO_FOOTER !
+>
+! MENU_INFO !
 > 0
 Bye!
 ```

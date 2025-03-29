@@ -30,11 +30,18 @@ public class Main {
                 System.out.print(menu);
                 switch (in.nextLine()) {
                     case "1" -> {
-                        System.out.println("Road added");
+                        System.out.print("Input road name: ");
+                        String name = in.nextLine();
+                        if (thread.addRoad(name))
+                            System.out.println(name + " added!");
+                        else
+                            System.out.println("Queue is full");
                         in.nextLine();
                     }
                     case "2" -> {
-                        System.out.println("Road deleted");
+                        thread.deleteRoad().ifPresentOrElse(
+                                road -> System.out.println(road + " deleted!"),
+                                () -> System.out.println("Queue is empty"));
                         in.nextLine();
                     }
                     case "3" -> {

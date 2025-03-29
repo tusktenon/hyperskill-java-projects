@@ -1,0 +1,60 @@
+Welcome to the traffic management system!
+Input the number of roads: > 5
+Input the interval: > 3
+// Started counting seconds
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+// 1 second passed
+> 3
+! 1s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+// 1 second passed
+! 2s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+// 1 second passed
+! 3s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+// 1 second passed
+! 4s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+// 3 seconds passed
+> 3
+! 7s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+// 1 second passed
+! 8s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+// 1 second passed
+! 9s. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 0
+Bye!

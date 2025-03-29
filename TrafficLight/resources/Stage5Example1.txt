@@ -1,0 +1,146 @@
+# To shrink the transcription each thread's output sequence will be collapsed like this:
+# ! Xs. have passed since system startup !
+# ! Number of roads: 5 !
+# ! Interval: 3 !
+# *roads*
+# ! Press "Enter" to open menu !
+
+Welcome to the traffic management system!
+Input the number of roads: > 5
+Input the interval: > 3
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadA
+RoadA Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadA
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadB
+RoadB Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadA
+RoadB
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadC
+RoadC Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadA
+RoadB
+RoadC
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+RoadA deleted!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadB
+RoadC
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Input road name: > RoadD
+RoadD Added!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+RoadB deleted!
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+RoadC deleted!
+>
+> 3
+! Xs. have passed since system startup !
+! Number of roads: 5 !
+! Interval: 3 !
+
+RoadD
+
+! Press "Enter" to open menu !
+>
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 0
+Bye!

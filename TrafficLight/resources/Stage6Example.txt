@@ -1,0 +1,196 @@
+# Since the structure of the output does not change in this stage, this transcription will contain only actions and road states each second.
+# "(hidden) " implies that thread's output on this second was not displayed in gif
+# Number of roads: 5
+# Interval: 3
+(hidden) 1:
+(hidden) 2:
+
+# RoadA added
+
+(hidden) 3:
+RoadA will be open for 3s.
+(hidden) 4:
+RoadA will be open for 2s.
+(hidden) 5:
+RoadA will be open for 1s.
+
+# RoadB added
+
+(hidden) 6:
+RoadA will be closed for 3s.
+RoadB will be open for 3s.
+(hidden) 7:
+RoadA will be closed for 2s.
+RoadB will be open for 2s.
+(hidden) 8:
+RoadA will be closed for 1s.
+RoadB will be open for 1s.
+(hidden) 9:
+RoadA will be open for 3s.
+RoadB will be closed for 3s.
+
+# RoadC added
+
+(hidden) 10:
+RoadA will be open for 2s.
+RoadB will be closed for 2s.
+RoadC will be closed for 5s.
+11:
+RoadA will be open for 1s.
+RoadB will be closed for 1s.
+RoadC will be closed for 4s.
+12:
+RoadA will be closed for 6s.
+RoadB will be open for 3s.
+RoadC will be closed for 3s.
+13:
+RoadA will be closed for 5s.
+RoadB will be open for 2s.
+RoadC will be closed for 2s.
+14:
+RoadA will be closed for 4s.
+RoadB will be open for 1s.
+RoadC will be closed for 1s.
+15:
+RoadA will be closed for 3s.
+RoadB will be closed for 6s.
+RoadC will be open for 3s.
+16:
+RoadA will be closed for 2s.
+RoadB will be closed for 5s.
+RoadC will be open for 2s.
+17:
+RoadA will be closed for 1s.
+RoadB will be closed for 4s.
+RoadC will be open for 1s.
+18:
+RoadA will be open for 3s.
+RoadB will be closed for 3s.
+RoadC will be closed for 6s.
+19:
+RoadA will be open for 2s.
+RoadB will be closed for 2s.
+RoadC will be closed for 5s.
+(hidden) 20:
+RoadA will be open for 1s.
+RoadB will be closed for 1s.
+RoadC will be closed for 4s.
+
+# RoadA deleted
+
+(hidden) 21:
+RoadB will be open for 3s.
+RoadC will be closed for 3s.
+(hidden) 22:
+RoadB will be open for 2s.
+RoadC will be closed for 2s.
+23:
+RoadB will be open for 1s.
+RoadC will be closed for 1s.
+24:
+RoadB will be closed for 3s.
+RoadC will be open for 3s.
+25:
+RoadB will be closed for 2s.
+RoadC will be open for 2s.
+26:
+RoadB will be closed for 1s.
+RoadC will be open for 1s.
+27:
+RoadB will be open for 3s.
+RoadC will be closed for 3s.
+28:
+RoadB will be open for 2s.
+RoadC will be closed for 2s.
+29:
+RoadB will be open for 1s.
+RoadC will be closed for 1s.
+(hidden) 30:
+RoadB will be closed for 3s.
+RoadC will be open for 3s.
+
+# RoadD added
+
+(hidden) 31:
+RoadB will be closed for 5s.
+RoadC will be open for 2s.
+RoadD will be closed for 2s.
+(hidden) 32:
+RoadB will be closed for 4s.
+RoadC will be open for 1s.
+RoadD will be closed for 1s.
+(hidden) 33:
+RoadB will be closed for 3s.
+RoadC will be closed for 6s.
+RoadD will be open for 3s.
+
+# RoadB deleted
+
+(hidden) 34:
+RoadC will be closed for 2s.
+RoadD will be open for 2s.
+(hidden) 35:
+RoadC will be closed for 1s.
+RoadD will be open for 1s.
+(hidden) 36:
+RoadC will be open for 3s.
+RoadD will be closed for 3s.
+(hidden) 37:
+RoadC will be open for 2s.
+RoadD will be closed for 2s.
+
+# RoadE added
+
+(hidden) 38:
+RoadC will be open for 1s.
+RoadD will be closed for 1s.
+RoadE will be closed for 4s.
+39:
+RoadC will be closed for 6s.
+RoadD will be open for 3s.
+RoadE will be closed for 3s.
+40:
+RoadC will be closed for 5s.
+RoadD will be open for 2s.
+RoadE will be closed for 2s.
+41:
+RoadC will be closed for 4s.
+RoadD will be open for 1s.
+RoadE will be closed for 1s.
+42:
+RoadC will be closed for 3s.
+RoadD will be closed for 6s.
+RoadE will be open for 3s.
+43:
+RoadC will be closed for 2s.
+RoadD will be closed for 5s.
+RoadE will be open for 2s.
+(hidden) 44:
+RoadC will be closed for 1s.
+RoadD will be closed for 4s.
+RoadE will be open for 1s.
+
+# RoadC deleted
+
+(hidden) 45:
+RoadD will be open for 3s.
+RoadE will be closed for 3s.
+(hidden) 46:
+RoadD will be open for 2s.
+RoadE will be closed for 2s.
+(hidden) 47:
+RoadD will be open for 1s.
+RoadE will be closed for 1s.
+
+# RoadD deleted
+
+(hidden) 48:
+RoadE will be open for 3s.
+49:
+RoadE will be open for 2s.
+51:
+RoadE will be open for 1s.
+52:
+RoadE will be open for 3s.
+53:
+RoadE will be open for 2s.

@@ -1,0 +1,53 @@
+Welcome to the traffic management system!
+Input the number of roads: > -1
+Error! Incorrect Input. Try again: > Hello
+Error! Incorrect Input. Try again: > 0
+Error! Incorrect Input. Try again: > 5
+Input the interval: > -5
+Error! Incorrect Input. Try again: > World
+Error! Incorrect Input. Try again: > 0
+Error! Incorrect Input. Try again: > 3
+// Output cleared
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 4
+Incorrect option
+>
+// Output cleared
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> -1
+Incorrect option
+>
+// Output cleared
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> Hello world
+Incorrect option
+>
+// Output cleared
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+Road deleted
+>
+// Output cleared
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 0
+Bye!

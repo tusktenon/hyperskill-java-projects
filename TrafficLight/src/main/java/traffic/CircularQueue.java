@@ -38,11 +38,10 @@ class CircularQueue {
         return Optional.of(dequeued);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+    public String[] toArray() {
+        String[] asArray = new String[length];
         for (int i = 0; i < length; i++)
-            sb.append(elements[(front + i) % elements.length]).append('\n');
-        return sb.toString();
+            asArray[i] = elements[(front + i) % elements.length];
+        return asArray;
     }
 }

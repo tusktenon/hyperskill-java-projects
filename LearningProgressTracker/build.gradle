@@ -5,3 +5,7 @@ plugins {
 application {
     mainClass = 'tracker.Main'
 }
+
+run {
+    standardInput = System.in
+}

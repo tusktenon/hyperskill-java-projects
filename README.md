@@ -19,3 +19,7 @@ All the of projects so far are CLI applications, and can be started by running `
 - [Budget Manager](https://hyperskill.org/projects/76)
 - [Tic-Tac-Toe with AI](https://hyperskill.org/projects/81)
 - [Traffic Light Simulator](https://hyperskill.org/projects/288)
+
+## Hard Projects
+
+- [Learning Progress Tracker](https://hyperskill.org/projects/197)

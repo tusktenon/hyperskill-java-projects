@@ -1,17 +1,21 @@
 package tracker;
 
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class Admin {
 
     static final Pattern VALID_EMAIL = Pattern.compile("\\w+(\\.\\w+)*@\\w+(\\.\\w+)+");
     static final Pattern VALID_NAME = Pattern.compile("([A-Za-z][-']?)+[A-Za-z]");
 
-    private int students = 0;
+    private final Platform platform;
     private final Scanner in;
 
-    Admin(Scanner in) {
+    Admin(Platform platform, Scanner in) {
+        this.platform = platform;
         this.in = in;
     }
 
@@ -20,7 +24,10 @@ class Admin {
 
         while (true) {
             switch (in.nextLine().trim().toLowerCase()) {
+                case "add points" -> addPoints();
                 case "add students" -> addStudents();
+                case "find" -> findAndDisplayStudent();
+                case "list" -> listStudents();
                 case "back" -> System.out.println("Enter 'exit' to exit the program.");
                 case "exit" -> {
                     System.out.println("Bye!");
@@ -32,42 +39,97 @@ class Admin {
         }
     }
 
+    private void addPoints() {
+        System.out.println("Enter an id and points or 'back' to return");
+
+        while (true) {
+            String input = in.nextLine();
+            if ("back".equalsIgnoreCase(input.trim())) return;
+
+            try {
+                String[] tokens = input.split("\\s+");
+                if (tokens.length != 1 + Platform.COURSES.length)
+                    throw new IllegalArgumentException();
+                String id = tokens[0];
+                int[] update = Arrays.stream(tokens).skip(1).mapToInt(Integer::parseInt).toArray();
+                platform.getStudentById(id).ifPresentOrElse(
+                        student -> {
+                            student.addPoints(update);
+                            System.out.println("Points updated.");
+                        },
+                        () -> System.out.printf("No student is found for id=%s.\n", id)
+                );
+            } catch (IllegalArgumentException e) {
+                System.out.println("Incorrect points format.");
+            }
+        }
+    }
+
     private void addStudents() {
         System.out.println("Enter student credentials or 'back' to return:");
 
         while (true) {
             String input = in.nextLine();
             if ("back".equalsIgnoreCase(input.trim())) {
-                System.out.println("Total " + students + " students have been added.");
+                System.out.printf("Total %d students have been added.\n", platform.studentCount());
                 return;
             }
-            if (validateInput(input)) {
-                students++;
-                System.out.println("The student has been added.");
+            try {
+                Student student = parseStudent(input);
+                if (platform.addStudent(student))
+                    System.out.println("The student has been added.");
+                else
+                    System.out.println("This email is already taken.");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
-    private static boolean validateInput(String input) {
+    private void findAndDisplayStudent() {
+        System.out.println("Enter an id or 'back' to return:");
+
+        while (true) {
+            String input = in.nextLine();
+            if ("back".equalsIgnoreCase(input.trim())) return;
+
+            platform.getStudentById(input).ifPresentOrElse(
+                    Admin::displayStudentInfo,
+                    () -> System.out.printf("No student is found for id=%s.\n", input));
+        }
+    }
+
+    private void listStudents() {
+        if (platform.studentCount() > 0) {
+            System.out.println("Students:");
+            platform.students().map(Student::getId).forEachOrdered(System.out::println);
+        } else {
+            System.out.println("No students found");
+        }
+    }
+
+    private static Student parseStudent(String input) throws Exception {
         String[] tokens = input.split("\\s+");
-        if (tokens.length < 3) {
-            System.out.println("Incorrect credentials.");
-            return false;
-        }
-        if (!VALID_NAME.matcher(tokens[0]).matches()) {
-            System.out.println("Incorrect first name.");
-            return false;
-        }
+        if (tokens.length < 3)
+            throw new Exception("Incorrect credentials.");
+        if (!VALID_NAME.matcher(tokens[0]).matches())
+            throw new Exception("Incorrect first name.");
         for (int i = 1; i < tokens.length - 1; i++) {
-            if (!VALID_NAME.matcher(tokens[i]).matches()) {
-                System.out.println("Incorrect last name.");
-                return false;
-            }
+            if (!VALID_NAME.matcher(tokens[i]).matches())
+                throw new Exception("Incorrect last name.");
         }
-        if (!VALID_EMAIL.matcher(tokens[tokens.length - 1]).matches()) {
-            System.out.println("Incorrect email.");
-            return false;
-        }
-        return true;
+        String email = tokens[tokens.length - 1];
+        if (!VALID_EMAIL.matcher(email).matches())
+            throw new Exception("Incorrect email.");
+        return new Student(0, email);
+    }
+
+    private static void displayStudentInfo(Student student) {
+        int[] points = student.getPoints();
+        System.out.print(student.getId() + " points: ");
+        System.out.println(
+                IntStream.range(0, Platform.COURSES.length)
+                        .mapToObj(i -> Platform.COURSES[i] + '=' + points[i])
+                        .collect(Collectors.joining("; ")));
     }
 }

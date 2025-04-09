@@ -12,10 +12,12 @@ class Admin {
     static final Pattern VALID_NAME = Pattern.compile("([A-Za-z][-']?)+[A-Za-z]");
 
     private final Platform platform;
+    private final Statistics statistics;
     private final Scanner in;
 
     Admin(Platform platform, Scanner in) {
         this.platform = platform;
+        this.statistics = new Statistics(platform);
         this.in = in;
     }
 
@@ -28,6 +30,7 @@ class Admin {
                 case "add students" -> addStudents();
                 case "find" -> findAndDisplayStudent();
                 case "list" -> listStudents();
+                case "statistics" -> displayStatistics();
                 case "back" -> System.out.println("Enter 'exit' to exit the program.");
                 case "exit" -> {
                     System.out.println("Bye!");
@@ -54,7 +57,7 @@ class Admin {
                 int[] update = Arrays.stream(tokens).skip(1).mapToInt(Integer::parseInt).toArray();
                 platform.getStudentById(id).ifPresentOrElse(
                         student -> {
-                            student.addPoints(update);
+                            student.updateRecord(update);
                             System.out.println("Points updated.");
                         },
                         () -> System.out.printf("No student is found for id=%s.\n", id)
@@ -106,6 +109,37 @@ class Admin {
         } else {
             System.out.println("No students found");
         }
+    }
+
+    private void displayStatistics() {
+        statistics.calculate();
+        System.out.println("Type the name of a course to see details or 'back' to quit:");
+        System.out.println(statistics);
+
+        while (true) {
+            String input = in.nextLine().trim();
+            if ("back".equalsIgnoreCase(input)) return;
+            IntStream.range(0, Platform.COURSES.length)
+                    .filter(i -> Platform.COURSES[i].equalsIgnoreCase(input))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            this::displayDetailedStatistics,
+                            () -> System.out.println("Unknown course"));
+        }
+    }
+
+    private void displayDetailedStatistics(int courseIndex) {
+        System.out.println(Platform.COURSES[courseIndex]);
+        System.out.println("id\tpoints\tcompleted");
+        platform.students()
+                .filter(student -> student.getSubmissions(courseIndex) > 0)
+                .sorted((a, b) -> Double.compare(
+                        b.percentCompleted(courseIndex), a.percentCompleted(courseIndex)))
+                .forEachOrdered(
+                        student -> System.out.printf("%d\t%d\t%.1f%%\n",
+                                student.getId(),
+                                student.getPoints(courseIndex),
+                                student.percentCompleted(courseIndex)));
     }
 
     private static Student parseStudent(String input) throws Exception {

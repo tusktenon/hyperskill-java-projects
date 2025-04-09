@@ -6,10 +6,11 @@ import java.util.stream.IntStream;
 
 class Statistics {
 
-    private static final int NUMBER_OF_COURSES = Platform.COURSES.length;
+    // For efficiency, maintain a static copy of Course.values()
+    private static final Course[] COURSES = Course.values();
 
     private final Platform platform;
-    private final EnumMap<CourseProperty, List<String>> statistics =
+    private final EnumMap<CourseProperty, List<Course>> statistics =
             new EnumMap<>(CourseProperty.class);
 
     Statistics(Platform platform) {
@@ -18,12 +19,12 @@ class Statistics {
 
     void calculate() {
         statistics.clear();
-        int[] enrollments = new int[NUMBER_OF_COURSES];
-        int[] submissions = new int[NUMBER_OF_COURSES];
-        long[] points = new long[NUMBER_OF_COURSES];
+        int[] enrollments = new int[COURSES.length];
+        int[] submissions = new int[COURSES.length];
+        long[] points = new long[COURSES.length];
 
         platform.students().forEach(student ->
-                IntStream.range(0, NUMBER_OF_COURSES)
+                IntStream.range(0, COURSES.length)
                         .filter(i -> student.getSubmissions(i) > 0)
                         .forEach(i -> {
                             enrollments[i]++;
@@ -44,16 +45,16 @@ class Statistics {
         int maxEnrollments = Arrays.stream(enrollments).max().orElseThrow();
         int minEnrollments = Arrays.stream(enrollments).min().orElseThrow();
 
-        List<String> mostPopular = IntStream.range(0, NUMBER_OF_COURSES)
+        List<Course> mostPopular = IntStream.range(0, COURSES.length)
                 .filter(i -> enrollments[i] == maxEnrollments)
-                .mapToObj(i -> Platform.COURSES[i])
+                .mapToObj(i -> COURSES[i])
                 .toList();
 
-        List<String> leastPopular = (maxEnrollments == minEnrollments)
+        List<Course> leastPopular = (maxEnrollments == minEnrollments)
                 ? List.of()
-                : IntStream.range(0, NUMBER_OF_COURSES)
+                : IntStream.range(0, COURSES.length)
                 .filter(i -> enrollments[i] == minEnrollments)
-                .mapToObj(i -> Platform.COURSES[i])
+                .mapToObj(i -> COURSES[i])
                 .toList();
 
         statistics.put(CourseProperty.MOST_POPULAR, mostPopular);
@@ -64,16 +65,16 @@ class Statistics {
         int maxSubmissions = Arrays.stream(submissions).max().orElseThrow();
         int minSubmissions = Arrays.stream(submissions).min().orElseThrow();
 
-        List<String> mostActive = IntStream.range(0, NUMBER_OF_COURSES)
+        List<Course> mostActive = IntStream.range(0, COURSES.length)
                 .filter(i -> submissions[i] == maxSubmissions)
-                .mapToObj(i -> Platform.COURSES[i])
+                .mapToObj(i -> COURSES[i])
                 .toList();
 
-        List<String> leastActive = (maxSubmissions == minSubmissions)
+        List<Course> leastActive = (maxSubmissions == minSubmissions)
                 ? List.of()
-                : IntStream.range(0, NUMBER_OF_COURSES)
+                : IntStream.range(0, COURSES.length)
                 .filter(i -> submissions[i] == minSubmissions)
-                .mapToObj(i -> Platform.COURSES[i])
+                .mapToObj(i -> COURSES[i])
                 .toList();
 
         statistics.put(CourseProperty.MOST_ACTIVE, mostActive);
@@ -81,7 +82,7 @@ class Statistics {
     }
 
     private void calculateEasiestHardest(long[] points, int[] submissions) {
-        Double[] averages = IntStream.range(0, NUMBER_OF_COURSES)
+        Double[] averages = IntStream.range(0, COURSES.length)
                 .mapToObj(i -> submissions[i] == 0 ? null : ((double) points[i]) / submissions[i])
                 .toArray(Double[]::new);
 
@@ -95,16 +96,16 @@ class Statistics {
                 .min(Comparator.naturalOrder())
                 .orElseThrow();
 
-        List<String> easiest = IntStream.range(0, NUMBER_OF_COURSES)
+        List<Course> easiest = IntStream.range(0, COURSES.length)
                 .filter(i -> maxAverage.equals(averages[i]))
-                .mapToObj(i -> Platform.COURSES[i])
+                .mapToObj(i -> COURSES[i])
                 .toList();
 
-        List<String> hardest = maxAverage.equals(minAverage)
+        List<Course> hardest = maxAverage.equals(minAverage)
                 ? List.of()
-                : IntStream.range(0, NUMBER_OF_COURSES)
+                : IntStream.range(0, COURSES.length)
                 .filter(i -> minAverage.equals(averages[i]))
-                .mapToObj(i -> Platform.COURSES[i])
+                .mapToObj(i -> COURSES[i])
                 .toList();
 
         statistics.put(CourseProperty.EASIEST, easiest);
@@ -118,8 +119,8 @@ class Statistics {
                 .collect(Collectors.joining("\n"));
     }
 
-    private static String courseListToString(List<String> list) {
+    private static String courseListToString(List<Course> list) {
         if (list.isEmpty()) return "n/a";
-        return String.join(", ", list);
+        return String.join(", ", list.stream().map(Course::toString).toList());
     }
 }

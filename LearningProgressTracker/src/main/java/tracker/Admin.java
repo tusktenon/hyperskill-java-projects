@@ -11,6 +11,9 @@ class Admin {
     static final Pattern VALID_EMAIL = Pattern.compile("\\w+(\\.\\w+)*@\\w+(\\.\\w+)+");
     static final Pattern VALID_NAME = Pattern.compile("([A-Za-z][-']?)+[A-Za-z]");
 
+    // For efficiency, maintain a static copy of Course.values()
+    private static final Course[] COURSES = Course.values();
+
     private final Platform platform;
     private final Statistics statistics;
     private final Scanner in;
@@ -51,7 +54,7 @@ class Admin {
 
             try {
                 String[] tokens = input.split("\\s+");
-                if (tokens.length != 1 + Platform.COURSES.length)
+                if (tokens.length != 1 + COURSES.length)
                     throw new IllegalArgumentException();
                 String id = tokens[0];
                 int[] update = Arrays.stream(tokens).skip(1).mapToInt(Integer::parseInt).toArray();
@@ -119,8 +122,8 @@ class Admin {
         while (true) {
             String input = in.nextLine().trim();
             if ("back".equalsIgnoreCase(input)) return;
-            IntStream.range(0, Platform.COURSES.length)
-                    .filter(i -> Platform.COURSES[i].equalsIgnoreCase(input))
+            IntStream.range(0, COURSES.length)
+                    .filter(i -> COURSES[i].toString().equalsIgnoreCase(input))
                     .findFirst()
                     .ifPresentOrElse(
                             this::displayDetailedStatistics,
@@ -129,7 +132,7 @@ class Admin {
     }
 
     private void displayDetailedStatistics(int courseIndex) {
-        System.out.println(Platform.COURSES[courseIndex]);
+        System.out.println(COURSES[courseIndex]);
         System.out.println("id\tpoints\tcompleted");
         platform.students()
                 .filter(student -> student.getSubmissions(courseIndex) > 0)
@@ -162,8 +165,8 @@ class Admin {
         int[] points = student.getPoints();
         System.out.print(student.getId() + " points: ");
         System.out.println(
-                IntStream.range(0, Platform.COURSES.length)
-                        .mapToObj(i -> Platform.COURSES[i] + '=' + points[i])
+                IntStream.range(0, COURSES.length)
+                        .mapToObj(i -> COURSES[i].toString() + '=' + points[i])
                         .collect(Collectors.joining("; ")));
     }
 }

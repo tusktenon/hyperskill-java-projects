@@ -5,10 +5,14 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 class Student {
+
+    // For efficiency, maintain a static copy of Course.values()
+    private static final Course[] COURSES = Course.values();
+
     private int id;
     private final String email;
-    private final int[] points = new int[Platform.COURSES.length];
-    private final int[] submissions = new int[Platform.COURSES.length];
+    private final int[] points = new int[COURSES.length];
+    private final int[] submissions = new int[COURSES.length];
 
     Student(int id, String email) {
         this.id = id;
@@ -36,14 +40,13 @@ class Student {
     }
 
     double percentCompleted(int courseIndex) {
-        return ((double) (100 * points[courseIndex]))
-                / Platform.COURSE_COMPLETION_POINTS[courseIndex];
+        return ((double) (100 * points[courseIndex])) / COURSES[courseIndex].completionPoints();
     }
 
     void updateRecord(int[] update) {
-        if (update.length != points.length || Arrays.stream(update).anyMatch(i -> i < 0))
+        if (update.length != COURSES.length || Arrays.stream(update).anyMatch(i -> i < 0))
             throw new IllegalArgumentException();
-        IntStream.range(0, points.length)
+        IntStream.range(0, COURSES.length)
                 .filter(i -> update[i] > 0)
                 .forEach(i -> {
                     points[i] += update[i];

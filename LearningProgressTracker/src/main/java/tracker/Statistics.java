@@ -9,12 +9,12 @@ class Statistics {
     // For efficiency, maintain a static copy of Course.values()
     private static final Course[] COURSES = Course.values();
 
-    private final Platform platform;
+    private final StudentRegistry registry;
     private final EnumMap<CourseProperty, List<Course>> statistics =
             new EnumMap<>(CourseProperty.class);
 
-    Statistics(Platform platform) {
-        this.platform = platform;
+    Statistics(StudentRegistry registry) {
+        this.registry = registry;
     }
 
     void calculate() {
@@ -23,7 +23,7 @@ class Statistics {
         int[] submissions = new int[COURSES.length];
         long[] points = new long[COURSES.length];
 
-        platform.students().forEach(student ->
+        registry.students().forEach(student ->
                 IntStream.range(0, COURSES.length)
                         .filter(i -> student.getSubmissions(i) > 0)
                         .forEach(i -> {

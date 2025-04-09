@@ -14,13 +14,13 @@ class Admin {
     // For efficiency, maintain a static copy of Course.values()
     private static final Course[] COURSES = Course.values();
 
-    private final Platform platform;
+    private final StudentRegistry registry;
     private final Statistics statistics;
     private final Scanner in;
 
-    Admin(Platform platform, Scanner in) {
-        this.platform = platform;
-        this.statistics = new Statistics(platform);
+    Admin(StudentRegistry registry, Scanner in) {
+        this.registry = registry;
+        this.statistics = new Statistics(registry);
         this.in = in;
     }
 
@@ -58,7 +58,7 @@ class Admin {
                     throw new IllegalArgumentException();
                 String id = tokens[0];
                 int[] update = Arrays.stream(tokens).skip(1).mapToInt(Integer::parseInt).toArray();
-                platform.getStudentById(id).ifPresentOrElse(
+                registry.getStudentById(id).ifPresentOrElse(
                         student -> {
                             student.updateRecord(update);
                             System.out.println("Points updated.");
@@ -77,12 +77,12 @@ class Admin {
         while (true) {
             String input = in.nextLine();
             if ("back".equalsIgnoreCase(input.trim())) {
-                System.out.printf("Total %d students have been added.\n", platform.studentCount());
+                System.out.printf("Total %d students have been added.\n", registry.studentCount());
                 return;
             }
             try {
                 Student student = parseStudent(input);
-                if (platform.addStudent(student))
+                if (registry.addStudent(student))
                     System.out.println("The student has been added.");
                 else
                     System.out.println("This email is already taken.");
@@ -99,16 +99,16 @@ class Admin {
             String input = in.nextLine();
             if ("back".equalsIgnoreCase(input.trim())) return;
 
-            platform.getStudentById(input).ifPresentOrElse(
+            registry.getStudentById(input).ifPresentOrElse(
                     Admin::displayStudentInfo,
                     () -> System.out.printf("No student is found for id=%s.\n", input));
         }
     }
 
     private void listStudents() {
-        if (platform.studentCount() > 0) {
+        if (registry.studentCount() > 0) {
             System.out.println("Students:");
-            platform.students().map(Student::getId).forEachOrdered(System.out::println);
+            registry.students().map(Student::getId).forEachOrdered(System.out::println);
         } else {
             System.out.println("No students found");
         }
@@ -134,7 +134,7 @@ class Admin {
     private void displayDetailedStatistics(int courseIndex) {
         System.out.println(COURSES[courseIndex]);
         System.out.println("id\tpoints\tcompleted");
-        platform.students()
+        registry.students()
                 .filter(student -> student.getSubmissions(courseIndex) > 0)
                 .sorted((a, b) -> Double.compare(
                         b.percentCompleted(courseIndex), a.percentCompleted(courseIndex)))

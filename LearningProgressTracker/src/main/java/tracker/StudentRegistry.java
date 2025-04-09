@@ -3,7 +3,7 @@ package tracker;
 import java.util.*;
 import java.util.stream.Stream;
 
-class Platform {
+class StudentRegistry {
 
     private final Set<Student> students = new LinkedHashSet<>();
     private final Map<Integer, Student> studentIdMap = new HashMap<>();

@@ -66,11 +66,11 @@ class Student {
     public boolean equals(Object other) {
         if (other == null || getClass() != other.getClass()) return false;
         Student student = (Student) other;
-        return Objects.equals(email, student.email);
+        return id == student.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(email);
+        return Objects.hashCode(id);
     }
 }

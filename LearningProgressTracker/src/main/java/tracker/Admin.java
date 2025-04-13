@@ -12,12 +12,10 @@ class Admin {
 
     private final StudentRegistry registry;
     private final Notifier notifier = new Notifier();
-    private final Statistics statistics;
     private final Scanner in;
 
     Admin(StudentRegistry registry, Scanner in) {
         this.registry = registry;
-        this.statistics = new Statistics(registry);
         this.in = in;
     }
 
@@ -118,9 +116,8 @@ class Admin {
     }
 
     private void displayStatistics() {
-        statistics.calculate();
         System.out.println("Type the name of a course to see details or 'back' to quit:");
-        System.out.println(statistics);
+        Statistics.displayCourseProperties(registry);
 
         while (true) {
             String input = in.nextLine().trim();
@@ -129,23 +126,9 @@ class Admin {
                     .filter(i -> COURSES[i].toString().equalsIgnoreCase(input))
                     .findFirst()
                     .ifPresentOrElse(
-                            this::displayDetailedStatistics,
-                            () -> System.out.println("Unknown course"));
+                            i -> Statistics.displayCourseDetails(registry, i),
+                            () -> System.out.println("Unknown course."));
         }
-    }
-
-    private void displayDetailedStatistics(int courseIndex) {
-        System.out.println(COURSES[courseIndex]);
-        System.out.println("id\tpoints\tcompleted");
-        registry.students()
-                .filter(student -> student.getSubmissions(courseIndex) > 0)
-                .sorted((a, b) -> Double.compare(
-                        b.percentCompleted(courseIndex), a.percentCompleted(courseIndex)))
-                .forEachOrdered(
-                        student -> System.out.printf("%d\t%d\t%.1f%%\n",
-                                student.getId(),
-                                student.getPoints(courseIndex),
-                                student.percentCompleted(courseIndex)));
     }
 
     private static void displayStudentInfo(Student student) {

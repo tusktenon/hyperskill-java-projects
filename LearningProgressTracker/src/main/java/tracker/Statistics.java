@@ -1,7 +1,6 @@
 package tracker;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class Statistics {
@@ -9,16 +8,29 @@ class Statistics {
     // For efficiency, maintain a static copy of Course.values()
     private static final Course[] COURSES = Course.values();
 
-    private final StudentRegistry registry;
-    private final EnumMap<CourseProperty, List<Course>> statistics =
-            new EnumMap<>(CourseProperty.class);
+    private record CourseListPair(List<Course> maxList, List<Course> minList) {}
 
-    Statistics(StudentRegistry registry) {
-        this.registry = registry;
+    static void displayCourseProperties(StudentRegistry registry) {
+        courseProperties(registry).forEach((key, value) ->
+                System.out.println(key + ": " + courseListToString(value)));
     }
 
-    void calculate() {
-        statistics.clear();
+    static void displayCourseDetails(StudentRegistry registry, int courseIndex) {
+        System.out.println(COURSES[courseIndex]);
+        System.out.println("id\tpoints\tcompleted");
+        registry.students()
+                .filter(student -> student.getSubmissions(courseIndex) > 0)
+                .sorted((a, b) -> Double.compare(
+                        b.percentCompleted(courseIndex), a.percentCompleted(courseIndex)))
+                .forEachOrdered(
+                        student -> System.out.printf("%d\t%d\t%.1f%%\n",
+                                student.getId(),
+                                student.getPoints(courseIndex),
+                                student.percentCompleted(courseIndex)));
+    }
+
+    static Map<CourseProperty, List<Course>> courseProperties(StudentRegistry registry) {
+        EnumMap<CourseProperty, List<Course>> properties = new EnumMap<>(CourseProperty.class);
         int[] enrollments = new int[COURSES.length];
         int[] submissions = new int[COURSES.length];
         long[] points = new long[COURSES.length];
@@ -33,94 +45,86 @@ class Statistics {
                         }));
 
         if (Arrays.stream(enrollments).allMatch(e -> e == 0)) {
-            Arrays.stream(CourseProperty.values()).forEach(key -> statistics.put(key, List.of()));
+            Arrays.stream(CourseProperty.values()).forEach(key -> properties.put(key, List.of()));
         } else {
-            calculateMostLeastPopular(enrollments);
-            calculateMostLeastActive(submissions);
-            calculateEasiestHardest(points, submissions);
+            CourseListPair mostLeastPopular = calculateMostLeastPopular(enrollments);
+            properties.put(CourseProperty.MOST_POPULAR, mostLeastPopular.maxList());
+            properties.put(CourseProperty.LEAST_POPULAR, mostLeastPopular.minList());
+
+            CourseListPair mostLeastActive = calculateMostLeastActive(submissions);
+            properties.put(CourseProperty.MOST_ACTIVE, mostLeastActive.maxList());
+            properties.put(CourseProperty.LEAST_ACTIVE, mostLeastActive.minList());
+
+            CourseListPair easiestHardest = calculateEasiestHardest(points, submissions);
+            properties.put(CourseProperty.EASIEST, easiestHardest.maxList());
+            properties.put(CourseProperty.HARDEST, easiestHardest.minList());
         }
-    }
-
-    private void calculateMostLeastPopular(int[] enrollments) {
-        int maxEnrollments = Arrays.stream(enrollments).max().orElseThrow();
-        int minEnrollments = Arrays.stream(enrollments).min().orElseThrow();
-
-        List<Course> mostPopular = IntStream.range(0, COURSES.length)
-                .filter(i -> enrollments[i] == maxEnrollments)
-                .mapToObj(i -> COURSES[i])
-                .toList();
-
-        List<Course> leastPopular = (maxEnrollments == minEnrollments)
-                ? List.of()
-                : IntStream.range(0, COURSES.length)
-                .filter(i -> enrollments[i] == minEnrollments)
-                .mapToObj(i -> COURSES[i])
-                .toList();
-
-        statistics.put(CourseProperty.MOST_POPULAR, mostPopular);
-        statistics.put(CourseProperty.LEAST_POPULAR, leastPopular);
-    }
-
-    private void calculateMostLeastActive(int[] submissions) {
-        int maxSubmissions = Arrays.stream(submissions).max().orElseThrow();
-        int minSubmissions = Arrays.stream(submissions).min().orElseThrow();
-
-        List<Course> mostActive = IntStream.range(0, COURSES.length)
-                .filter(i -> submissions[i] == maxSubmissions)
-                .mapToObj(i -> COURSES[i])
-                .toList();
-
-        List<Course> leastActive = (maxSubmissions == minSubmissions)
-                ? List.of()
-                : IntStream.range(0, COURSES.length)
-                .filter(i -> submissions[i] == minSubmissions)
-                .mapToObj(i -> COURSES[i])
-                .toList();
-
-        statistics.put(CourseProperty.MOST_ACTIVE, mostActive);
-        statistics.put(CourseProperty.LEAST_ACTIVE, leastActive);
-    }
-
-    private void calculateEasiestHardest(long[] points, int[] submissions) {
-        Double[] averages = IntStream.range(0, COURSES.length)
-                .mapToObj(i -> submissions[i] == 0 ? null : ((double) points[i]) / submissions[i])
-                .toArray(Double[]::new);
-
-        Double maxAverage = Arrays.stream(averages)
-                .filter(Objects::nonNull)
-                .max(Comparator.naturalOrder())
-                .orElseThrow();
-
-        Double minAverage = Arrays.stream(averages)
-                .filter(Objects::nonNull)
-                .min(Comparator.naturalOrder())
-                .orElseThrow();
-
-        List<Course> easiest = IntStream.range(0, COURSES.length)
-                .filter(i -> maxAverage.equals(averages[i]))
-                .mapToObj(i -> COURSES[i])
-                .toList();
-
-        List<Course> hardest = maxAverage.equals(minAverage)
-                ? List.of()
-                : IntStream.range(0, COURSES.length)
-                .filter(i -> minAverage.equals(averages[i]))
-                .mapToObj(i -> COURSES[i])
-                .toList();
-
-        statistics.put(CourseProperty.EASIEST, easiest);
-        statistics.put(CourseProperty.HARDEST, hardest);
-    }
-
-    @Override
-    public String toString() {
-        return statistics.entrySet().stream()
-                .map(entry -> entry.getKey() + ": " + courseListToString(entry.getValue()))
-                .collect(Collectors.joining("\n"));
+        return properties;
     }
 
     private static String courseListToString(List<Course> list) {
         if (list.isEmpty()) return "n/a";
         return String.join(", ", list.stream().map(Course::toString).toList());
+    }
+
+    private static CourseListPair calculateMostLeastPopular(int[] enrollments) {
+        IntSummaryStatistics enrollmentSummary = Arrays.stream(enrollments).summaryStatistics();
+
+        List<Course> mostPopular = IntStream.range(0, COURSES.length)
+                .filter(i -> enrollments[i] == enrollmentSummary.getMax())
+                .mapToObj(i -> COURSES[i])
+                .toList();
+
+        List<Course> leastPopular = enrollmentSummary.getMin() == enrollmentSummary.getMax()
+                ? List.of()
+                : IntStream.range(0, COURSES.length)
+                .filter(i -> enrollments[i] == enrollmentSummary.getMin())
+                .mapToObj(i -> COURSES[i])
+                .toList();
+
+        return new CourseListPair(mostPopular, leastPopular);
+    }
+
+    private static CourseListPair calculateMostLeastActive(int[] submissions) {
+        IntSummaryStatistics submissionSummary = Arrays.stream(submissions).summaryStatistics();
+
+        List<Course> mostActive = IntStream.range(0, COURSES.length)
+                .filter(i -> submissions[i] == submissionSummary.getMax())
+                .mapToObj(i -> COURSES[i])
+                .toList();
+
+        List<Course> leastActive = submissionSummary.getMin() == submissionSummary.getMax()
+                ? List.of()
+                : IntStream.range(0, COURSES.length)
+                .filter(i -> submissions[i] == submissionSummary.getMin())
+                .mapToObj(i -> COURSES[i])
+                .toList();
+
+        return new CourseListPair(mostActive, leastActive);
+    }
+
+    private static CourseListPair calculateEasiestHardest(long[] points, int[] submissions) {
+        Double[] averages = IntStream.range(0, COURSES.length)
+                .mapToObj(i -> submissions[i] == 0 ? null : ((double) points[i]) / submissions[i])
+                .toArray(Double[]::new);
+
+        DoubleSummaryStatistics averageSummary = Arrays.stream(averages)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .summaryStatistics();
+
+        List<Course> easiest = IntStream.range(0, COURSES.length)
+                .filter(i -> Double.valueOf(averageSummary.getMax()).equals(averages[i]))
+                .mapToObj(i -> COURSES[i])
+                .toList();
+
+        List<Course> hardest = averageSummary.getMin() == averageSummary.getMax()
+                ? List.of()
+                : IntStream.range(0, COURSES.length)
+                .filter(i -> Double.valueOf(averageSummary.getMin()).equals(averages[i]))
+                .mapToObj(i -> COURSES[i])
+                .toList();
+
+        return new CourseListPair(easiest, hardest);
     }
 }

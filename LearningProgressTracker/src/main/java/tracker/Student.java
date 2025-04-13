@@ -11,12 +11,14 @@ class Student {
 
     private int id;
     private final String email;
+    private final String fullName;
     private final int[] points = new int[COURSES.length];
     private final int[] submissions = new int[COURSES.length];
 
-    Student(int id, String email) {
+    Student(int id, String email, String fullName) {
         this.id = id;
         this.email = email;
+        this.fullName = fullName;
     }
 
     int getId() {
@@ -25,6 +27,14 @@ class Student {
 
     void setId(int id) {
         this.id = id;
+    }
+
+    String getEmail() {
+        return email;
+    }
+
+    String getFullName() {
+        return fullName;
     }
 
     int[] getPoints() {

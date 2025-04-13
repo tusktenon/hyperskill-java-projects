@@ -15,6 +15,7 @@ class Admin {
     private static final Course[] COURSES = Course.values();
 
     private final StudentRegistry registry;
+    private final Notifier notifier = new Notifier();
     private final Statistics statistics;
     private final Scanner in;
 
@@ -33,6 +34,7 @@ class Admin {
                 case "add students" -> addStudents();
                 case "find" -> findAndDisplayStudent();
                 case "list" -> listStudents();
+                case "notify" -> sendNotifications();
                 case "statistics" -> displayStatistics();
                 case "back" -> System.out.println("Enter 'exit' to exit the program.");
                 case "exit" -> {
@@ -60,7 +62,7 @@ class Admin {
                 int[] update = Arrays.stream(tokens).skip(1).mapToInt(Integer::parseInt).toArray();
                 registry.getStudentById(id).ifPresentOrElse(
                         student -> {
-                            student.updateRecord(update);
+                            notifier.wrapStudentUpdate(student, update);
                             System.out.println("Points updated.");
                         },
                         () -> System.out.printf("No student is found for id=%s.\n", id)
@@ -114,6 +116,11 @@ class Admin {
         }
     }
 
+    private void sendNotifications() {
+        int sent = notifier.sendAll();
+        System.out.printf("Total %d students have been notified.\n", sent);
+    }
+
     private void displayStatistics() {
         statistics.calculate();
         System.out.println("Type the name of a course to see details or 'back' to quit:");
@@ -158,7 +165,11 @@ class Admin {
         String email = tokens[tokens.length - 1];
         if (!VALID_EMAIL.matcher(email).matches())
             throw new Exception("Incorrect email.");
-        return new Student(0, email);
+
+        String fullName = Arrays.stream(tokens)
+                .limit(tokens.length - 1)
+                .collect(Collectors.joining(" "));
+        return new Student(0, email, fullName);
     }
 
     private static void displayStudentInfo(Student student) {

@@ -4,12 +4,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
+// Currently, Student could be a record instead of a class. At some point, however, we might want
+// to add the option for students to update their email address and/or name.
 class Student {
 
     // For efficiency, maintain a static copy of Course.values()
     private static final Course[] COURSES = Course.values();
 
-    private int id;
+    private final int id;
     private final String email;
     private final String fullName;
     private final int[] points = new int[COURSES.length];
@@ -23,10 +25,6 @@ class Student {
 
     int getId() {
         return id;
-    }
-
-    void setId(int id) {
-        this.id = id;
     }
 
     String getEmail() {

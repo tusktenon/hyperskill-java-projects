@@ -2,14 +2,10 @@ package tracker;
 
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class Admin {
-
-    static final Pattern VALID_EMAIL = Pattern.compile("\\w+(\\.\\w+)*@\\w+(\\.\\w+)+");
-    static final Pattern VALID_NAME = Pattern.compile("([A-Za-z][-']?)+[A-Za-z]");
 
     // For efficiency, maintain a static copy of Course.values()
     private static final Course[] COURSES = Course.values();
@@ -79,12 +75,12 @@ class Admin {
         while (true) {
             String input = in.nextLine();
             if ("back".equalsIgnoreCase(input.trim())) {
-                System.out.printf("Total %d students have been added.\n", registry.studentCount());
+                System.out.printf("Total %d students have been added.\n", registry.size());
                 return;
             }
             try {
-                Student student = parseStudent(input);
-                if (registry.addStudent(student))
+                NewStudent newStudent = NewStudent.parse(input);
+                if (registry.add(newStudent))
                     System.out.println("The student has been added.");
                 else
                     System.out.println("This email is already taken.");
@@ -108,7 +104,7 @@ class Admin {
     }
 
     private void listStudents() {
-        if (registry.studentCount() > 0) {
+        if (registry.size() > 0) {
             System.out.println("Students:");
             registry.students().map(Student::getId).forEachOrdered(System.out::println);
         } else {
@@ -150,26 +146,6 @@ class Admin {
                                 student.getId(),
                                 student.getPoints(courseIndex),
                                 student.percentCompleted(courseIndex)));
-    }
-
-    private static Student parseStudent(String input) throws Exception {
-        String[] tokens = input.split("\\s+");
-        if (tokens.length < 3)
-            throw new Exception("Incorrect credentials.");
-        if (!VALID_NAME.matcher(tokens[0]).matches())
-            throw new Exception("Incorrect first name.");
-        for (int i = 1; i < tokens.length - 1; i++) {
-            if (!VALID_NAME.matcher(tokens[i]).matches())
-                throw new Exception("Incorrect last name.");
-        }
-        String email = tokens[tokens.length - 1];
-        if (!VALID_EMAIL.matcher(email).matches())
-            throw new Exception("Incorrect email.");
-
-        String fullName = Arrays.stream(tokens)
-                .limit(tokens.length - 1)
-                .collect(Collectors.joining(" "));
-        return new Student(0, email, fullName);
     }
 
     private static void displayStudentInfo(Student student) {

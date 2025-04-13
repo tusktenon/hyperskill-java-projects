@@ -6,20 +6,22 @@ import java.util.stream.Stream;
 class StudentRegistry {
 
     private final Set<Student> students = new LinkedHashSet<>();
+    private final Set<String> emails = new HashSet<>();
     private final Map<Integer, Student> studentIdMap = new HashMap<>();
     private static int nextStudentId = 1;
 
-    boolean addStudent(Student student) {
-        boolean added = students.add(student);
+    boolean add(NewStudent newStudent) {
+        boolean added = emails.add(newStudent.email());
         if (added) {
-            student.setId(nextStudentId);
+            Student student = new Student(nextStudentId, newStudent.email(), newStudent.fullName());
+            students.add(student);
             studentIdMap.put(nextStudentId, student);
             nextStudentId++;
         }
         return added;
     }
 
-    int studentCount() {
+    int size() {
         return students.size();
     }
 

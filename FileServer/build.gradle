@@ -6,3 +6,6 @@ application {
     mainClass = 'server.Main'
 }
 
+run {
+    standardInput = System.in
+}

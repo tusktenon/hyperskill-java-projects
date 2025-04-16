@@ -8,6 +8,18 @@ java {
     }
 }
 
+task runClient(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'client.Main'
+    standardInput = System.in
+}
+
+task runServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'server.Main'
+    standardInput = System.in
+}
+
 task runSimulation(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'simulation.Main'

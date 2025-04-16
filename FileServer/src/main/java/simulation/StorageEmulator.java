@@ -1,4 +1,4 @@
-package server;
+package simulation;
 
 import java.util.EnumSet;
 import java.util.Set;

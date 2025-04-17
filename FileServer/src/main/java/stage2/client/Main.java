@@ -1,4 +1,4 @@
-package client;
+package stage2.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

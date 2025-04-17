@@ -125,3 +125,99 @@ Client started!
 Sent: Give me everything you have!
 Received: All files were sent!
 ```
+
+
+## Stage 3/4: Save a text file
+
+### Description
+
+In this stage, you will write a program that can save files on a hard drive and send or delete them upon request.
+
+To manage our files, we will use simplified HTTP requests. An HTTP request in our program should start with `GET`, `PUT`, or `DELETE`. We encourage you to [read more](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) about the HTTP methods. An HTTP response in our program should start with the status code of the operation. For example, the code `200` means that the operation was successful, and `404` means that the resource was not found. Check out the [full list of status codes on Wikipedia](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes).
+
+To create a new file on the server, the client should send a request `PUT NAME DATA`, where `NAME` is the name of the file without spaces or tabs, and `DATA` indicates text data. If a file with this name already exists, the server should respond with the code `403`. If the file is created successfully, the server responds with the code `200`. In this case, the client should print `The response says that the file was created!`. Otherwise, it should print `The response says that creating the file was forbidden!`
+
+The server should store the client's files in the *.../server/data/* folder.
+
+To get a file from the server, the client should send a request `GET NAME`, where `NAME` is the name of the file. If the file with this name does not exist, the server should respond with the code `404`. If a file with this name exists, the server responds with the code `200`, a single space, and the content of the file. In this case, the client should print `The content of the file is: FILE_CONTENT`, where `FILE_CONTENT` is the content of the requested file. Otherwise, it should print `The response says that the file was not found!`
+
+To delete a file from the server, the client should send a request `DELETE NAME`, where `NAME` is the name of the file. If a file with this name does not exist, the server should respond with the code `404`. If the file is deleted successfully, the server responds with the code `200`. In this case, the client should print `The response says that the file was successfully deleted!`. Otherwise, it should print `The response says that the file was not found!`
+
+In this stage, you should write a client program that prompts the user for an action, connects to the server, gets a response, prints it in a readable format, and quits. The client program should perform only one work cycle. Also, you should write a server program that processes the requests one after another in one cycle. As these requests are fast to process, there is no need for parallel execution.
+
+Since the server cannot shut down by itself and the tests require that the program stops at a certain point, you should implement a simple way to stop the server. The client should be able to handle the `exit` action and send the respective message to the server. When the client sends `exit`, you should stop the server. Note: you shouldn't allow this behavior in a normal situation when no testing needs to be done.
+
+Don't forget to shut down your server before starting tests!
+
+### Objectives
+
+In this stage, your client-side program should:
+
+1. Prompt the user to enter an action.
+2. Prompt the user for the name of the file to be created, sent, or deleted.
+3. Prompt the user to enter the content of the file (when applicable).
+4. Send the request to the server and receive a response from the server.
+5. Print the respective message after receiving the response.
+6. Disconnect from the server and terminate.
+
+Your server-side program should:
+
+1. Print `Server started!` when the program starts.
+2. Receive a request from the client and respond accordingly.
+    - For a `PUT` request, send a status code `200` if the file is created successfully; otherwise, send a status code `403`.
+    - For a `GET` request, send a `200` status code and the `FILE_CONTENT` separated by a single space if the file exists; otherwise, send a `404` status code.
+    For a `DELETE` request, send a `200` status code if the file is deleted successfully; otherwise, send a `404` status code.
+3. Server program should not terminate until it receives the `exit` command.
+
+### Examples
+
+The greater-than symbol followed by a space (`> `) represents the user input. Note that it's not part of the input.
+
+The first execution of the client program should produce the following output:
+```text
+Enter action (1 - get a file, 2 - create a file, 3 - delete a file): > 2
+Enter filename: > 123.txt
+Enter file content: > This is the first file on the server!
+The request was sent.
+The response says that file was created!
+```
+
+Then, the server should create a file on the disk drive with the text `This is the first file on the server!`. You should be able to access this file even after restarting the server.
+
+After the second execution, the output of the client program should be the following:
+```text
+Enter action (1 - get a file, 2 - create a file, 3 - delete a file): > 1
+Enter filename: > 123.txt
+The request was sent.
+The content of the file is: This is the first file on the server!
+```
+
+Here is an example of the output after deleting the file:
+```text
+Enter action (1 - get a file, 2 - create a file, 3 - delete a file): > 3
+Enter filename: > 123.txt
+The request was sent.
+The response says that the file was successfully deleted!
+```
+
+After attempting to delete the same file again, the output should be the following:
+```text
+Enter action (1 - get a file, 2 - create a file, 3 - delete a file): > 3
+Enter filename: > 123.txt
+The request was sent.
+The response says that the file was not found!
+```
+
+After attempting to get a file that doesn't exist, the output should be the following:
+```text
+Enter action (1 - get a file, 2 - create a file, 3 - delete a file): > 1
+Enter filename: > file_that_doesnt_exist.txt
+The request was sent.
+The response says that the file was not found!
+```
+
+Here is an example of the output after stopping the server:
+```text
+Enter action (1 - get a file, 2 - create a file, 3 - delete a file): > exit
+The request was sent.
+```

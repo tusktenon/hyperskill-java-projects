@@ -14,12 +14,23 @@ task runStage1(type: JavaExec) {
     standardInput = System.in
 }
 
-task runClient(type: JavaExec) {
+task runClient2(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'stage2.client.Main'
 }
 
-task runServer(type: JavaExec) {
+task runServer2(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'stage2.server.Main'
+}
+
+task runClient3(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'stage3.client.Main'
+    standardInput = System.in
+}
+
+task runServer3(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'stage3.server.Main'
 }

@@ -13,7 +13,12 @@ public class Main {
 
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 23456;
-    private static final String DATA_DIRECTORY = "server/data";
+
+    // Select a data directory:
+    // - the first option is required for successful submission on Hyperskill
+    // - the second seems more reasonable for a multi-stage project repository
+    // private static final String DATA_DIRECTORY = "src/server/data";
+    private static final String DATA_DIRECTORY = "data/stage3/server";
 
     public static void main(String[] args) {
         // Create data directory if it does not already exist

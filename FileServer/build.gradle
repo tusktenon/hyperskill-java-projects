@@ -34,3 +34,14 @@ task runServer3(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'stage3.server.Main'
 }
+
+task runClient4(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'stage4.client.Main'
+    standardInput = System.in
+}
+
+task runServer4(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'stage4.server.Main'
+}

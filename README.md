@@ -4,7 +4,7 @@ These are the projects I completed as part of the [Java Backend Developer (Sprin
 
 When I started this course, I already had a fair amount of experience with Java, but none with Java build tools. To get as much practice as possible, I decided to use Gradle for even the simplest of projects.
 
-All the of projects so far are CLI applications, and can be started by running `gradle run --console=plain` from the project's root folder.
+Almost all of the of projects are CLI applications, and can be started by running `gradle run` from the project's root folder (I've added the `console=plain` option to each project's `gradle.properties` file, so the command-line output should be clear of any Gradle-related interference). The one exception is the File Server project, which has it's own [README](FileServer/README.md) explaining how to launch the client and server programs for each stage.
 
 *A note on code style.* I have a slight preference for Google Java Style over Oracle Java Conventions, and used the former for my first four projects (Cinema Room Manager, Coffee Machine Simulator, Simple Tic-Tac-Toe, and Tic-Tac-Toe with AI). I switched to Oracle style for the remaining projects, to be consistent with Hyperskill.
 

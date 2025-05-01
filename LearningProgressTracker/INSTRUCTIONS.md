@@ -1,6 +1,10 @@
 # Learning Progress Tracker (Java)
 
-See the [project page on Hyperskill](https://hyperskill.org/projects/197) for a thorough overview.
+## Project description
+
+Online learning is gaining popularity. A good education platform can manage registrations, track learning progress, send notifications and newsletters to many users worldwide. It is a huge volume of work indeed. In this project, you will build an application that keeps track of the registered users, their learning progress, and metrics. It will also provide detailed information about each user or any category of users and the overall statistics for the entire learning platform.
+
+[View more](https://hyperskill.org/projects/197)
 
 
 ## Stage 1/5: No empty lines here

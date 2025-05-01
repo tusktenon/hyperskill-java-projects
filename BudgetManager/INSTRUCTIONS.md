@@ -1,6 +1,10 @@
 # Budget Manager
 
-See the [project page on Hyperskill](https://hyperskill.org/projects/76) for a thorough overview.
+## Project description
+
+Not to sound overly serious, but it’s very important to manage your budget. This implies analyzing your expenses and estimating the income, which sometimes may be difficult to do yourself. Luckily, technology is there to assist: you can create your own personal budget manager program that counts the ins and outs and helps control the finances.
+
+[View more](https://hyperskill.org/projects/76)
 
 
 ## Stage 1/5: Count my money

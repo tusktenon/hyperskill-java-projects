@@ -1,6 +1,10 @@
 # File Server
 
-See the [project page on Hyperskill](https://hyperskill.org/projects/52) for a thorough overview.
+## Project Description
+
+You will practice concepts frequently tested in technical interviews at top tech companies. It's so easy to lose your precious data — unless you store it on a server. Besides, file servers allow you to access your files remotely, no matter where you are. In this project, you will create your own file server, even though a simple one.
+
+[View more](https://hyperskill.org/projects/52)
 
 
 ## Stage 1/4: Storage emulator

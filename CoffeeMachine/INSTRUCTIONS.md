@@ -1,6 +1,10 @@
 # Coffee Machine Simulator with Java
 
-See the [project page on Hyperskill](https://hyperskill.org/projects/33) for a thorough overview.
+## Project description
+
+ What can be better than a cup of coffee during a break? A coffee that you don’t have to make yourself. It’s enough to press a couple of buttons on the machine and you get a cup of energy; but first, we should teach the machine how to do it. In this project, you'll program a coffee machine simulator using Java. The machine works with typical products: coffee, milk, sugar, and plastic cups; if it runs out of something, it shows a notification. You can get three types of coffee: espresso, cappuccino, and latte. Since nothing’s for free, it also collects the money. This project allows you to better understand the basic OOP, its main concepts such as classes, class methods and attributes, and get a taste of Java. Practice working with methods, challenge yourself with loops and conditions, and get more confident with OOP.
+
+[View more](https://hyperskill.org/projects/33)
 
 
 ## Stage 1/6: Make a first cup

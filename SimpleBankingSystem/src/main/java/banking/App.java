@@ -1,6 +1,5 @@
 package banking;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -18,18 +17,18 @@ public class App {
             0. Exit
             """;
 
-    private final List<Account> accounts;
+    private final AccountsRegistry accounts;
     private final Scanner in;
     private boolean exitRequested = false;
 
-    static void run(List<Account> accounts) {
+    static void run(AccountsRegistry accounts) {
         try (Scanner in = new Scanner(System.in)) {
             App app = new App(accounts, in);
             app.mainMenu();
         }
     }
 
-    private App(List<Account> accounts, Scanner in) {
+    private App(AccountsRegistry accounts, Scanner in) {
         this.accounts = accounts;
         this.in = in;
     }
@@ -54,8 +53,7 @@ public class App {
     }
 
     private void handleNewAccountRequest() {
-        Account account = new Account();
-        accounts.add(account);
+        Account account = accounts.add();
         System.out.printf("""
                         Your card has been created
                         Your card number:
@@ -68,16 +66,12 @@ public class App {
 
     private void handleLoginRequest() {
         System.out.print("Enter your card number: ");
-        String cardNumberInput = in.nextLine();
+        String cardNumber = in.nextLine();
         System.out.print("Enter your PIN: ");
-        String pinInput = in.nextLine();
+        String pin = in.nextLine();
         System.out.println();
         try {
-            long cardNumber = Long.parseLong(cardNumberInput);
-            int pin = Integer.parseInt(pinInput);
-            accounts.stream()
-                    .filter(a -> a.getCardNumber() == cardNumber && a.getPin() == pin)
-                    .findAny()
+            accounts.lookup(cardNumber, pin)
                     .ifPresentOrElse(
                             account -> {
                                 System.out.println("You have successfully logged in!");

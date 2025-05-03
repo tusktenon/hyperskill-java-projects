@@ -8,20 +8,18 @@ public class Account {
     private static final byte ACCOUNT_NUMBER_DIGITS = 9;
     private static final byte PIN_DIGITS = 4;
     private static final Random RNG = new Random();
-    private static long nextAccountNumber = 0;
 
-    private static final long CARD_NUMBER_BASE =
-            BIN * Long.parseLong('1' + "0".repeat(ACCOUNT_NUMBER_DIGITS + 1));
-    private static final String PIN_FORMAT_STRING = "%0" + PIN_DIGITS + 'd';
+    private static final long ACCOUNT_NUMBER_BOUND =
+            Long.parseLong('1' + "0".repeat(ACCOUNT_NUMBER_DIGITS));
     private static final int PIN_BOUND = Integer.parseInt('1' + "0".repeat(PIN_DIGITS));
+    private static final String PIN_FORMAT_STRING = "%0" + PIN_DIGITS + 'd';
 
     private final long cardNumber;
     private final int pin;
 
-    Account() {
-        cardNumber = CARD_NUMBER_BASE + nextAccountNumber * 10 + checkDigit(nextAccountNumber);
-        pin = RNG.nextInt(PIN_BOUND);
-        nextAccountNumber++;
+    Account(long cardNumber, int pin) {
+        this.cardNumber = cardNumber;
+        this.pin = pin;
     }
 
     long getCardNumber() {
@@ -38,6 +36,18 @@ public class Account {
 
     int getBalance() {
         return 0;
+    }
+
+    static long generateAccountNumber() {
+        return RNG.nextLong(ACCOUNT_NUMBER_BOUND);
+    }
+
+    static long toCardNumber(long accountNumber) {
+        return BIN * ACCOUNT_NUMBER_BOUND * 10 + accountNumber * 10 + checkDigit(accountNumber);
+    }
+
+    static int generatePin() {
+        return RNG.nextInt(PIN_BOUND);
     }
 
     private static long checkDigit(long accountNumber) {

@@ -6,3 +6,6 @@ application {
     mainClass = 'banking.Main'
 }
 
+run {
+    standardInput = System.in
+}

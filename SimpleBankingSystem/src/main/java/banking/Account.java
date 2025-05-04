@@ -43,16 +43,24 @@ public class Account {
     }
 
     static long toCardNumber(long accountNumber) {
-        return BIN * ACCOUNT_NUMBER_BOUND * 10 + accountNumber * 10 + checkDigit(accountNumber);
+        long uncheckedCardNumber = BIN * ACCOUNT_NUMBER_BOUND + accountNumber;
+        return 10 * uncheckedCardNumber + checkDigit(uncheckedCardNumber);
     }
 
     static int generatePin() {
         return RNG.nextInt(PIN_BOUND);
     }
 
-    private static long checkDigit(long accountNumber) {
-        // In a future stage, this method will calculate the check digit
-        // for the given account number using the Luhn algorithm
-        return 0;
+    private static int checkDigit(long unchecked) {
+        byte[] ascii = Long.toString(unchecked).getBytes();
+        int uncheckedSum = 0;
+        for (int i = 0; i < ascii.length; i++) {
+            int digit = ascii[i] - '0';
+            if (i % 2 == 0)
+                digit = digit < 5 ? 2 * digit : 2 * digit - 9;
+            uncheckedSum += digit;
+        }
+        int uncheckedSumLastDigit = uncheckedSum % 10;
+        return uncheckedSumLastDigit == 0 ? 0 : 10 - uncheckedSumLastDigit;
     }
 }

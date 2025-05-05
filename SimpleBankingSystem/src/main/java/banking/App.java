@@ -1,5 +1,9 @@
 package banking;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 public class App {
@@ -17,28 +21,37 @@ public class App {
             0. Exit
             """;
 
-    private final AccountsRegistry accounts;
+    private final Connection connection;
     private final Scanner in;
     private boolean exitRequested = false;
 
-    static void run(AccountsRegistry accounts) {
-        try (Scanner in = new Scanner(System.in)) {
-            App app = new App(accounts, in);
+    static void run(String dataFile) {
+        String url = "jdbc:sqlite:" + dataFile;
+        try (Connection connection = DriverManager.getConnection(url);
+             Scanner in = new Scanner(System.in)) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("""
+                        CREATE TABLE IF NOT EXISTS card (
+                            id INTEGER,
+                            number TEXT,
+                            pin TEXT,
+                            balance INTEGER DEFAULT 0
+                        )
+                        """);
+            }
+            App app = new App(connection, in);
             app.mainMenu();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
         }
     }
 
-    private App(AccountsRegistry accounts, Scanner in) {
-        this.accounts = accounts;
+    private App(Connection connection, Scanner in) {
+        this.connection = connection;
         this.in = in;
     }
 
-    private void requestExit() {
-        exitRequested = true;
-        System.out.println("Bye!");
-    }
-
-    private void mainMenu() {
+    private void mainMenu() throws SQLException {
         while (!exitRequested) {
             System.out.print(MAIN_MENU_TEXT);
             String selection = in.nextLine();
@@ -52,45 +65,41 @@ public class App {
         }
     }
 
-    private void handleNewAccountRequest() {
-        Account account = accounts.add();
+    private void handleNewAccountRequest() throws SQLException {
+        Card card = DatabaseUtils.add(connection);
         System.out.printf("""
                         Your card has been created
                         Your card number:
-                        %d
+                        %s
                         Your card PIN:
                         %s
                         """,
-                account.getCardNumber(), account.getPinString());
+                card.number(), card.pin());
     }
 
-    private void handleLoginRequest() {
+    private void handleLoginRequest() throws SQLException {
         System.out.print("Enter your card number: ");
         String cardNumber = in.nextLine();
         System.out.print("Enter your PIN: ");
         String pin = in.nextLine();
         System.out.println();
-        try {
-            accounts.lookup(cardNumber, pin)
-                    .ifPresentOrElse(
-                            account -> {
-                                System.out.println("You have successfully logged in!");
-                                loggedInMenu(account);
-                            },
-                            () -> System.out.println("Wrong card number or PIN!")
-                    );
-        } catch (NumberFormatException e) {
-            System.out.println("Wrong card number or PIN!");
-        }
+        DatabaseUtils.lookup(cardNumber, pin, connection)
+                .ifPresentOrElse(
+                        card -> {
+                            System.out.println("You have successfully logged in!");
+                            loggedInMenu(card);
+                        },
+                        () -> System.out.println("Wrong card number or PIN!")
+                );
     }
 
-    private void loggedInMenu(Account account) {
+    private void loggedInMenu(Card card) {
         while (true) {
             System.out.print(LOGGED_IN_MENU_TEXT);
             String selection = in.nextLine();
             System.out.println();
             switch (selection) {
-                case "1" -> System.out.println("Balance: " + account.getBalance());
+                case "1" -> System.out.println("Balance: " + card.balance());
                 case "2" -> {
                     System.out.println("You have successfully logged out!");
                     return;
@@ -102,5 +111,10 @@ public class App {
                 default -> System.out.println("Invalid selection");
             }
         }
+    }
+
+    private void requestExit() {
+        exitRequested = true;
+        System.out.println("Bye!");
     }
 }

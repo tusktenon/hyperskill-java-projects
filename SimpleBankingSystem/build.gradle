@@ -2,6 +2,14 @@ plugins {
     id 'application'
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.xerial:sqlite-jdbc:3.49.1.0'
+}
+
 application {
     mainClass = 'banking.Main'
 }

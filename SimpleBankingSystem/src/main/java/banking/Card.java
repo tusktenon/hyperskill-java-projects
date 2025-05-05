@@ -2,7 +2,7 @@ package banking;
 
 import java.util.Random;
 
-public class Account {
+public record Card(String number, String pin, int balance) {
 
     private static final long BIN = 4000_00;
     private static final byte ACCOUNT_NUMBER_DIGITS = 9;
@@ -14,41 +14,16 @@ public class Account {
     private static final int PIN_BOUND = Integer.parseInt('1' + "0".repeat(PIN_DIGITS));
     private static final String PIN_FORMAT_STRING = "%0" + PIN_DIGITS + 'd';
 
-    private final long cardNumber;
-    private final int pin;
-
-    Account(long cardNumber, int pin) {
-        this.cardNumber = cardNumber;
-        this.pin = pin;
-    }
-
-    long getCardNumber() {
-        return cardNumber;
-    }
-
-    int getPin() {
-        return pin;
-    }
-
-    String getPinString() {
-        return PIN_FORMAT_STRING.formatted(pin);
-    }
-
-    int getBalance() {
-        return 0;
-    }
-
-    static long generateAccountNumber() {
-        return RNG.nextLong(ACCOUNT_NUMBER_BOUND);
-    }
-
-    static long toCardNumber(long accountNumber) {
+    static String generateCardNumber() {
+        long accountNumber = RNG.nextLong(ACCOUNT_NUMBER_BOUND);
         long uncheckedCardNumber = BIN * ACCOUNT_NUMBER_BOUND + accountNumber;
-        return 10 * uncheckedCardNumber + checkDigit(uncheckedCardNumber);
+        long finalCardNumber = 10 * uncheckedCardNumber + checkDigit(uncheckedCardNumber);
+        return Long.toString(finalCardNumber);
     }
 
-    static int generatePin() {
-        return RNG.nextInt(PIN_BOUND);
+    static String generatePin() {
+        int pin = RNG.nextInt(PIN_BOUND);
+        return PIN_FORMAT_STRING.formatted(pin);
     }
 
     private static int checkDigit(long unchecked) {

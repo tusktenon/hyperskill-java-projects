@@ -2,7 +2,7 @@ package banking;
 
 import java.util.Random;
 
-public record Card(String number, String pin, int balance) {
+class CardUtils {
 
     private static final long BIN = 4000_00;
     private static final byte ACCOUNT_NUMBER_DIGITS = 9;

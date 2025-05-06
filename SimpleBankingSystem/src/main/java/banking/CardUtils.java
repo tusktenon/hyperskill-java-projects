@@ -26,6 +26,15 @@ class CardUtils {
         return PIN_FORMAT_STRING.formatted(pin);
     }
 
+    static boolean isValidNumber(String number) {
+        try {
+            long cardNumber = Long.parseLong(number);
+            return cardNumber % 10 == checkDigit(cardNumber / 10);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private static int checkDigit(long unchecked) {
         byte[] ascii = Long.toString(unchecked).getBytes();
         int uncheckedSum = 0;

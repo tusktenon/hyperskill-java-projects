@@ -14,6 +14,7 @@ class App {
             2. Log into account
             0. Exit
             """;
+
     private static final String LOGGED_IN_MENU_TEXT = """
             
             1. Balance

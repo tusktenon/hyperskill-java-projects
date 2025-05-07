@@ -18,6 +18,7 @@ All of the of projects are CLI applications, and most can be started by executin
 
 - [Budget Manager](https://hyperskill.org/projects/76)
 - [File Server](https://hyperskill.org/projects/52)
+- [Maze Runner](https://hyperskill.org/projects/47)
 - [Simple Banking System](https://hyperskill.org/projects/93)
 - [Tic-Tac-Toe with AI](https://hyperskill.org/projects/81)
 - [Traffic Light Simulator](https://hyperskill.org/projects/288)

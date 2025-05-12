@@ -1,5 +1,7 @@
 package maze;
 
+import maze.Maze.Cell;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,8 +11,6 @@ import java.util.Random;
  * <a href="https://www.youtube.com/watch?v=cQVH4gcb3O4">shown here</a>.
  */
 class MazeGenerator {
-
-    private record Cell(int row, int col) {}
 
     private record FrontierCell(int row, int col, int adjacentRow, int adjacentCol) {}
 
@@ -44,7 +44,6 @@ class MazeGenerator {
 
     private void selectStarterCell() {
         // This algorithm must start at a cell with odd coordinates
-        // that is not on the edge of the maze
         int row = 2 * rng.nextInt(height / 2) + 1;
         int col = 2 * rng.nextInt(width / 2) + 1;
         frontierCells.add(new FrontierCell(row, col, row, col));
@@ -53,10 +52,10 @@ class MazeGenerator {
     private void addPassages() {
         while (!frontierCells.isEmpty()) {
             FrontierCell current = frontierCells.remove(rng.nextInt(frontierCells.size()));
-            if (maze.isWall(current.row, current.col)) {
-                maze.unblock(current.row, current.col);
-                maze.unblock(current.adjacentRow, current.adjacentCol);
-                addFrontierCellsAndPossibleExits(current.row, current.col);
+            if (maze.isWall(current.row(), current.col())) {
+                maze.unblock(current.row(), current.col());
+                maze.unblock(current.adjacentRow(), current.adjacentCol());
+                addFrontierCellsAndPossibleExits(current.row(), current.col());
             }
         }
     }
@@ -64,11 +63,11 @@ class MazeGenerator {
     private void addExits() {
         for (int exits = 0; exits < 2; exits++) {
             Cell exit = possibleExits.remove(rng.nextInt(possibleExits.size()));
-            maze.unblock(exit.row, exit.col);
-            if (height < maze.height() && exit.row == height - 1)
-                maze.unblock(height, exit.col);
-            else if (width < maze.width() && exit.col == width - 1)
-                maze.unblock(exit.row, width);
+            maze.unblock(exit.row(), exit.col());
+            if (height < maze.height() && exit.row() == height - 1)
+                maze.unblock(height, exit.col());
+            else if (width < maze.width() && exit.col() == width - 1)
+                maze.unblock(exit.row(), width);
         }
     }
 

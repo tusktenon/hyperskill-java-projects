@@ -27,6 +27,7 @@ public class Main {
                 case "2" -> loadMaze();
                 case "3" -> saveMaze();
                 case "4" -> displayMaze();
+                case "5" -> displayEscape();
                 case "0" -> {
                     System.out.println("Bye!");
                     return;
@@ -46,9 +47,9 @@ public class Main {
         if (maze != null) {
             System.out.println("""
                     3. Save the maze
-                    4. Display the maze""");
+                    4. Display the maze
+                    5. Find the escape""");
         }
-
         System.out.println("0. Exit");
     }
 
@@ -79,15 +80,15 @@ public class Main {
     }
 
     private void saveMaze() {
-        if (maze != null) {
+        if (maze == null) {
+            System.out.println("Option unavailable. Please generate or load a maze.");
+        } else {
             String fileName = in.nextLine();
             try {
                 maze.save(new File(fileName));
             } catch (FileNotFoundException ignored) {
                 System.out.printf("Cannot save maze to file %s.%n", fileName);
             }
-        } else {
-            System.out.println("Option unavailable. Please generate or load a maze.");
         }
     }
 
@@ -95,5 +96,17 @@ public class Main {
         System.out.println(
                 maze == null ? "Option unavailable. Please generate or load a maze." : maze
         );
+    }
+
+    private void displayEscape() {
+        if (maze == null) {
+            System.out.println("Option unavailable. Please generate or load a maze.");
+        } else {
+            try {
+                System.out.println(maze.showEscapePath());
+            } catch (Maze.MazeStructureException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 }

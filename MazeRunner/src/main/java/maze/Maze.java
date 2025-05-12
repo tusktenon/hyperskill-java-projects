@@ -3,11 +3,27 @@ package maze;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Set;
+import java.util.function.BiPredicate;
 
 abstract class Maze {
 
-    public static final String PASSAGE_STRING = "  ";
-    public static final String WALL_STRING = "██";
+    record Cell(int row, int col) {}
+
+    public static class FileFormatException extends Exception {}
+
+    public static class MazeStructureException extends Exception {
+        public MazeStructureException(String message) {
+            super(message);
+        }
+    }
+
+    static final String PASSAGE_STRING = "  ";
+    static final String WALL_STRING = "██";
+    static final String PATH_STRING = "//";
+
+    private Set<Cell> escapePath;
+    private MazeStructureException escapePathException;
 
     abstract int height();
 
@@ -19,7 +35,7 @@ abstract class Maze {
         return !isPassage(row, col);
     }
 
-    final void save(File file) throws FileNotFoundException {
+    public final void save(File file) throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(file)) {
             writer.printf("%d %d%n", height(), width());
             for (int row = 0; row < height(); row++) {
@@ -33,10 +49,35 @@ abstract class Maze {
 
     @Override
     public String toString() {
+        return toString((row, path) -> false);
+    }
+
+    public String showEscapePath() throws MazeStructureException {
+        if (escapePathException != null) {
+            throw escapePathException;
+        }
+        if (escapePath == null) {
+            try {
+                escapePath = MazeSolver.solve(this);
+            } catch (MazeStructureException e) {
+                escapePathException = e;
+                throw e;
+            }
+        }
+        return toString((row, col) -> escapePath.contains(new Cell(row, col)));
+    }
+
+    private String toString(BiPredicate<Integer, Integer> isOnPath) {
         StringBuilder builder = new StringBuilder(height() * (WALL_STRING.length() * width() + 1));
         for (int row = 0; row < height(); row++) {
             for (int col = 0; col < width(); col++) {
-                builder.append(isPassage(row, col) ? PASSAGE_STRING : WALL_STRING);
+                builder.append(
+                        isOnPath.test(row, col)
+                                ? PATH_STRING
+                                : isPassage(row, col)
+                                ? PASSAGE_STRING
+                                : WALL_STRING
+                );
             }
             builder.append('\n');
         }

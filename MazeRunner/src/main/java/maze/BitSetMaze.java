@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 class BitSetMaze extends Maze {
 
-    public static class FileFormatException extends Exception {}
-
     private final int height;
     private final int width;
     private final BitSet cells;
@@ -20,7 +18,7 @@ class BitSetMaze extends Maze {
         cells = new BitSet(height * width);
     }
 
-    static BitSetMaze load(File file) throws FileFormatException, FileNotFoundException {
+    public static BitSetMaze load(File file) throws FileFormatException, FileNotFoundException {
         try (Scanner scanner = new Scanner(file)) {
             int height = scanner.nextInt();
             int width = scanner.nextInt();

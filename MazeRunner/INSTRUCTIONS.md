@@ -117,11 +117,11 @@ Please, enter the size of a maze
 
 The program should provide a menu with five options:
 
-1. Generate a new maze.
-2. Load a maze.
-3. Save the maze.
-4. Display the maze.
-5. Exit.
+1\. Generate a new maze
+2\. Load a maze
+3\. Save the maze
+4\. Display the maze
+0\. Exit
 
 After a maze is generated or loaded from a file, it becomes the current maze that can be saved or displayed.
 
@@ -189,3 +189,127 @@ Enter the size of a new maze
 >0
 Bye!
 ```
+
+**Note,** the program should not stop until the user selects the exit option.
+
+
+## Stage 4/4: A way out
+
+### Description
+
+Modify the menu by adding a new option:
+
+1\. Generate a new maze
+2\. Load a maze
+3\. Save the maze
+4\. Display the maze
+**5\. Find the escape**
+0\. Exit
+
+This option should be available only if a current maze exists.
+
+Do not save the data about the escape path to the files and do not display the escape path when the user chooses the fourth option. Mark the escape with `/` symbol.
+
+### Example
+
+After starting, your program must print a menu listing only appropriate options. When a user has chosen an option, the program must perform the corresponding action.
+```text
+=== Menu ===
+1. Generate a new maze
+2. Load a maze
+0. Exit
+>2
+>maze.txt
+
+=== Menu ===
+1. Generate a new maze
+2. Load a maze
+3. Save the maze
+4. Display the maze
+5. Find the escape
+0. Exit
+>4
+██████████████████████████████████████████████████  ██████████
+██      ██                          ██  ██          ██  ██  ██
+██  ██████████████  ██████████████████  ██  ██████████  ██  ██
+██  ██                          ██      ██  ██          ██  ██
+██  ██████████████████  ██████████  ██████  ██████████  ██  ██
+██  ██  ██  ██  ██  ██  ██  ██              ██  ██          ██
+██  ██  ██  ██  ██  ██  ██  ██  ██████████████  ██████  ██  ██
+██  ██  ██          ██  ██              ██      ██      ██  ██
+██  ██  ██████  ██████  ██  ██████████████  ██████████  ██████
+██  ██      ██          ██              ██      ██      ██  ██
+██  ██  ██████  ██████  ██████████  ██████  ██████  ██████  ██
+██  ██  ██  ██  ██  ██  ██                  ██          ██  ██
+██  ██  ██  ██████  ██  ██████████  ██████████  ██  ██████  ██
+██              ██  ██      ██  ██          ██  ██  ██  ██  ██
+██████  ██  ██████  ██████  ██  ██  ██████████  ██████  ██  ██
+██      ██  ██  ██  ██  ██      ██  ██      ██  ██          ██
+██████  ██████  ██  ██  ██  ██████  ██  ██████  ██████  ██████
+██          ██  ██      ██      ██          ██          ██  ██
+██  ██████  ██  ██████  ██  ██████████  ██████  ██████████  ██
+██  ██      ██          ██  ██          ██      ██      ██  ██
+██████████  ██████████  ██  ██  ██████████  ██████  ██████  ██
+██                  ██          ██  ██      ██  ██      ██  ██
+██████████████████  ██████  ██████  ██████  ██  ██  ██████  ██
+██                          ██      ██  ██                  ██
+██████████  ██████████████  ██  ██████  ██  ██████████████  ██
+██          ██  ██      ██  ██  ██  ██              ██  ██  ██
+██████  ██████  ██████  ██  ██  ██  ██  ██████████████  ██████
+██      ██      ██                      ██  ██              ██
+██████████████  ██████████████  ██████  ██  ██████  ██  ██████
+██                                  ██              ██      ██
+██████████████████████████  ██████████████████████████████████
+
+=== Menu ===
+1. Generate a new maze
+2. Load a maze
+3. Save the maze
+4. Display the maze
+5. Find the escape
+0. Exit
+>5
+██████████████████████████████████████████████████//██████████
+██      ██                          ██  ██//////////██  ██  ██
+██  ██████████████  ██████████████████  ██//██████████  ██  ██
+██  ██                          ██      ██//██          ██  ██
+██  ██████████████████  ██████████  ██████//██████████  ██  ██
+██  ██  ██  ██  ██  ██  ██  ██//////////////██  ██          ██
+██  ██  ██  ██  ██  ██  ██  ██//██████████████  ██████  ██  ██
+██  ██  ██          ██  ██//////        ██      ██      ██  ██
+██  ██  ██████  ██████  ██//██████████████  ██████████  ██████
+██  ██      ██          ██//////////    ██      ██      ██  ██
+██  ██  ██████  ██████  ██████████//██████  ██████  ██████  ██
+██  ██  ██  ██  ██  ██  ██        //        ██          ██  ██
+██  ██  ██  ██████  ██  ██████████//██████████  ██  ██████  ██
+██              ██  ██      ██  ██//        ██  ██  ██  ██  ██
+██████  ██  ██████  ██████  ██  ██//██████████  ██████  ██  ██
+██      ██  ██  ██  ██  ██      ██//██      ██  ██          ██
+██████  ██████  ██  ██  ██  ██████//██  ██████  ██████  ██████
+██          ██  ██      ██      ██//////    ██          ██  ██
+██  ██████  ██  ██████  ██  ██████████//██████  ██████████  ██
+██  ██      ██          ██  ██//////////██      ██      ██  ██
+██████████  ██████████  ██  ██//██████████  ██████  ██████  ██
+██                  ██    //////██  ██      ██  ██      ██  ██
+██████████████████  ██████//██████  ██████  ██  ██  ██████  ██
+██                        //██      ██  ██                  ██
+██████████  ██████████████//██  ██████  ██  ██████████████  ██
+██          ██  ██      ██//██  ██  ██              ██  ██  ██
+██████  ██████  ██████  ██//██  ██  ██  ██████████████  ██████
+██      ██      ██        //////        ██  ██              ██
+██████████████  ██████████████//██████  ██  ██████  ██  ██████
+██                        //////    ██              ██      ██
+██████████████████████████//██████████████████████████████████
+
+=== Menu ===
+1. Generate a new maze
+2. Load a maze
+3. Save the maze
+4. Display the maze
+5. Find the escape
+0. Exit
+>0
+Bye!
+```
+
+**Note,** the program should not stop until the user selects the exit option.

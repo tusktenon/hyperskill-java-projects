@@ -330,3 +330,57 @@ Response body:
     "error": "Wrong token!"
 }
 ```
+
+
+## Stage 4/4: The statistics
+
+### Description
+
+Your REST service knows how to show available tickets, sell them, and make a refund. Let's add statistics available only to the theatre managers.
+
+### Objectives
+
+Implement the `/stats` endpoint that will handle `GET` requests with URL parameters. If the URL parameters contain a `password` key with a `super_secret` value, return the movie theatre statistics in the following format:
+```json
+{
+    "income": 0,
+    "available": 81,
+    "purchased": 0
+}
+```
+
+Take a look at the description of keys:
+
+- `income` — shows the total income of sold tickets.
+- `available` — shows how many seats are available.
+- `purchased` — shows how many tickets were purchased.
+
+If the parameters don't contain a password key or a wrong value has been passed, respond with a `401` status code. The response body should contain the following:
+```json
+{
+    "error": "The password is wrong!"
+}
+```
+
+### Examples
+
+**Example 1:** *a `GET /stats` request with no parameters*
+
+*Response body:*
+
+```json
+{
+    "error": "The password is wrong!"
+}
+```
+
+**Example 2:** *a `GET /stats` request with the correct password*
+
+*Response body:*
+```json
+{
+    "income": 30,
+    "available": 78,
+    "purchased": 3
+}
+```

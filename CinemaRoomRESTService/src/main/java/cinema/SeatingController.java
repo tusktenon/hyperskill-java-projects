@@ -26,4 +26,13 @@ public class SeatingController {
             return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
         }
     }
+
+    @PostMapping("/return")
+    public ResponseEntity<?> refund(@RequestBody PurchaseToken purchase) {
+        try {
+            return ResponseEntity.ok().body(seatingService.refund(purchase));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
+        }
+    }
 }

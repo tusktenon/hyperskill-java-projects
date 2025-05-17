@@ -1,14 +1,29 @@
 package cinema;
 
-import cinema.models.SeatingPlan;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import cinema.models.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class SeatingController {
 
+    private final SeatingService seatingService;
+
+    public SeatingController(SeatingService seatingService) {
+        this.seatingService = seatingService;
+    }
+
     @GetMapping("/seats")
     public SeatingPlan seats() {
-        return new SeatingPlan(9, 9);
+        return seatingService.seatingPlan();
+    }
+
+    @PostMapping("/purchase")
+    public ResponseEntity<?> purchase(@RequestBody Seat seat) {
+        try {
+            return ResponseEntity.ok().body(seatingService.purchase(seat));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
+        }
     }
 }

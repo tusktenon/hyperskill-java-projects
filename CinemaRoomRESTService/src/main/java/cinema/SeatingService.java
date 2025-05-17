@@ -25,14 +25,14 @@ public class SeatingService {
         return seatingPlan;
     }
 
-    public PricedSeat purchase(Seat seat) {
+    public Ticket purchase(Seat seat) {
         int row = seat.row();
         int column = seat.column();
         if (row < 1 || row > rows || column < 1 || column > columns) {
             throw new IllegalArgumentException("The number of a row or a column is out of bounds!");
         }
         if (purchased.add(seat)) {
-            return new PricedSeat(row, column, pricer);
+            return new Ticket(row, column, pricer);
         } else {
             throw new IllegalArgumentException("The ticket has been already purchased!");
         }

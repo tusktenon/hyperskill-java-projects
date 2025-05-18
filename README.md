@@ -8,7 +8,7 @@ Most of the projects are CLI applications that can be started by executing `grad
 
 - The later stages of the File Server project have separate client and server programs; see the project's [README](FileServer/README.md) for details.
 - The later stages of the Simple Banking System project have (mandatory) command-line arguments;  see the project's [README](SimpleBankingSystem/README.md) for details.
-- Cinema Room REST Service is a Spring Boot application that can be started with `gradle bootRun`.
+- Cinema Room REST Service and QRCode Service are Spring Boot applications that can be started with `gradle bootRun`.
 
 *A note on code style.* I have a slight preference for Google Java Style over Oracle Java Conventions, and used the former for my first four projects (Cinema Room Manager, Coffee Machine Simulator, Simple Tic-Tac-Toe, and Tic-Tac-Toe with AI). I switched to Oracle style for the remaining projects, to be consistent with Hyperskill.
 
@@ -23,11 +23,12 @@ Most of the projects are CLI applications that can be started by executing `grad
 - [Budget Manager](https://hyperskill.org/projects/76)
 - [File Server](https://hyperskill.org/projects/52)
 - [Maze Runner](https://hyperskill.org/projects/47)
-- [Simple Banking System](https://hyperskill.org/projects/93)
+- [Simple Banking System](https://hyperskill.org/projects/93) (JDBC with SQLite)
 - [Tic-Tac-Toe with AI](https://hyperskill.org/projects/81)
 - [Traffic Light Simulator](https://hyperskill.org/projects/288)
 
 ## Hard Projects
 
-- [Cinema Room REST Service](https://hyperskill.org/projects/189)
+- [Cinema Room REST Service](https://hyperskill.org/projects/189) (Spring Boot and Spring Web MVC)
 - [Learning Progress Tracker](https://hyperskill.org/projects/197)
+- [QRCode Service](https://hyperskill.org/projects/385) (Spring Boot and Spring Web MVC)

@@ -51,4 +51,11 @@ public class SeatingService {
             throw new IllegalArgumentException("Wrong token!");
         }
     }
+
+    public Statistics statistics() {
+        int income = sales.values().stream().mapToInt(Ticket::price).sum();
+        int capacity = seatingPlan.seats().size();
+        int reserved = purchased.size();
+        return new Statistics(income, capacity - reserved, reserved);
+    }
 }

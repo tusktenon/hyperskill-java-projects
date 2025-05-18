@@ -20,4 +20,9 @@ public class CinemaConfig {
     public SeatingService seatingService() {
         return new SeatingService(ROWS, COLUMNS, SEAT_PRICER);
     }
+
+    @Bean
+    public String managerPassword() {
+        return "super_secret";
+    }
 }

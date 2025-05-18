@@ -3,32 +3,40 @@ package qrcodeapi;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class Controller {
 
-    private static final BufferedImage BLANK;
+    public static final int MIN_SIZE = 150;
+    public static final int MAX_SIZE = 350;
+    public static final List<String> SUPPORTED_TYPES = List.of("png", "jpeg", "gif");
 
-    static {
-        BLANK = new BufferedImage(250, 250, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = BLANK.createGraphics();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, 250, 250);
-    }
+    public static final String ILLEGAL_SIZE_MESSAGE =
+            "Image size must be between %d and %d pixels".formatted(MIN_SIZE, MAX_SIZE);
+
+    public static final String UNSUPPORTED_TYPE_MESSAGE =
+            "Only %s and %s image types are supported".formatted(
+                    String.join(", ", SUPPORTED_TYPES.subList(0, SUPPORTED_TYPES.size() - 1)),
+                    SUPPORTED_TYPES.getLast());
 
     @GetMapping("/health")
     @ResponseStatus(HttpStatus.OK)
     public void health() {
     }
 
-    @GetMapping(path = "/qrcode")
-    public ResponseEntity<BufferedImage> qrcode() {
+    @GetMapping("/qrcode")
+    public ResponseEntity<?> qrcode(@RequestParam int size, @RequestParam String type) {
+        if (size < MIN_SIZE || size > MAX_SIZE) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(ILLEGAL_SIZE_MESSAGE));
+        }
+        if (!SUPPORTED_TYPES.contains(type)) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(UNSUPPORTED_TYPE_MESSAGE));
+        }
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .body(BLANK);
+                .contentType(MediaType.parseMediaType("image/" + type))
+                .body(QRCodeService.blankCode(size));
     }
 }

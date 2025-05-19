@@ -27,7 +27,14 @@ public class Controller {
     }
 
     @GetMapping("/qrcode")
-    public ResponseEntity<?> qrcode(@RequestParam int size, @RequestParam String type) {
+    public ResponseEntity<?> qrcode(
+            @RequestParam String contents, @RequestParam int size, @RequestParam String type
+    ) {
+        if (contents.isBlank()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorMessage("Contents cannot be null or blank"));
+        }
         if (size < MIN_SIZE || size > MAX_SIZE) {
             return ResponseEntity.badRequest().body(new ErrorMessage(ILLEGAL_SIZE_MESSAGE));
         }
@@ -37,6 +44,6 @@ public class Controller {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("image/" + type))
-                .body(QRCodeService.blankCode(size));
+                .body(QRCodeService.generateImage(contents, size));
     }
 }

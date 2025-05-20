@@ -3,6 +3,8 @@ package qrcodeapi;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -16,6 +18,12 @@ public class Controller {
     public static final String ILLEGAL_SIZE_MESSAGE =
             "Image size must be between %d and %d pixels".formatted(MIN_SIZE, MAX_SIZE);
 
+    public static final String INVALID_CORRECTION_MESSAGE =
+            "Permitted error correction levels are %s".formatted(String.join(", ",
+                    Arrays.stream(CorrectionLevel.values())
+                            .map(CorrectionLevel::toString)
+                            .toList()));
+
     public static final String UNSUPPORTED_TYPE_MESSAGE =
             "Only %s and %s image types are supported".formatted(
                     String.join(", ", SUPPORTED_TYPES.subList(0, SUPPORTED_TYPES.size() - 1)),
@@ -27,23 +35,35 @@ public class Controller {
     }
 
     @GetMapping("/qrcode")
-    public ResponseEntity<?> qrcode(
-            @RequestParam String contents, @RequestParam int size, @RequestParam String type
+    public ResponseEntity<BufferedImage> qrcode(
+            @RequestParam String contents,
+            @RequestParam(defaultValue = "250") int size,
+            @RequestParam(defaultValue = "L") String correction,
+            @RequestParam(defaultValue = "png") String type
     ) {
         if (contents.isBlank()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ErrorMessage("Contents cannot be null or blank"));
+            throw new RequestException("Contents cannot be null or blank");
         }
         if (size < MIN_SIZE || size > MAX_SIZE) {
-            return ResponseEntity.badRequest().body(new ErrorMessage(ILLEGAL_SIZE_MESSAGE));
+            throw new RequestException(ILLEGAL_SIZE_MESSAGE);
+        }
+        CorrectionLevel correctionLevel;
+        try {
+            correctionLevel = CorrectionLevel.valueOf(correction);
+        } catch (IllegalArgumentException e) {
+            throw new RequestException(INVALID_CORRECTION_MESSAGE);
         }
         if (!SUPPORTED_TYPES.contains(type)) {
-            return ResponseEntity.badRequest().body(new ErrorMessage(UNSUPPORTED_TYPE_MESSAGE));
+            throw new RequestException(UNSUPPORTED_TYPE_MESSAGE);
         }
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("image/" + type))
-                .body(QRCodeService.generateImage(contents, size));
+                .body(QRCodeService.generateImage(contents, correctionLevel.level(), size));
+    }
+
+    @ExceptionHandler(RequestException.class)
+    public ResponseEntity<ErrorMessage> handleRequestException(RequestException e) {
+        return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
     }
 }

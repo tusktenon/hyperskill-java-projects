@@ -1,5 +1,15 @@
 # File Server
 
+## How to run this project
+
+Starting with stage 2, the File Server project actually consists of two programs: a client and a server (that are meant to be run simultaneously in separate terminals). I've organized the source files into multiple packages:
+
+- `stage1` contains the storage emulator program developed during Stage 1;
+- `stageX.client` and `stageX.server` (where `X` is 2, 3 or 4) contain the client and server programs for the later stages of the project.
+
+I've written custom Gradle tasks for each of these, so they can be built and run with `gradle runStage1`, `gradle runClientX` and `gradle runServerX`. Alternatively, you can just use `gradle build` to compile all the source files, then navigate to the `build/classes/java/main` directory and run `java stage1.Main`, `java stageX.client.Main` or `java stageX.server.Main`.
+
+
 ## Project Description
 
 You will practice concepts frequently tested in technical interviews at top tech companies. It's so easy to lose your precious data — unless you store it on a server. Besides, file servers allow you to access your files remotely, no matter where you are. In this project, you will create your own file server, even though a simple one.

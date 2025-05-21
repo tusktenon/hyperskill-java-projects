@@ -1,5 +1,10 @@
 # Simple Banking System (Java)
 
+## How to run this project
+
+In stages 3 and 4, the program expects the location of the SQLite database file to be passed as a command line argument using the `-fileName` option; for example `-filename data/banking.db`. This can be achieved with `gradle run --args='-fileName data/banking.db'`.
+
+
 ## Project description
 
 Everything goes digital these days, and so does money. Today, most people have credit cards, which save us time, energy and nerves. From not having to carry a wallet full of cash to consumer protection, cards make our lives easier in many ways. In this project, you will develop a simple banking system with database.

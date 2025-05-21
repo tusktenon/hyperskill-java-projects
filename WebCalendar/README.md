@@ -34,3 +34,75 @@ Create a resource that handles `GET` requests for the `/event/today` endpoint an
 ```json
 []
 ```
+
+
+## Stage 2/4: GET vs POST
+
+### Description
+
+Let's add the ability to handle `POST` requests from the user side and parse their arguments. To parse the arguments from the `POST` request, use the `@RequestBody` annotation. This annotation indicates a method parameter should be bound to the body of the web request. The body of the request is passed through an `HttpMessageConverter` to resolve the method argument depending on the content type of the request.
+
+### Objectives
+
+Create a new resource to handle `POST` requests for the `/event` endpoint. It must require the following arguments in the request body:
+
+- An `event` argument of the `String` type.
+- A `date` argument of the `LocalDate` type. The correct format is `YYYY-MM-DD`.
+
+If a user sends the correct response, display the following message: `The event has been added!`, and show the user data:
+```json
+{
+    "message": "The event has been added!",
+    "event": "Client event name",
+    "date": "Client date"
+}
+```
+
+### Examples
+
+**Example 1:** *Wrong `POST` request for the /event endpoint*
+
+*Request body:*
+```json
+{
+    "date": "2021-02-10"
+}
+```
+
+*Response:* `400 Bad Request`
+
+*No Response body.*
+
+**Example 2:** *Wrong `POST` request for the /event endpoint*
+
+*Request body:*
+```json
+{
+    "event": "Video conference"
+}
+```
+
+*Response:* `400 Bad Request`
+
+*No Response body.*
+
+**Example 3:** *Сorrect `POST` request for the /event endpoint*
+
+*Request body:*
+```json
+{
+    "event": "Video conference",
+    "date": "2020-11-15"
+}
+```
+
+*Response:* 200 OK
+
+*Response body:*
+```json
+{
+    "message": "The event has been added!",
+    "event": "Video conference",
+    "date": "2020-11-15"
+}
+```

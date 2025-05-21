@@ -106,3 +106,84 @@ If a user sends the correct response, display the following message: `The event 
     "date": "2020-11-15"
 }
 ```
+
+
+## Stage 3/4: Relax
+
+### Description
+
+What about events that you have added to your calendar? We need to find a way to store and access them whenever you need. Use the Spring Data JPA extension to connect a database to your Spring Boot application. We will use Spring Data JPA to connect our Spring Boot application to an H2 database.
+
+To start working with Spring Data JPA, we need to add the necessary dependencies to our Gradle-based Spring Boot project:
+```kotlin
+dependencies {
+    // ...
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    // ...
+}
+```
+
+Next, we need to configure the database connection in the *application.properties* file (they are already added to the project):
+```text
+spring.datasource.url=jdbc:h2:file:../d
+spring.datasource.driverClassName=org.h2.Driver
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+spring.h2.console.enabled=true
+spring.h2.console.settings.trace=false
+spring.h2.console.settings.web-allow-others=false
+
+spring.jpa.show-sql=true
+```
+
+We also need to create an entity that represents a table in the database. For that, we create a class annotated with `@Entity` and define fields with the appropriate JPA annotations. We can use the `EventRepository` interface, which extends `JpaRepository`, to perform CRUD operations. Now, we can save, delete, and update our data in the database. Also, we need to convert our object into JSON format to send it as a response. Spring Boot does this automatically when we return an object from a controller method.
+
+### Objectives
+
+1. Create an `Event` entity to save events to the database. The table should contain the following columns:
+    - `id` of the INTEGER type. It should be our `PRIMARY KEY`. Its value will be incremented and generated automatically. Starting from 1.
+    - `event` of the VARCHAR type. It should be `NOT NULL`.
+    - `date` of the DATE type. It should be `NOT NULL`.
+2. Your REST API should have the following features:
+    - POST request for the `/event` endpoint should save the event to your database. It should require the same arguments as in the previous stage.
+    - GET request for the `/event` endpoint should return all the events from the database. If there are no events, it should return the response status code `204 NO_CONTENT`.
+    - GET request for the `/event/today` endpoint should return the list of today's events. 
+
+### Examples
+
+**Example 1:** *`GET` request for the /event endpoint*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+[
+   {
+      "id":1,
+      "event":"Video conference",
+      "date":"2021-03-01"
+   },
+   {
+      "id":2,
+      "event":"Today's first event",
+      "date":"2021-02-28"
+   }
+]
+```
+
+**Example 2:** *`GET` request for the /event/today endpoint*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+[
+   {
+      "id":2,
+      "event":"Today's first event",
+      "date":"2021-02-28"
+   }
+]
+```

@@ -187,3 +187,119 @@ We also need to create an entity that represents a table in the database. For th
    }
 ]
 ```
+
+
+## Stage 4/4: Back to the future
+
+### Description
+
+It's easy to forget essential things. Work meetings, doctor appointments, gym sessions, family gatherings, and parties with friends - there's so much to remember! Planning is also crucial for our calendar. We need to add some features like the ability to get a list of events for a specific time interval, find event information by an ID, and delete occurrences from the database. In Spring Boot, you can use the `@PathVariable` annotation to get variables from the request URL.
+```java
+@GetMapping("/event/{id}")
+public ResponseEntity<Event> getEventById(@PathVariable("id") Long id) {
+	Event event = eventRepository.findById(id);
+	if (event == null) {
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	return new ResponseEntity<>(event, HttpStatus.OK);
+} 
+```
+
+In the example above, we get a Long value from the request URL and return the Event object as a response. If the event does not exist, it will return the 404 status code.
+
+Sometimes, you need to return an error message if something is wrong. You can use the `ResponseEntity` object to send a response with a given status code and a message.
+
+Also, for this stage specifically, we need change the configuration for the database connection in the `application.properties` file. Please make the following update while keeping everything else as it is.
+```text
+spring.jpa.hibernate.ddl-auto=update
+```
+
+### Objectives
+
+In this stage, add a resource with the */event/<int:id>* URL. It should handle the following requests:
+
+- A `GET` request should return the event with the ID in JSON format. If an event doesn't exist, return `404` with the following message: `The event doesn't exist!`
+
+- A `DELETE` request should delete the event with the given ID and respond with the following response body with the information on the deleted event:
+    ```json
+    {
+        "id":1,
+        "event":"Video conference",
+        "date":"2020-10-15"
+    }
+    ```
+    If the event with the ID doesn't exist, return `404` with the message `The event doesn't exist!`
+
+- A `GET` request for the */event* endpoint with `start_time` and `end_time` parameters should return a list of events for the given time range. If the arguments are missing, return the list of all events.
+
+- The URLs from the previous stage should work in the same way.
+
+### Examples
+
+**Example 1:** *`GET` request for the /event?start_time=2020-10-10&end_time=2020-10-20 endpoint*
+
+*Response Body:*
+
+*Response:* `200 OK`
+```json
+[
+   {
+      "id":1,
+      "event":"Video conference",
+      "date":"2020-10-15"
+   },
+   {
+      "id":2,
+      "event":"Today's first event",
+      "date":"2020-10-20"
+   }
+]
+```
+
+**Example 2:** *`GET` request for the /event/1 endpoint*
+
+*Response:* `200 OK`
+
+*Response Body:*
+```json
+{
+    "id":1,
+    "event":"Video conference",
+    "date":"2020-10-15"
+}
+```
+
+**Example 3:** *`GET` request for the /event/10 endpoint*
+
+*Response:* `404 Not Found`
+
+*Response Body:*
+```json
+{
+    "message": "The event doesn't exist!"
+}
+```
+
+**Example 4:** *`DELETE` request for the /event/1 endpoint*
+
+*Response:* `200 OK`
+
+*Response Body:*
+```json
+{
+    "id":1,
+    "event":"Video conference",
+    "date":"2020-10-15"
+}
+```
+
+**Example 5:** *`DELETE` request for the /event/10 endpoint*
+
+*Response:* `404 Not Found`
+
+*Response Body:*
+```json
+{
+    "message": "The event doesn't exist!"
+}
+```

@@ -1,3 +1,6 @@
 bin
 .classpath
 .settings
+
+# H2 data file for Web Calendar project
+d.mv.db

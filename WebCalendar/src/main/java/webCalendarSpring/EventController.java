@@ -7,8 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class EventController {
@@ -20,15 +19,25 @@ public class EventController {
     }
 
     @GetMapping("/event")
-    public ResponseEntity<?> allEvents() {
-        List<Event> events = eventRepository.findAllEvents();
+    public ResponseEntity<?> getEventsInDateRange(
+            @RequestParam(name = "start_time", required = false) LocalDate start,
+            @RequestParam(name = "end_time", required = false) LocalDate end
+    ) {
+        List<Event> events = start == null && end == null
+                ? eventRepository.findAllEvents()
+                : eventRepository.findByDateBetween(start, end);
         return events.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(events, HttpStatus.OK);
     }
 
+    @GetMapping("/event/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+        return ResponseEntity.ok(eventRepository.findById(id).orElseThrow());
+    }
+
     @GetMapping("/event/today")
-    public List<Event> today() {
+    public List<Event> getEventsForToday() {
         return eventRepository.findByDate(LocalDate.now());
     }
 
@@ -42,8 +51,21 @@ public class EventController {
         );
     }
 
+    @DeleteMapping("/event/{id}")
+    public ResponseEntity<Event> deleteEventById(@PathVariable Long id) {
+        Event event = eventRepository.findById(id).orElseThrow();
+        eventRepository.delete(event);
+        return ResponseEntity.ok(event);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handleInvalidRequestBody() {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Map<String, String>> handleNoSuchEvent() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "The event doesn't exist!"));
     }
 }

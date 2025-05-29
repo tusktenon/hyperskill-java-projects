@@ -15,4 +15,6 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     }
 
     public List<Event> findByDate(LocalDate date);
+
+    public List<Event> findByDateBetween(LocalDate start, LocalDate end);
 }

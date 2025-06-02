@@ -1,5 +1,6 @@
 package feedbackservice;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class FeedbackController {
     }
 
     @PostMapping("/feedback")
-    public ResponseEntity<Void> addFeedback(@RequestBody Feedback feedback) {
+    public ResponseEntity<Void> addFeedback(@Valid @RequestBody Feedback feedback) {
         String id = repository.save(feedback).id();
         return ResponseEntity.created(URI.create("/feedback/" + id)).build();
     }

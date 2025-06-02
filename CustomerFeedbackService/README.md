@@ -262,3 +262,146 @@ Location: /feedback/655e0c5f76a1e10ce2159b89
   }
 ]
 ```
+
+
+## Stage 3/4: Turn the page
+
+### Description
+
+After collecting feedback from customers for some time, we've noticed a considerable increase in the number of documents. Retrieving all documents at once is not practical anymore due to the high traffic and memory utilization.
+
+At this stage, you'll implement paging, allowing a client to request a particular portion of the document collection by specifying the desired page and page size.
+
+`MongoRepository` extends the `PagingAndSortingRepository` repository. This implies that the overloaded `findAll` method can accept a `Pageable` object, which facilitates the simultaneous application of sorting and paging. This method gives back a `Page<T>` object carrying all the necessary information for clients to move between pages.
+
+### Objectives
+
+- Alter the `GET /feedback` endpoint. It should now support paging and accept optional `page` and `perPage` request parameters, with default values of 1 and 10 respectively. The `page` parameter signifies the requested page of data and the `perPage` parameter defines the number of documents per page. If either or both of these parameters are absent, apply their default values. The documents must still be sorted by their IDs in descending order before pagination.
+
+- Validate and sanitize the `page` request parameter to ensure that only valid pagination settings are applied. Page numbering starts with 1, which means that if the given `page` value is less than 1, the first page should be returned.
+
+- Validate and sanitize the `perPage` request parameter to ensure that only valid pagination settings are applied. The minimum allowed `perPage` value is 5 and the maximum is 20. This implies that if the provided `perPage` value is less than 5 or more than 20, the default page size of 10 should be applied.
+
+- Change the response body of the `GET /feedback` endpoint. It should now be a JSON object with the following fields:
+    ```json
+    {
+      "total_documents": <long>,
+      "is_first_page": <boolean>,
+      "is_last_page": <boolean>,
+      "documents": <[array of documents]>
+    }
+    ```
+    Where `total_documents` is the total count of documents in the collection, `is_first_page` depicts whether the returned page is the first one, `is_last_page` indicates if the returned page is the final one, and `documents` is a JSON array of JSON objects representing feedback documents in the same format as in the previous stage:
+    ```json
+    {
+    "id": <string>,
+    "rating": <integer>,
+    "feedback": <string | null>,
+    "customer": <string | null>,
+    "product": <string>,
+    "vendor": <string>
+    }
+    ```
+    - If the requested page number is greater than the maximum available page number, the document array should be empty.
+
+### Examples
+
+**Example 1:** `POST` request to the `/feedback` endpoint.
+
+*Request body:*
+```json
+{
+  "rating": 4,
+  "feedback": "good but expensive",
+  "customer": "John Doe",
+  "product": "MacBook Air",
+  "vendor": "Online Trade LLC"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /feedback/655e0c5f76a1e10ce2159b88
+```
+
+**Example 2:** `POST` request to the `/feedback` endpoint.
+
+*Request body:*
+```json
+{
+  "rating": 4,
+  "product": "Blue duct tape",
+  "vendor": "99 Cents & Co."
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /feedback/655e0c5f76a1e10ce2159b89
+```
+
+**Example 3:** `GET` request to the `/feedback` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "total_documents": 2,
+  "is_first_page": true,
+  "is_last_page": true,
+  "documents": [
+    {
+      "id": "655e0c5f76a1e10ce2159b89",
+      "rating": 4,
+      "feedback": null,
+      "customer": null,
+      "product": "Blue duct tape",
+      "vendor": "99 Cents & Co."
+    },
+    {
+      "id": "655e0c5f76a1e10ce2159b88",
+      "rating": 4,
+      "feedback": "good but expensive",
+      "customer": "John Doe",
+      "product": "MacBook Air",
+      "vendor": "Online Trade LLC"
+    }
+  ]
+}
+```
+
+**Example 4:** `GET` request to the `/feedback?page=2&perPage=3` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "total_documents": 2,
+  "is_first_page": true,
+  "is_last_page": true,
+  "documents": [
+    {
+      "id": "655e0c5f76a1e10ce2159b89",
+      "rating": 4,
+      "feedback": null,
+      "customer": null,
+      "product": "Blue duct tape",
+      "vendor": "99 Cents & Co."
+    },
+    {
+      "id": "655e0c5f76a1e10ce2159b88",
+      "rating": 4,
+      "feedback": "good but expensive",
+      "customer": "John Doe",
+      "product": "MacBook Air",
+      "vendor": "Online Trade LLC"
+    }
+  ]
+}
+```

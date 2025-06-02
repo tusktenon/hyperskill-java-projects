@@ -128,3 +128,137 @@ Location: /feedback/655e0c5f76a1e10ce2159b88
 ```text
 Location: /feedback/655e0c5f76a1e10ce2159b89
 ```
+
+
+## Stage 2/4: Documents for all
+
+### Description
+
+The service can already store customer feedback. Now, you need to add functionality to fetch and display stored documents. Earlier, you made the service return the URL of each created document. Now, you should create an endpoint that will accept such a URL and return the related document. Moreover, you will create a separate endpoint for fetching all stored documents.
+
+To reach these goals, `MongoRepository` offers two methods, `findById` and `findAll`. The latter has an overloaded version that accepts a `Sort` object to arrange the queried collection.
+
+### Objectives
+
+- Build a `GET /feedback/<id>` endpoint that will return the requested feedback document by its ID. This endpoint matches the document's URL you return from the `POST /feedback` endpoint. If the provided id is correct, this endpoint should respond with the status code `200 OK` and a JSON response body in the following format:
+    ```json
+    {
+      "id": <string>,
+      "rating": <integer>,
+      "feedback": <string | null>,
+      "customer": < | null>,
+      "product": <string>,
+      "vendor": <string>
+    }
+    ```
+    If the `feedback` and/or `customer` fields are not in the document, they should show as null in the response body. If no document matches the provided `id`, the endpoint should respond with the status code `404 NOT FOUND`.
+
+- Build a `GET /feedback` endpoint that will return a JSON array of all saved documents, arranged by their `ObjectId` in descending order. This endpoint should always respond with the status code `200 OK` and a JSON array as the response body:
+    ```json
+    [
+    {
+        "id": <string>,
+        "rating": <integer>,
+        "feedback": <string | null>,
+        "customer": <string | null>,
+        "product": <string>,
+        "vendor": <string>
+    },
+    {
+        "id": <string>,
+        "rating": <integer>,
+        "feedback": <string | null>,
+        "customer": <string | null>,
+        "product": <string>,
+        "vendor": <string>
+    },
+    ...
+    ]
+    ```
+    If the `feedback` collection contains no documents, this endpoint should return an empty JSON array.
+
+### Examples
+
+**Example 1:** `POST` request to the `/feedback` endpoint.
+
+*Request body:*
+```json
+{
+  "rating": 4,
+  "feedback": "good but expensive",
+  "customer": "John Doe",
+  "product": "MacBook Air",
+  "vendor": "Online Trade LLC"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /feedback/655e0c5f76a1e10ce2159b88
+```
+
+**Example 2:** `POST` request to the `/feedback` endpoint.
+
+*Request body:*
+```json
+{
+  "rating": 4,
+  "product": "Blue duct tape",
+  "vendor": "99 Cents & Co."
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /feedback/655e0c5f76a1e10ce2159b89
+```
+
+**Example 3:** `GET` request to the `/feedback/655e0c5f76a1e10ce2159b88` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": "655e0c5f76a1e10ce2159b88",
+  "rating": 4,
+  "feedback": "good but expensive",
+  "customer": "John Doe",
+  "product": "MacBook Air",
+  "vendor": "Online Trade LLC"
+}
+```
+
+**Example 4:** `GET` request to the `/feedback/655e0c5f76a1e10ce2159b90` endpoint.
+
+*Response code:* `404 NOT FOUND`
+
+**Example 5:** `GET` request to the `/feedback` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "655e0c5f76a1e10ce2159b89",
+    "rating": 4,
+    "feedback": null,
+    "customer": null,
+    "product": "Blue duct tape",
+    "vendor": "99 Cents & Co."
+  },
+  {
+    "id": "655e0c5f76a1e10ce2159b88",
+    "rating": 4,
+    "feedback": "good but expensive",
+    "customer": "John Doe",
+    "product": "MacBook Air",
+    "vendor": "Online Trade LLC"
+  }
+]
+```

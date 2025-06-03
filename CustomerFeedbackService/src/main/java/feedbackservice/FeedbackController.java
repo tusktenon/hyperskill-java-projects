@@ -24,13 +24,22 @@ public class FeedbackController {
 
     @GetMapping("/feedback")
     public FeedbackPageDTO getAllFeedback(
+            @RequestParam(required = false) Integer rating,
+            @RequestParam(required = false) String customer,
+            @RequestParam(required = false) String product,
+            @RequestParam(required = false) String vendor,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int perPage
     ) {
+        Feedback probe = new Feedback(null, rating, null, customer, product, vendor);
+        Example<Feedback> example = Example.of(probe);
+
         page = Math.max(page, 1);
         if (perPage < PER_PAGE_MIN || perPage > PER_PAGE_MAX) perPage = PER_PAGE_DEFAULT;
         Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("id").descending());
-        return new FeedbackPageDTO(repository.findAll(pageable));
+
+        Page<Feedback> feedbackPage = repository.findAll(example, pageable);
+        return new FeedbackPageDTO(feedbackPage);
     }
 
     @GetMapping("/feedback/{id}")

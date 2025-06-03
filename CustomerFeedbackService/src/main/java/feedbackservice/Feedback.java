@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "feedback")
 public record Feedback(
         @Id String id,
-        @Min(1) @Max(5) int rating,
+        @Min(1) @Max(5) @NotNull Integer rating,
         String feedback,
         String customer,
         @NotBlank String product,

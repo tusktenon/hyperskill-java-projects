@@ -405,3 +405,101 @@ Location: /feedback/655e0c5f76a1e10ce2159b89
   ]
 }
 ```
+
+
+## Stage 4/4: Filter them all
+
+### Description
+
+Even though getting paged results is good, sometimes it becomes a rather long task to browse through multiple pages to find the documents you need. To make this task easier, you can apply filtration based on certain criteria, and then sort and paginate the refined collection.
+
+This stage involves modifying the `GET /feedback` endpoint by adding a filter. This filter allows clients to apply a combination of several constraints and then retrieve a page of content from the filtered document set.
+
+If using `MongoRepository`, filtering a collection isn't a challenging task. `MongoRepository` extends the `QueryByExampleExecutor` interface, allowing you to create a probe that serves as an `Example` for filtering documents. The `findAll` method can accept both an `Example` and a `Pageable` object, making filtering, sorting, and pagination a single-step process.
+
+The [Spring documentation](https://docs.spring.io/spring-data/relational/reference/query-by-example.html) provides a detailed explanation on how to use Query by Example with a relational database. This approach, however, can also be applied to `MongoRepository`.
+
+### Objectives
+
+- Update the `GET /feedback` endpoint, so that alongside the pagination functionality, it could also accept optional filter parameters. These filters will filter the document collection based on `rating`, `customer`, `product`, and `vendor` parameters and should work in any combination with the `page` and `perPage` parameters.
+
+- The `GET /feedback` endpoint should return only those documents that match the provided parameters for the corresponding fields. For instance, if the request made is: `GET /feedback?rating=5&product=blue+duct+tape&vendor=Total+Sales`, the endpoint should only return documents related to the product `"blue duct tape"`, with the `rating` as `5` and `vendor` as `"Total Sales"`.
+
+- Sorting and paging settings should be applied as in the previous stages, provided that now the total number of documents and the position of the requested page should be calculated for the filtered collection of documents.
+
+### Examples
+
+**Example 1:** Sending a `GET` request to the `/feedback` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "total_documents": 3,
+  "is_first_page": true,
+  "is_last_page": true,
+  "documents": [
+    {
+      "id": "655e0c5f76a1e10ce2159b89",
+      "rating": 5,
+      "feedback": null,
+      "customer": null,
+      "product": "Blue duct tape",
+      "vendor": "99 Cents & Co."
+    },
+    {
+      "id": "655e0c5f76a1e10ce2159b88",
+      "rating": 4,
+      "feedback": "good but expensive",
+      "customer": "John Doe",
+      "product": "MacBook Air",
+      "vendor": "Online Trade LLC"
+    },
+    {
+      "id": "655e0c5f76a1e10ce2159b87",
+      "rating": 5,
+      "feedback": null,
+      "customer": John Doe,
+      "product": "Blue duct tape",
+      "vendor": "99 Cents & Co."
+    },
+  ]
+}
+```
+
+**Example 2:** Sending a `GET` request to `/feedback?page=1&perPage=5&customer=John+Doe&rating=5` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "total_documents": 1,
+  "is_first_page": true,
+  "is_last_page": true,
+  "documents": [
+      "id": "655e0c5f76a1e10ce2159b87",
+      "rating": 5,
+      "feedback": null,
+      "customer": John Doe,
+      "product": "Blue duct tape",
+      "vendor": "99 Cents & Co."
+    }
+  ]
+}
+```
+
+**Example 3:** Making a `GET` request to the `/feedback?page=1&perPage=5&customer=John+Doe&rating=5&product=Blue+duct+tape` endpoint.
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "total_documents": 0,
+  "is_first_page": true,
+  "is_last_page": true,
+  "documents": []
+}
+```

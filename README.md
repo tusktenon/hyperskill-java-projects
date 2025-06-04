@@ -39,4 +39,5 @@ Each project falls into one of three groups:
 - [Customer Feedback Service](https://hyperskill.org/projects/409) (Spring Boot, Spring Data MongoDB and Spring Web MVC)
 - [Learning Progress Tracker](https://hyperskill.org/projects/197)
 - [QRCode Service](https://hyperskill.org/projects/385) (Spring Boot and Spring Web MVC)
+- [Transaction Aggregator](https://hyperskill.org/projects/424) (Spring Boot and Spring Web MVC)
 - [Web Calendar](https://hyperskill.org/projects/396) (Spring Boot, Spring Data JPA and Spring Web MVC)

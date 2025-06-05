@@ -112,7 +112,7 @@ Your service should accept a request with an account number and fetch transactio
 
 ### Description
 
-The transaction aggregator service is performing its function, but recently the transaction data servers started to return errors. Sometimes instead of requested transaction data they return the status code `529 TOO MANY REQUESTS` and sometimes they respond with the status code `503 SERVICE UNAVAILABLE`.
+The transaction aggregator service is performing its function, but recently the transaction data servers started to return errors. Sometimes instead of requested transaction data they return the status code `429 TOO MANY REQUESTS` and sometimes they respond with the status code `503 SERVICE UNAVAILABLE`.
 
 The transaction aggregator service needs to handle such situations. It was noticed that the servers don't return errors for long, so after a small number of retries they respond with data. This means that you can apply a simple retry pattern:
 
@@ -125,14 +125,14 @@ Real life scenarios need more sophisticated approaches such as retries with expo
 
 ### Objectives
 
-- Update the logic of sending requests and receiving responses from the remote services `http://localhost:8888` and `http://localhost:8889`. These services may return a server error with a code of 529 or 503. Make up to 5 retries to get the requested data.
+- Update the logic of sending requests and receiving responses from the remote services `http://localhost:8888` and `http://localhost:8889`. These services may return a server error with a code of 429 or 503. Make up to 5 retries to get the requested data.
 - The other functionality should remain the same as in the previous stage.
 
 ### Examples
 
 **Example 1.** *GET request to the /aggregate?account=02248 endpoint:*
 
-*Response code:* `529 TOO MANY REQUESTS`
+*Response code:* `429 TOO MANY REQUESTS`
 
 **Example 2.** *GET request to the /aggregate?account=02248 endpoint:*
 

@@ -106,3 +106,65 @@ Your service should accept a request with an account number and fetch transactio
   }
 ]
 ```
+
+
+## Stage 3/4: Faulty servers
+
+### Description
+
+The transaction aggregator service is performing its function, but recently the transaction data servers started to return errors. Sometimes instead of requested transaction data they return the status code `529 TOO MANY REQUESTS` and sometimes they respond with the status code `503 SERVICE UNAVAILABLE`.
+
+The transaction aggregator service needs to handle such situations. It was noticed that the servers don't return errors for long, so after a small number of retries they respond with data. This means that you can apply a simple retry pattern:
+
+1. Send a request.
+2. Check if the response code is a server error.
+3. If yes, send another request until the total number of retries reaches 5.
+4. If no, return the received data.
+
+Real life scenarios need more sophisticated approaches such as retries with exponential backoff and jitter, but in this case a simple series of retries will do the job.
+
+### Objectives
+
+- Update the logic of sending requests and receiving responses from the remote services `http://localhost:8888` and `http://localhost:8889`. These services may return a server error with a code of 529 or 503. Make up to 5 retries to get the requested data.
+- The other functionality should remain the same as in the previous stage.
+
+### Examples
+
+**Example 1.** *GET request to the /aggregate?account=02248 endpoint:*
+
+*Response code:* `529 TOO MANY REQUESTS`
+
+**Example 2.** *GET request to the /aggregate?account=02248 endpoint:*
+
+*Response code:* `503 SERVICE UNAVAILABLE`
+
+**Example 3.** *GET request to the /aggregate?account=02248 endpoint:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id":"31969aef-ffbe-413a-8a94-bc920556a0d4",
+    "serverId":"server-04",
+    "account":"02248",
+    "amount":"5120",
+    "timestamp":"2023-12-24T00:02:31.886783206"
+  },
+  {
+    "id":"dcc57df0-d815-497f-be1d-b3fb419b9bee",
+    "serverId":"server-04",
+    "account":"02248",
+    "amount":"4933",
+    "timestamp":"2023-12-21T10:33:56.886823126"
+  },
+  {
+    "id":"398c135b-b055-4415-a7be-4beb4a3c7da8",
+    "serverId":"server-25",
+    "account":"02248",
+    "amount":"1205",
+    "timestamp":"2023-12-19T16:56:48.886729416"
+  }
+]
+```

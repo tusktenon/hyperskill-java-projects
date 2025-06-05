@@ -168,3 +168,9 @@ Real life scenarios need more sophisticated approaches such as retries with expo
   }
 ]
 ```
+
+### *My Comments*
+
+The instructions are vague/misleading as to how you should handle the case where a data server responds to all 5 attempts with an error code. To pass Hyperskill's tests, your program should treat this situation as if the server responded with an empty list.
+
+You may assume a data server always responds with `200 OK`, `429 TOO MANY REQUESTS` or `503 SERVICE UNAVAILABLE`.

@@ -15,6 +15,6 @@ public class AggregationController {
 
     @GetMapping("/aggregate")
     public List<Transaction> aggregate(@RequestParam String account) {
-        return aggregationService.getTransactions(account);
+        return aggregationService.getSortedTransactions(account);
     }
 }

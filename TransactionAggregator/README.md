@@ -194,3 +194,7 @@ Another way to improve performance is to make requests asynchronously so that wa
 
 - Implement caching in the transaction aggregator service to optimize its performance despite the performance of remote services may downgrade.
 - Implement asynchronous requests to the remote services so that one request won't block the another one.
+
+### *My Comments*
+
+I completed all four stages using [`RestClient`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/RestClient.html), but there's a strong case for switching to [`WebClient`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html) for Stages 3 and 4. `RestClient` and `WebClient` have similar APIs, but the latter performs non-blocking (asynchronous) requests. Moreover, `WebClient` includes a `retry()` method that simplifies the solution to Stage 3. (More precisely, `retry()` methods are provided by the [`Mono<T>`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html) and [`Flux<T>`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html) classes used as return types by the relevant `WebClient` methods.)

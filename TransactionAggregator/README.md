@@ -174,3 +174,23 @@ Real life scenarios need more sophisticated approaches such as retries with expo
 The instructions are vague/misleading as to how you should handle the case where a data server responds to all 5 attempts with an error code. To pass Hyperskill's tests, your program should treat this situation as if the server responded with an empty list.
 
 You may assume a data server always responds with `200 OK`, `429 TOO MANY REQUESTS` or `503 SERVICE UNAVAILABLE`.
+
+
+## Stage 4/4: Long queries
+
+### Description
+
+The transaction aggregator service now can handle remote service errors but another problem has recently arisen. The remote services tend to take quite long to respond. To improve performance of the aggregator, this problem should be handled too.
+
+The main feature of the remote data services is that they send information about transactions made in a previous period. This means there will no new data for any account. This also means that if the aggregator has received transactions data for a given account, this information can be safely cached because it will be the same for any subsequent request.
+
+Taking this into account, choose and implement a caching strategy for the transaction aggregator service. Using an in-memory cache will be enough for this project.
+
+A good choice is using the cache functionality provided by Spring Boot.
+
+Another way to improve performance is to make requests asynchronously so that waiting for a response does not block the thread and both responses can be received effectively at the same time.
+
+### Objectives
+
+- Implement caching in the transaction aggregator service to optimize its performance despite the performance of remote services may downgrade.
+- Implement asynchronous requests to the remote services so that one request won't block the another one.

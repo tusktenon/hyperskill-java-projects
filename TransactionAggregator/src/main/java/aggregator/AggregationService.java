@@ -2,26 +2,25 @@ package aggregator;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.util.Comparator;
 import java.util.List;
 
-@RestController
-public class Aggregator {
+@Service
+public class AggregationService {
 
     private static final int MAX_RETRIES = 5;
 
     private final List<String> sourceURIs;
 
-    public Aggregator(List<String> sourceURIs) {
+    public AggregationService(List<String> sourceURIs) {
         this.sourceURIs = sourceURIs;
     }
 
-    @GetMapping("/aggregate")
-    public List<Transaction> aggregate(@RequestParam String account) {
+    public List<Transaction> getTransactions(String account) {
         return sourceURIs.stream()
                 .flatMap(uri -> getTransactions(uri, account).stream())
                 .sorted(Comparator.comparing(Transaction::timestamp).reversed())

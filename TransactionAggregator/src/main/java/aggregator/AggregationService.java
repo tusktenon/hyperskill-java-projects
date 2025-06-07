@@ -19,9 +19,11 @@ public class AggregationService {
     private static final int MAX_RETRIES = 5;
 
     private final List<String> sourceURIs;
+    private final RestClient client;
 
-    public AggregationService(List<String> sourceURIs) {
+    public AggregationService(List<String> sourceURIs, RestClient client) {
         this.sourceURIs = sourceURIs;
+        this.client = client;
     }
 
     @Cacheable("transactions")
@@ -50,8 +52,8 @@ public class AggregationService {
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
             // As of Spring 6.1, RestClient is preferred to RestTemplate
             try {
-                return RestClient.create(uri + "/transactions?account=" + account)
-                        .get()
+                return client.get()
+                        .uri(uri + "/transactions?account=" + account)
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .body(new ParameterizedTypeReference<List<Transaction>>() {});

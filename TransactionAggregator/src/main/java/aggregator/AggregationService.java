@@ -1,5 +1,6 @@
 package aggregator;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -18,11 +19,12 @@ public class AggregationService {
 
     private static final int MAX_RETRIES = 5;
 
-    private final List<String> sourceURIs;
     private final RestClient client;
 
-    public AggregationService(List<String> sourceURIs, RestClient client) {
-        this.sourceURIs = sourceURIs;
+    @Value("${aggregator.sources}")
+    private List<String> sourceURIs;
+
+    public AggregationService(RestClient client) {
         this.client = client;
     }
 

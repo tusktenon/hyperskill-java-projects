@@ -22,7 +22,7 @@ public class AggregationService {
     private final RestClient client;
 
     @Value("${aggregator.sources}")
-    private List<String> sourceURIs;
+    private List<String> sourceURLs;
 
     public AggregationService(RestClient client) {
         this.client = client;
@@ -40,22 +40,22 @@ public class AggregationService {
 
     @SuppressWarnings("unchecked")
     private CompletableFuture<List<Transaction>>[] getTransactionsAsync(String account) {
-        return (CompletableFuture<List<Transaction>>[]) sourceURIs.stream()
-                .map(uri -> getTransactionsAsync(uri, account))
+        return (CompletableFuture<List<Transaction>>[]) sourceURLs.stream()
+                .map(url -> getTransactionsAsync(url, account))
                 .toArray(CompletableFuture[]::new);
     }
 
     @Async
-    public CompletableFuture<List<Transaction>> getTransactionsAsync(String uri, String account) {
-        return CompletableFuture.supplyAsync(() -> getTransactions(uri, account));
+    public CompletableFuture<List<Transaction>> getTransactionsAsync(String url, String account) {
+        return CompletableFuture.supplyAsync(() -> getTransactions(url, account));
     }
 
-    private List<Transaction> getTransactions(String uri, String account) {
+    private List<Transaction> getTransactions(String url, String account) {
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
             // As of Spring 6.1, RestClient is preferred to RestTemplate
             try {
                 return client.get()
-                        .uri(uri + "/transactions?account=" + account)
+                        .uri(url + "/transactions?account=" + account)
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .body(new ParameterizedTypeReference<List<Transaction>>() {});

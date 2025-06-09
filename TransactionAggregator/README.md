@@ -59,7 +59,7 @@ Each server returns a JSON array of transaction data it stores related to the sp
 }
 ```
 
-Your service should accept a request with an account number and fetch transaction data from both servers for that account. After that, you should combine the data into a single list, sort them by the timestamp so what the newer transactions come first, and return the resulting list to the client.
+Your service should accept a request with an account number and fetch transaction data from both servers for that account. After that, you should combine the data into a single list, sort them by the timestamp so that the newer transactions come first, and return the resulting list to the client.
 
 ### Objectives
 

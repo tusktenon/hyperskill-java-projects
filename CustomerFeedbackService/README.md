@@ -72,7 +72,7 @@ public class MyEntity {
 ### Objectives
 
 - Create a `POST /feedback` endpoint that accepts requests with JSON bodies in the following format:
-    ```json
+    ```text
     {
       "rating": <integer>,
       "feedback": <string, optional>,
@@ -141,7 +141,7 @@ To reach these goals, `MongoRepository` offers two methods, `findById` and `find
 ### Objectives
 
 - Build a `GET /feedback/<id>` endpoint that will return the requested feedback document by its ID. This endpoint matches the document's URL you return from the `POST /feedback` endpoint. If the provided id is correct, this endpoint should respond with the status code `200 OK` and a JSON response body in the following format:
-    ```json
+    ```text
     {
       "id": <string>,
       "rating": <integer>,
@@ -154,7 +154,7 @@ To reach these goals, `MongoRepository` offers two methods, `findById` and `find
     If the `feedback` and/or `customer` fields are not in the document, they should show as null in the response body. If no document matches the provided `id`, the endpoint should respond with the status code `404 NOT FOUND`.
 
 - Build a `GET /feedback` endpoint that will return a JSON array of all saved documents, arranged by their `ObjectId` in descending order. This endpoint should always respond with the status code `200 OK` and a JSON array as the response body:
-    ```json
+    ```text
     [
     {
         "id": <string>,
@@ -283,7 +283,7 @@ At this stage, you'll implement paging, allowing a client to request a particula
 - Validate and sanitize the `perPage` request parameter to ensure that only valid pagination settings are applied. The minimum allowed `perPage` value is 5 and the maximum is 20. This implies that if the provided `perPage` value is less than 5 or more than 20, the default page size of 10 should be applied.
 
 - Change the response body of the `GET /feedback` endpoint. It should now be a JSON object with the following fields:
-    ```json
+    ```text
     {
       "total_documents": <long>,
       "is_first_page": <boolean>,
@@ -292,7 +292,7 @@ At this stage, you'll implement paging, allowing a client to request a particula
     }
     ```
     Where `total_documents` is the total count of documents in the collection, `is_first_page` depicts whether the returned page is the first one, `is_last_page` indicates if the returned page is the final one, and `documents` is a JSON array of JSON objects representing feedback documents in the same format as in the previous stage:
-    ```json
+    ```text
     {
     "id": <string>,
     "rating": <integer>,
@@ -460,7 +460,7 @@ The [Spring documentation](https://docs.spring.io/spring-data/relational/referen
       "id": "655e0c5f76a1e10ce2159b87",
       "rating": 5,
       "feedback": null,
-      "customer": John Doe,
+      "customer": "John Doe",
       "product": "Blue duct tape",
       "vendor": "99 Cents & Co."
     },
@@ -479,13 +479,14 @@ The [Spring documentation](https://docs.spring.io/spring-data/relational/referen
   "is_first_page": true,
   "is_last_page": true,
   "documents": [
+    {
       "id": "655e0c5f76a1e10ce2159b87",
       "rating": 5,
       "feedback": null,
-      "customer": John Doe,
+      "customer": "John Doe",
       "product": "Blue duct tape",
       "vendor": "99 Cents & Co."
-    }
+    },
   ]
 }
 ```

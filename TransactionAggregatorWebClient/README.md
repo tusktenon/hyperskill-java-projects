@@ -1,6 +1,6 @@
 # Transaction Aggregator (WebClient implementation)
 
-This project is an alternative implementation of the full (Stage 4) **Transaction Aggregator** project, using `WebClient` in place of `RestClient`.
+This project is an alternative implementation of the full (Stage 4) **Transaction Aggregator** application, using `WebClient` in place of `RestClient`.
 
 I completed all four stages of Transaction Aggregator using Spring Web's[`RestClient`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/RestClient.html) to perform HTTP requests. That works just fine, but there's a strong case for switching to [`WebClient`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html) from Spring WebFlux for Stages 3 and 4:
 

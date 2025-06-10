@@ -20,7 +20,7 @@ Let's make our virtual movie theater with the help of a REST service. Our movie 
 Implement the `/seats` endpoint that handles `GET` requests and returns the information about the movie theatre.
 
 The response should contain information about the rows, columns, and available seats. The response is a JSON object and has the following format:
-```text
+```json
 {
    "rows": 5,
    "columns": 6,
@@ -52,7 +52,7 @@ Note that the `seats` array contains 81 elements, as there are 81 seats in the r
 
 *A `GET /seats` request.*
 *Response body:*
-```text
+```json
 {
    "rows": 9,
    "columns": 9,

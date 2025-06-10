@@ -1,6 +1,6 @@
 # File Server
 
-## How to run this project
+## *How to run this project*
 
 Starting with stage 2, the File Server project actually consists of two programs: a client and a server (that are meant to be run simultaneously in separate terminals). I've organized the source files into multiple packages:
 

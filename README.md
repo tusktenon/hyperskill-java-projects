@@ -11,7 +11,7 @@ Each project falls into one of three groups:
 
 - **CLI applications that do not use Spring.** These can be started by executing `gradle run` from the project's root directory (I've added the `console=plain` option to each project's `gradle.properties` file, so the command-line output should be clear of any Gradle-related interference).
 - **Spring Boot applications.** These can be started with `gradle bootRun`.
-- **Special cases.** The later stages of the File Server project have separate client and server programs, while the later stages of the Simple Banking System project have (mandatory) command-line arguments. Instructions for how to launch these programs are provided in the projects' README files.
+- **Special cases.** The later stages of the File Server project have separate client and server programs, while the later stages of the Simple Banking System project have (mandatory) command-line arguments. Instructions for how to launch these programs are provided in the projects' README files. The Transaction Aggregator application only works if compatible data servers are running on the same machine, so I've created a [companion project](TransactionAggregatorDataServer) that provides a simple implementation for these servers.
 
 
 ## The Projects

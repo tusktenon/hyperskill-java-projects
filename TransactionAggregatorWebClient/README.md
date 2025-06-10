@@ -7,3 +7,5 @@ I completed all four stages of Transaction Aggregator using Spring Web's[`RestCl
 - The [`Mono<T>`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html) and [`Flux<T>`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html) types used by `WebClient` provide a `retry()` method, which makes it very easy to add the functionality required in Stage 3.
 - `WebClient` makes non-blocking (asynchronous) HTTP requests, giving you half of Stage 4 "for free."
 - At the same time, the switch to `WebClient` requires no changes in how you enable Spring's caching functionality.
+
+***NOTE:*** Since this program has the same API as the original Transaction Aggregator, it can be used with the same [companion data servers](../TransactionAggregatorDataServer).

@@ -28,6 +28,7 @@ Each project falls into one of three groups:
 
 - [Budget Manager](https://hyperskill.org/projects/76)
 - [File Server](https://hyperskill.org/projects/52)
+- [HyperCollections](https://hyperskill.org/projects/319)
 - [Maze Runner](https://hyperskill.org/projects/47)
 - [Simple Banking System](https://hyperskill.org/projects/93) (JDBC with SQLite)
 - [Tic-Tac-Toe with AI](https://hyperskill.org/projects/81)

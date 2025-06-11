@@ -1,18 +1,18 @@
 package collections;
 
-import java.util.List;
+import java.util.Set;
 
 public final class ImmutableCollection<E> {
 
-    private final List<E> contents;
+    private final Set<E> contents;
 
     // No public constructors
     @SafeVarargs
     private ImmutableCollection(E... data) {
-        // The unmodifiable lists created by `List.of` disallow  null elements.
+        // The unmodifiable sets created by `Set.of` disallow  null elements.
         // Attempts to create them with null elements result in `NullPointerException`:
-        // https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html#unmodifiable
-        contents = List.of(data);
+        // https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html#unmodifiable
+        contents = Set.of(data);
     }
 
     // Only required for Hyperskill tests

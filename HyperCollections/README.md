@@ -64,6 +64,10 @@ System.out.println(collection.size()); // 5
 
 Note: you don't need to implement the `main` method. 
 
+### *My Comment*
+
+The Hyperskill tests require a no-argument version of the `of` method, but note that it isn't actually needed: the varargs overload handles this case correctly.
+
 
 ## Stage 2/4: BiMaps and MultiSets
 
@@ -168,3 +172,15 @@ System.out.println(multiset); // [b, b, b, b, c, c]
 ```
 
 Note: you don't need to implement the `main` method.
+
+### *My Comments*
+
+Consider the expected outputs shown in the examples: in addition to implementing the methods listed above, you'll need to override `toString()` for both classes.
+
+The method descriptions are a little vague, and the messages from failing tests don't provide much help. For `Multiset` in particular, I found myself examining the source code for the tests to figure out the expected behaviour of the methods:
+
+- `add(element, occurrences)` and `remove(element, occurrences)` should simply do nothing if `occurrences` is zero or negative.
+- `setCount(element, count)` should remove `element` from the multiset if `count` is zero and do nothing if `count` is negative.
+- Similarly, `setCount(element, oldCount, newCount)` should do nothing if `newCount` is negative, and remove `element` if `newCount` is zero and `oldCount` matches the current count.
+- The `toString()` method must list elements in insertion order (i.e., the backing `Map` should be a `LinkedHashMap`).
+

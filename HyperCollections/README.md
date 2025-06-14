@@ -184,3 +184,74 @@ The method descriptions are a little vague, and the messages from failing tests 
 - Similarly, `setCount(element, oldCount, newCount)` should do nothing if `newCount` is negative, and remove `element` if `newCount` is zero and `oldCount` matches the current count.
 - The `toString()` method must list elements in insertion order (i.e., the backing `Map` should be a `LinkedHashMap`).
 
+
+
+## Stage 3/4: Size Limited Queues
+
+### Description
+
+A **Size Limited Queue**, or "CircularFifoQueue", is a first-in-first-out queue with a fixed size that replaces its oldest element if full.
+
+The removal order of a `SizeLimitedQueue` is based on the insertion order, so elements are removed in the same order in which they were added. The iteration order is the same as the removal order.
+
+The `add` and `remove` operations all perform in constant time. All other operations perform in linear time or worse.
+
+To prevent unexpected situations with the operations of the collection, let's respond to some exceptional conditions. This queue prevents null objects from being added by throwing `NullPointerException`. The provided limit should be positive, otherwise the queue should throw an `IllegalArgumentException`. The `peek` operation should return null, and the `remove` operation should throw `NoSuchElementException` for an empty queue.
+
+You may use unit tests to be sure you've implemented all collections correctly so far.
+
+### Objectives
+
+You have to implement the `SizeLimitedQueue<E>` class with the following endpoints:
+
+| Method | Description |
+| --- | --- |
+| `void add(E element)` | Adds the given element to the queue |
+| `void clear()` | Clears the queue |
+| `boolean isAtFullCapacity()` | Returns `true` if the capacity limit of the queue has been reached |
+| `boolean isEmpty()` | Returns `true` if the queue is empty, and `false` otherwise |
+| `int maxSize()` | Gets the maximum size of the collection (the bound) |
+| `E peek()` | Returns the first element in the queue |
+| `E remove()` | Removes the first element in the queue |
+| `int size()` | Returns the number of elements stored in the queue |
+| `E[] toArray(E[] e)` | Returns the queue elements as an `E` array from tail to head |
+| `Object[] toArray()` | Returns the queue elements as an `Object` array from tail to head |
+
+Note: the `SizeLimitedQueue` class must be generic.
+
+### Example
+
+Here is an example of how to work with the collection.
+```java
+SizeLimitedQueue<Integer> collection = new SizeLimitedQueue<>(3); // limit is 3
+
+System.out.println(collection); // []
+System.out.println(collection.maxSize()); // 3
+System.out.println(collection.size()); // 0
+System.out.println(collection.isEmpty()); // true
+
+collection.add(1);
+collection.add(2);
+
+System.out.println(collection.isEmpty()); // false
+System.out.println(collection); // [1, 2]
+System.out.println(collection.isAtFullCapacity()); // false
+
+collection.add(3);
+
+System.out.println(collection); // [1, 2, 3]
+System.out.println(collection.isAtFullCapacity()); // true
+
+collection.add(4);
+System.out.println(collection); // [2, 3, 4]
+
+System.out.println(collection.peek()); // 2
+System.out.println(collection); // [2, 3, 4]
+System.out.println(collection.remove()); // 2
+System.out.println(collection); // [3, 4]
+
+System.out.println(collection.toArray().getClass()); // class [Ljava.lang.Object;
+System.out.println(collection.toArray(new Integer[0]).getClass()); // class [Ljava.lang.Integer;
+```
+
+Note: you don't need to implement the `main` method.

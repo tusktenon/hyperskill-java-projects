@@ -255,3 +255,9 @@ System.out.println(collection.toArray(new Integer[0]).getClass()); // class [Lja
 ```
 
 Note: you don't need to implement the `main` method.
+
+### *My Comments*
+
+The descriptions of both `toArray` methods seem to suggest that the tail of the queue should be element `0` of the returned array, while the head should be element `size - 1`; in fact, the tests require the opposite ordering.
+
+I used an array as the backing collection, but most learners used a `Queue<E>` implementation – namely, `ArrayDeque<E>` – from the Java Collections Framework. Using a `Queue<E>` is obviously much simpler, while using an array feels more "in the spirit" of the exercise.

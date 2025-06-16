@@ -36,6 +36,7 @@ Each project falls into one of three groups:
 
 ### Hard
 
+- [Car Sharing](https://hyperskill.org/projects/140) (JDBC with H2)
 - [Cinema Room REST Service](https://hyperskill.org/projects/189) (Spring Boot and Spring Web MVC)
 - [Customer Feedback Service](https://hyperskill.org/projects/409) (Spring Boot, Spring Data MongoDB and Spring Web MVC)
 - [Learning Progress Tracker](https://hyperskill.org/projects/197)

@@ -31,3 +31,7 @@ The database file name is obtained from the command-line arguments. Here is an e
 
 > [!NOTE]
 > To pass the tests, you have to enable the auto-commit mode so that all changes are automatically saved in the database file. To do that, call the method `connection.setAutoCommit(true)` of the `Connection` object.
+
+### *My Comment*
+
+I made a small modification to the `Main.java` file submitted to Hyperskill: The database storage directory has been changed from `./src/carsharing/db/` (which is required by Hyperskill's tests) to `./db/`.

@@ -19,9 +19,10 @@ public class Main {
         try (Connection conn = dataSource.getConnection();
              Scanner scanner = new Scanner(System.in)) {
             conn.setAutoCommit(true);
-            new Application(scanner, new CompanyDao(conn)).mainMenu();
+            new Application(scanner, new CompanyDao(conn), new CarDao(conn)).mainMenu();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 }
+

@@ -2,7 +2,9 @@ package carsharing;
 
 import org.h2.jdbcx.JdbcDataSource;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Scanner;
 
 public class Main {
 
@@ -14,16 +16,10 @@ public class Main {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setUrl("jdbc:h2:./db/" + databaseFileName);
 
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dataSource.getConnection();
+             Scanner scanner = new Scanner(System.in)) {
             conn.setAutoCommit(true);
-            try (Statement statement = conn.createStatement()) {
-                statement.executeUpdate("""
-                        CREATE TABLE IF NOT EXISTS COMPANY (
-                            ID INT,
-                            NAME VARCHAR
-                        )
-                        """);
-            }
+            new Application(scanner, new CompanyDao(conn)).mainMenu();
         } catch (SQLException e) {
             e.printStackTrace();
         }

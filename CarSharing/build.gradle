@@ -14,3 +14,6 @@ application {
     mainClass = 'carsharing.Main'
 }
 
+run {
+    standardInput = System.in
+}

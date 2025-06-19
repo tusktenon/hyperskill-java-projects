@@ -1,4 +1,6 @@
-package carsharing;
+package carsharing.persistence;
+
+import carsharing.business.Company;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,16 +12,6 @@ public class CompanyDao {
 
     public CompanyDao(Connection connection) {
         this.connection = connection;
-        String sql = """
-                CREATE TABLE IF NOT EXISTS company (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    name VARCHAR NOT NULL UNIQUE
-                )""";
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public void add(String name) {

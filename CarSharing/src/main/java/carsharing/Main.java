@@ -1,5 +1,8 @@
 package carsharing;
 
+import carsharing.business.ManagementService;
+import carsharing.persistence.*;
+import carsharing.presentation.MainMenu;
 import org.h2.jdbcx.JdbcDataSource;
 
 import java.sql.Connection;
@@ -16,13 +19,15 @@ public class Main {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setUrl("jdbc:h2:./db/" + databaseFileName);
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection();
              Scanner scanner = new Scanner(System.in)) {
-            conn.setAutoCommit(true);
-            new Application(scanner, new CompanyDao(conn), new CarDao(conn)).mainMenu();
+            connection.setAutoCommit(true);
+            DbUtils.createTables(connection);
+            var carDao = new CarDao(connection);
+            var companyDao = new CompanyDao(connection);
+            new MainMenu(scanner, new ManagementService(carDao, companyDao)).run();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 }
-

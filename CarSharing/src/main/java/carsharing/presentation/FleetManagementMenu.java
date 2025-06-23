@@ -2,11 +2,9 @@ package carsharing.presentation;
 
 import carsharing.business.*;
 
-import java.util.List;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
-public class FleetManagementMenu implements Menu {
+public class FleetManagementMenu extends AbstractMenu {
 
     private static final String MENU_TEXT = """
             1. Car list
@@ -14,13 +12,10 @@ public class FleetManagementMenu implements Menu {
             0. Back
             """;
 
-    private final Scanner scanner;
-    private final ManagementService service;
     private final Company company;
 
-    public FleetManagementMenu(Scanner scanner, ManagementService service, Company company) {
-        this.scanner = scanner;
-        this.service = service;
+    public FleetManagementMenu(Scanner scanner, DataService service, Company company) {
+        super(scanner, service);
         this.company = company;
     }
 
@@ -30,7 +25,7 @@ public class FleetManagementMenu implements Menu {
         while (true) {
             System.out.print(MENU_TEXT);
             switch (scanner.nextLine()) {
-                case "1" -> listCars();
+                case "1" -> displayFleet();
                 case "2" -> addCar();
                 case "0" -> {
                     return;
@@ -41,20 +36,13 @@ public class FleetManagementMenu implements Menu {
         }
     }
 
-    private void listCars() {
-        List<Car> cars = service.listFleet(company);
-        if (cars.isEmpty()) {
-            System.out.println("\nThe car list is empty!");
-        } else {
-            System.out.println("\nCar list:");
-            IntStream.range(0, cars.size())
-                    .forEachOrdered(i -> System.out.printf("%d. %s%n", i + 1, cars.get(i).name()));
-        }
+    private void displayFleet() {
+        displayList(service.listFleet(company), "The car list is empty!", "Car list:", Car::name);
     }
 
     private void addCar() {
         System.out.println("\nEnter the car name:");
-        service.addToFleet(scanner.nextLine(), company);
+        service.addCarToFleet(scanner.nextLine(), company);
         System.out.println("The car was added!");
     }
 }

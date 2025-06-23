@@ -1,12 +1,11 @@
 package carsharing.presentation;
 
 import carsharing.business.Company;
-import carsharing.business.ManagementService;
+import carsharing.business.DataService;
 
-import java.util.List;
 import java.util.Scanner;
 
-public class CompanyManagementMenu implements Menu {
+public class CompanyManagementMenu extends AbstractMenu {
 
     private static final String MENU_TEXT = """
             
@@ -15,12 +14,8 @@ public class CompanyManagementMenu implements Menu {
             0. Back
             """;
 
-    private final Scanner scanner;
-    private final ManagementService service;
-
-    public CompanyManagementMenu(Scanner scanner, ManagementService service) {
-        this.scanner = scanner;
-        this.service = service;
+    public CompanyManagementMenu(Scanner scanner, DataService service) {
+        super(scanner, service);
     }
 
     @Override
@@ -28,7 +23,7 @@ public class CompanyManagementMenu implements Menu {
         while (true) {
             System.out.print(MENU_TEXT);
             switch (scanner.nextLine()) {
-                case "1" -> listCompanies();
+                case "1" -> displayCompanies();
                 case "2" -> addCompany();
                 case "0" -> {
                     return;
@@ -38,32 +33,14 @@ public class CompanyManagementMenu implements Menu {
         }
     }
 
-    private void listCompanies() {
-        List<Company> companies = service.listCompanies();
-        if (companies.isEmpty()) {
-            System.out.println("\nThe company list is empty!");
-            return;
-        }
-        while (true) {
-            System.out.println("\nChoose a company:");
-            companies.forEach(
-                    company -> System.out.printf("%d. %s%n", company.id(), company.name()));
-            System.out.println("0. Back");
-
-            try {
-                int selection = Integer.parseInt(scanner.nextLine());
-                if (selection == 0) {
-                    return;
-                } else if (1 <= selection && selection <= companies.size()) {
-                    new FleetManagementMenu(scanner, service, companies.get(selection - 1)).run();
-                    return;
-                } else {
-                    System.out.println("Invalid selection");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid selection");
-            }
-        }
+    private void displayCompanies() {
+        displayAndSelectFromList(
+                service.listCompanies(),
+                "The company list is empty!",
+                "Choose a company:",
+                Company::name,
+                company -> new FleetManagementMenu(scanner, service, company).run()
+        );
     }
 
     private void addCompany() {

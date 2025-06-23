@@ -2,41 +2,26 @@ package carsharing.persistence;
 
 import carsharing.business.Company;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CompanyDao {
 
-    private final Connection connection;
+    private final DbClient dbClient;
 
-    public CompanyDao(Connection connection) {
-        this.connection = connection;
+    public CompanyDao(DbClient dbClient) {
+        this.dbClient = dbClient;
     }
 
     public void add(String name) {
-        String sql = "INSERT INTO company (name) VALUES (?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, name);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        dbClient.update("INSERT INTO company (name) VALUES ('%s')".formatted(name));
+    }
+
+    public Optional<Company> findById(int id) {
+        return dbClient.uniqueCompanyQuery("SELECT * FROM company WHERE id = %d".formatted(id));
     }
 
     public List<Company> findAllOrderById() {
-        List<Company> companies = new ArrayList<>();
-        String sql = "SELECT * FROM company ORDER BY id";
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet results = statement.executeQuery()) {
-            while (results.next()) {
-                int id = results.getInt("id");
-                String name = results.getString("name");
-                companies.add(new Company(id, name));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return companies;
+        return dbClient.companyQuery("SELECT * FROM company ORDER BY id");
     }
 }

@@ -261,3 +261,138 @@ Note: you don't need to implement the `main` method.
 The descriptions of both `toArray` methods seem to suggest that the tail of the queue should be element `0` of the returned array, while the head should be element `size - 1`; in fact, the tests require the opposite ordering.
 
 I used an array as the backing collection, but most learners used a `Queue<E>` implementation – namely, `ArrayDeque<E>` – from the Java Collections Framework. Using a `Queue<E>` is obviously much simpler, while using an array feels more "in the spirit" of the exercise.
+
+
+## Stage 4/4: Ranges
+
+### Description
+
+A **range**, or "interval", defines the boundaries around a contiguous span of values of some Comparable type, for example, "integers from 1 to 100 inclusive".
+
+Types of ranges: each end of a range may be bounded or unbounded. If bounded, there is an associated endpoint value, and the range is considered to be either **open** (doesn't include the endpoint) or **closed** (includes the endpoint) on that side. With three possibilities on each side, this yields nine basic types of ranges, enumerated below.
+
+Notation: a square bracket `[` or `]` indicates that the range is closed on that side, a parenthesis `(` or `)` means it is open, or unbounded. The construct $\{x | P(x)\}$ is read as "the set of all $x$ such that $P(x)$".
+
+### Objectives
+
+In this stage, you have to implement the `Range` class with the following endpoints:
+
+| Notation | Definition | Factory Method |
+| --- | --- | --- |
+| $(a, b)$ | $\{x | a < x < b\}$ | `open(a, b)` |
+| $[a, b]$ | $\{x | a \leq x \leq b\}$ | `closed(a, b)` |
+| $(a, b]$ | $\{x | a < x \leq b\}$ | `openClosed(a, b)` |
+| $[a, b)$ | $\{x | a \leq x < b\}$ | `closedOpen(a, b)` |
+| $(a, +\infty)$ | $\{x | x > a\}$ | `greaterThan(a)` |
+| $[a, +\infty)$ | $\{x | x >= a\}$ | `atLeast(a)` |
+| $(-\infty, b)$ | $\{x | x < b\}$ | `lessThan(a)` |
+| $(-\infty, b]$ | $\{x | x \leq b\}$ | `atMost(a)` |
+| $(-\infty, +\infty)$ | $\{x\}$ | `all()` |
+
+- Make the `Range` class generic.
+- Each of the implemented factory methods should return an instance of the `Range` object.
+- When both endpoints exist, the upper endpoint may not be less than the lower one. Otherwise, an `IllegalArgumentException` must be thrown. The endpoints may be equal only if at least one of the bounds is closed.
+- Each method should throw a `NullPointerException` if any of the provided arguments is null.
+- The arguments of the static factory method – `a`, `b` – must implement the `Comparable` interface from the Java Standard Library.
+- The `Range` class can't be instantiated directly: you can get new instances through the factory method only.
+
+An instance of the `Range` class should provide the following methods:
+
+| Instance method | Definition |
+| --- | --- |
+| `boolean contains(C value)` | Returns `true` if the value is within the bounds of this range |
+| `boolean encloses(Range<C> other)` | Returns `true` if the bounds of other ranges don't extend outside the bounds of this range |
+| `Range<C> intersection(Range<C> connectedRange)` | Returns the maximal range enclosed by both this range and the `connectedRange`, if such a range exists |
+| `Range<C> span(Range<C> other)` | Returns the minimal range that encloses both this range and another |
+| `boolean isEmpty()` | Returns `true` if this range is of the form `[v, v)` or `(v, v]` |
+
+`C` in the table above stands for Comparable. To pass the tests, make sure to not
+
+Some of the corner cases are the following:
+
+- $[a, a]$: a singleton range,
+- $[a, a)$; $(a, a]$: empty ranges – also valid, but should be printed as `EMPTY`,
+- $(a, a)$: invalid – an `IllegalArgumentException` must be thrown.
+
+Helpful notes:
+
+- Intersection with any `EMPTY` range should be `EMPTY`
+- `EMPTY` range does not enclose any other range
+- Any range (except `EMPTY` one) encloses `EMPTY`
+
+### Examples
+
+**Example 1:** *usual cases*
+```text
+System.out.println(Range.open(1, 10)); //(1, 10)
+System.out.println(Range.closed(1, 10)); //[1, 10]
+System.out.println(Range.openClosed(1, 10)); //(1, 10]
+System.out.println(Range.closedOpen(1, 10)); //[1, 10)
+System.out.println(Range.greaterThan(1)); //(1, INF)
+System.out.println(Range.atLeast(1)); //[1, INF)
+System.out.println(Range.lessThan(10)); //(-INF, 10)
+System.out.println(Range.atMost(10)); //(-INF, 10]
+System.out.println(Range.all()); //(-INF, INF)
+```
+
+**Example 2:** *corner cases*
+```text
+System.out.println(Range.closed(1, 1)); //[1, 1]
+System.out.println(Range.openClosed(1, 1)); //EMPTY
+System.out.println(Range.closedOpen(1, 1)); //EMPTY
+```
+
+**Example 3:** *methods*
+```text
+System.out.println(Range.open(1, 10).contains(5)); //true
+System.out.println(Range.open(1, 10).contains(10)); //false
+System.out.println(Range.openClosed(1, 10).contains(10)); //true
+
+System.out.println(Range.closed(1, 10).encloses(Range.closed(5, 7))); //true
+System.out.println(Range.open(1, 10).encloses(Range.closedOpen(1, 10))); //false
+System.out.println(Range.closed(1, 10).encloses(Range.open(1, 10))); //true
+System.out.println(Range.all().encloses(Range.all())); //true
+
+System.out.println(Range.atMost(10).span(Range.closed(1, 5))); //(-INF, 10]
+System.out.println(Range.atMost(10).span(Range.atLeast(11))); //(-INF, INF)
+System.out.println(Range.all().span(Range.atMost(10))); //(-INF, INF)
+
+System.out.println(Range.all().intersection(Range.atLeast(5))); //[5, INF)
+System.out.println(Range.atMost(10).intersection(Range.greaterThan(10))); //EMPTY
+System.out.println(Range.closedOpen(1, 1).intersection(Range.openClosed(1, 1))); //EMPTY
+```
+
+**Example 4:** *examples for unusual methods cases*
+```text
+System.out.println(Range.openClosed(1, 1).contains(1)); //false
+System.out.println(Range.lessThan(10).contains(10)); //false
+System.out.println(Range.atMost(10).contains(10)); //true
+System.out.println(Range.greaterThan(10).contains(10)); //false
+System.out.println(Range.atLeast(10).contains(10)); //true
+
+System.out.println(Range.closed(0, 0).encloses(Range.closed(0, 0))); //true
+System.out.println(Range.openClosed(0, 5).encloses(Range.closedOpen(0, 0))); //true
+System.out.println(Range.closedOpen(0, 5).encloses(Range.openClosed(0, 5))); //false
+System.out.println(Range.openClosed(0, 0).encloses(Range.closedOpen(0, 5))); //false
+System.out.println(Range.openClosed(0, 0).encloses(Range.closedOpen(0, 0))); //false
+
+System.out.println(Range.closed(10,10).span(Range.closed(10,10))); //[10, 10]
+System.out.println(Range.closed(10,10).span(Range.openClosed(10,10))); //[10, 10]
+System.out.println(Range.closed(10,10).span(Range.closedOpen(10,10))); //[10, 10]
+System.out.println(Range.openClosed(10,10).span(Range.closed(10,10))); //[10, 10]
+System.out.println(Range.openClosed(10,10).span(Range.openClosed(10,10))); //EMPTY
+System.out.println(Range.openClosed(10,10).span(Range.closedOpen(10,10))); //EMPTY
+System.out.println(Range.closedOpen(10,10).span(Range.closed(10,10))); //[10, 10]
+System.out.println(Range.closedOpen(10,10).span(Range.openClosed(10,10))); //EMPTY
+System.out.println(Range.closedOpen(10,10).span(Range.closedOpen(10,10))); //EMPTY
+
+System.out.println(Range.closed(10,10).intersection(Range.closed(10,10))); //[10, 10]
+System.out.println(Range.closed(10,10).intersection(Range.openClosed(10,10))); //EMPTY
+System.out.println(Range.closed(10,10).intersection(Range.closedOpen(10,10))); //EMPTY
+System.out.println(Range.openClosed(10,10).intersection(Range.closed(10,10))); //EMPTY
+System.out.println(Range.openClosed(10,10).intersection(Range.openClosed(10,10))); //EMPTY
+System.out.println(Range.openClosed(10,10).intersection(Range.closedOpen(10,10))); //EMPTY
+System.out.println(Range.closedOpen(10,10).intersection(Range.closed(10,10))); //EMPTY
+System.out.println(Range.closedOpen(10,10).intersection(Range.openClosed(10,10))); //EMPTY
+System.out.println(Range.closedOpen(10,10).intersection(Range.closedOpen(10,10))); //EMPTY
+```

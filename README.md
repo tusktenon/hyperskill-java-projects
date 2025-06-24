@@ -43,3 +43,7 @@ Each project falls into one of three groups:
 - [QRCode Service](https://hyperskill.org/projects/385) (Spring Boot and Spring Web MVC)
 - [Transaction Aggregator](https://hyperskill.org/projects/424) (Spring Boot and Spring Web MVC)
 - [Web Calendar](https://hyperskill.org/projects/396) (Spring Boot, Spring Data JPA and Spring Web MVC)
+
+### Challenging
+
+- [Web Quiz Engine with Java](https://hyperskill.org/projects/91) (Spring Boot and Spring Web MVC)

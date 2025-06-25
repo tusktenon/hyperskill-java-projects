@@ -1,16 +1,13 @@
 package engine;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/quiz")
-public class QuizController {
+import java.util.List;
 
-    private static final Quiz quiz = new Quiz(
-            "The Java Logo",
-            "What is depicted on the Java logo?",
-            new String[]{"Robot", "Tea leaf", "Cup of coffee", "Bug"},
-            2);
+@RestController
+@RequestMapping("/api/quizzes")
+public class QuizController {
 
     private static final QuizResult correct =
             new QuizResult(true, "Congratulations, you're right!");
@@ -18,13 +15,30 @@ public class QuizController {
     private static final QuizResult wrong =
             new QuizResult(false, "Wrong answer! Please, try again.");
 
+    private final QuizService quizService;
+
+    public QuizController(QuizService quizService) {
+        this.quizService = quizService;
+    }
+
     @GetMapping
-    public Quiz getQuiz() {
-        return quiz;
+    public List<Quiz> getAll() {
+        return quizService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Quiz> getById(@PathVariable int id) {
+        return ResponseEntity.of(quizService.getById(id));
     }
 
     @PostMapping
-    public QuizResult answerQuiz(@RequestParam int answer) {
-        return answer == quiz.answer() ? correct : wrong;
+    public Quiz add(@RequestBody ProposedQuiz proposed) {
+        return quizService.add(proposed);
+    }
+
+    @PostMapping("/{id}/solve")
+    public ResponseEntity<QuizResult> answerQuiz(@PathVariable int id, @RequestParam int answer) {
+        return ResponseEntity.of(
+                quizService.getById(id).map(quiz -> answer == quiz.answer() ? correct : wrong));
     }
 }

@@ -308,3 +308,15 @@ You can write any other strings in the `feedback` field, but the names of fields
 *Request:* `POST /api/quizzes/15/solve?answer=1`
 
 *Response:* `404 NOT FOUND`
+
+### *My Comment*
+
+I chose to create a `ProposedQuiz` record type, representing a new `Quiz` that has not yet been assigned an `id`. I like the "type-correctness" of this approach, but it is also possible to work entirely with `Quiz`. Simply move the `withId()` method from `ProposedQuiz` to `Quiz`, and replace the `@JsonIgnore` annotation on the `answer` field with
+```java
+@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+```
+This annotation [specifies](https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/latest/com.fasterxml.jackson.annotation/com/fasterxml/jackson/annotation/JsonProperty.Access.html) that the property will be written as part of deserialization (i.e., when adding a new quiz via `POST`) but not read for serialization (i.e., when sending a quiz in response to a `GET` request). For extra safety, you could also add the complementary annotation
+```java
+@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+```
+on the `id` field, to ensure that, if a user happens to include an `id` in the request body when posting a new quiz, that `id` value will be ignored during deserialization (although my `QuizService` implementation would ignore such an `id` in any case).

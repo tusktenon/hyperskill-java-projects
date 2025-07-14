@@ -271,7 +271,7 @@ A **range**, or "interval", defines the boundaries around a contiguous span of v
 
 Types of ranges: each end of a range may be bounded or unbounded. If bounded, there is an associated endpoint value, and the range is considered to be either **open** (doesn't include the endpoint) or **closed** (includes the endpoint) on that side. With three possibilities on each side, this yields nine basic types of ranges, enumerated below.
 
-Notation: a square bracket `[` or `]` indicates that the range is closed on that side, a parenthesis `(` or `)` means it is open, or unbounded. The construct $\{x | P(x)\}$ is read as "the set of all $x$ such that $P(x)$".
+Notation: a square bracket `[` or `]` indicates that the range is closed on that side, a parenthesis `(` or `)` means it is open, or unbounded. The construct $\{x : P(x)\}$ is read as "the set of all $x$ such that $P(x)$".
 
 ### Objectives
 
@@ -279,14 +279,14 @@ In this stage, you have to implement the `Range` class with the following endpoi
 
 | Notation | Definition | Factory Method |
 | --- | --- | --- |
-| $(a, b)$ | $\{x | a < x < b\}$ | `open(a, b)` |
-| $[a, b]$ | $\{x | a \leq x \leq b\}$ | `closed(a, b)` |
-| $(a, b]$ | $\{x | a < x \leq b\}$ | `openClosed(a, b)` |
-| $[a, b)$ | $\{x | a \leq x < b\}$ | `closedOpen(a, b)` |
-| $(a, +\infty)$ | $\{x | x > a\}$ | `greaterThan(a)` |
-| $[a, +\infty)$ | $\{x | x >= a\}$ | `atLeast(a)` |
-| $(-\infty, b)$ | $\{x | x < b\}$ | `lessThan(a)` |
-| $(-\infty, b]$ | $\{x | x \leq b\}$ | `atMost(a)` |
+| $(a, b)$ | $\{x : a < x < b\}$ | `open(a, b)` |
+| $[a, b]$ | $\{x : a \leq x \leq b\}$ | `closed(a, b)` |
+| $(a, b]$ | $\{x : a < x \leq b\}$ | `openClosed(a, b)` |
+| $[a, b)$ | $\{x : a \leq x < b\}$ | `closedOpen(a, b)` |
+| $(a, +\infty)$ | $\{x : x > a\}$ | `greaterThan(a)` |
+| $[a, +\infty)$ | $\{x : x \geq a\}$ | `atLeast(a)` |
+| $(-\infty, b)$ | $\{x : x < b\}$ | `lessThan(a)` |
+| $(-\infty, b]$ | $\{x : x \leq b\}$ | `atMost(a)` |
 | $(-\infty, +\infty)$ | $\{x\}$ | `all()` |
 
 - Make the `Range` class generic.

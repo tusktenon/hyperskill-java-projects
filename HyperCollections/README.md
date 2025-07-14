@@ -396,3 +396,11 @@ System.out.println(Range.closedOpen(10,10).intersection(Range.closed(10,10))); /
 System.out.println(Range.closedOpen(10,10).intersection(Range.openClosed(10,10))); //EMPTY
 System.out.println(Range.closedOpen(10,10).intersection(Range.closedOpen(10,10))); //EMPTY
 ```
+
+### *My Comments*
+
+I chose to implement the `encloses`, `intersection` and `span` methods using *double dispatch*, a classic OOP technique. The Hyperskill tests demand an implementation that uses Java language level 17, which introduced sealed classes; had they allowed Java 21, which added pattern matching for `switch` statements, I might have taken that approach instead.
+
+Note that the advantages of pattern matching for `switch` (over `if`-`else` chains using `instanceof`) go beyond more legible code. The compiler can verify that the `switch` cases are exhaustive, and there's also a potential performance improvement: the compiler can emit code that will jump to the correct branch in constant time, instead of having to go through the `if` clauses sequentially until reaching a match. See the [JEP](https://openjdk.org/jeps/441) for a good explanation.
+
+Since Ranges are immutable, I went to some length to avoid creating new ones whenever possible: the all and empty ranges are singletons, and whenever the span or intersection of two ranges happens to be one of the input ranges (a common occurrence), those methods return that range, not a new one with identical bounds. If minimizing the creating of new objects isn't a concern, it's possible to write a much shorter solution.

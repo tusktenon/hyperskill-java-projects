@@ -40,6 +40,7 @@ Each project falls into one of three groups:
 - [Cinema Room REST Service](https://hyperskill.org/projects/189) (Spring Boot and Spring Web MVC)
 - [Customer Feedback Service](https://hyperskill.org/projects/409) (Spring Boot, Spring Data MongoDB and Spring Web MVC)
 - [Learning Progress Tracker](https://hyperskill.org/projects/197)
+- [Meal Planner](https://hyperskill.org/projects/318) (JDBC with PostgreSQL)
 - [QRCode Service](https://hyperskill.org/projects/385) (Spring Boot and Spring Web MVC)
 - [Transaction Aggregator](https://hyperskill.org/projects/424) (Spring Boot and Spring Web MVC)
 - [Web Calendar](https://hyperskill.org/projects/396) (Spring Boot, Spring Data JPA and Spring Web MVC)

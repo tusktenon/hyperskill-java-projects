@@ -9,3 +9,7 @@ repositories {
 application {
     mainClass = 'mealplanner.Main'
 }
+
+run {
+    standardInput = System.in
+}

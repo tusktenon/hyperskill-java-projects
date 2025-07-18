@@ -1,5 +1,19 @@
 # Meal Planner (Java)
 
+## *How to run this project*
+
+Starting with Stage 3, the Meal Planner application connects to a PostgreSQL database named `meals_db`. The project instructions don't provide any guidance on setting up such a database; I opted to use Docker Compose (see the [compose.yaml](compose.yaml) file for configuration details). To create and start the Postgres container, run the following from the project's root directory:
+```sh
+$ docker compose up -d
+```
+If desired, you can then interact with the database using the [psql](https://www.postgresql.org/docs/current/app-psql.html) command-line tool:
+```text
+$ docker exec -it mealplanner-postgres psql -U postgres
+postgres-# \c meals_db
+```
+(don't forget to add the semicolon at the end of any SQL commands!).
+
+
 ## Project description
 
 Every day, people face a lot of difficult choices: for example, what to prepare for breakfast, lunch, and dinner? Are the necessary ingredients in stock? With the Meal Planner, this can be quick and painless! You can make a database of categorized meals and set the menu for the week. This app will also help create and store shopping lists based on the meals so that no ingredient is missing.

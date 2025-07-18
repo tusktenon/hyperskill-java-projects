@@ -32,15 +32,16 @@ public class Menu {
     }
 
     private void addMeal() {
-        Category category = getCategory();
+        Category category =
+                getCategory("Which meal do you want to add (breakfast, lunch, dinner)?");
         String name = getName();
         String[] ingredients = getIngredients();
         mealDao.add(new Meal(category, name, ingredients));
         System.out.println("The meal has been added!");
     }
 
-    private Category getCategory() {
-        System.out.println("Which meal do you want to add (breakfast, lunch, dinner)?");
+    private Category getCategory(String prompt) {
+        System.out.println(prompt);
         while (true) {
             try {
                 return Category.valueOf(in.nextLine());
@@ -83,11 +84,15 @@ public class Menu {
     }
 
     private void displayMeals() {
-        List<Meal> meals = mealDao.findAll();
+        Category category =
+                getCategory("Which category do you want to print (breakfast, lunch, dinner)?");
+        List<Meal> meals = mealDao.findByCategory(category);
         if (meals.isEmpty()) {
-            System.out.println("No meals saved. Add a meal first.");
+            System.out.println("No meals found.");
         } else {
-            meals.forEach(meal -> System.out.printf("%n%s%n", meal));
+            System.out.println("Category: " + category);
+            meals.forEach(meal -> System.out.printf("%nName: %s%nIngredients:%n%s%n",
+                    meal.name(), String.join("\n", meal.ingredients())));
             System.out.println();
         }
     }

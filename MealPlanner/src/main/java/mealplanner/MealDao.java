@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface MealDao {
 
-    List<Meal> findAll();
+    List<Meal> findByCategory(Meal.Category category);
 
     void add(Meal meal);
 }

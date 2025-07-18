@@ -1,14 +1,15 @@
 package mealplanner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryMealDao implements MealDao {
 
     private final List<Meal> meals = new ArrayList<>();
 
     @Override
-    public List<Meal> findAll() {
-        return Collections.unmodifiableList(meals);
+    public List<Meal> findByCategory(Meal.Category category) {
+        return meals.stream().filter(meal -> meal.category().equals(category)).toList();
     }
 
     @Override

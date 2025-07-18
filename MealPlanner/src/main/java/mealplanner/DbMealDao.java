@@ -32,37 +32,34 @@ public class DbMealDao implements MealDao {
     }
 
     @Override
-    public List<Meal> findAll() {
-        Map<Integer, Meal.Builder> meals = new HashMap<>();
-        String selectAllMeals = "SELECT * FROM meals";
-        String selectAllIngredients = "SELECT ingredient, meal_id FROM ingredients";
-        try {
-            try (Statement statement = conn.createStatement();
-                 ResultSet mealResults = statement.executeQuery(selectAllMeals)) {
-                while (mealResults.next()) {
-                    int id = mealResults.getInt("meal_id");
-                    String category = mealResults.getString("category");
-                    String name = mealResults.getString("meal");
-                    meals.put(id, new Meal.Builder(Meal.Category.valueOf(category), name));
-                }
-            }
-            try (Statement statement = conn.createStatement();
-                 ResultSet ingredientResults = statement.executeQuery(selectAllIngredients)) {
-                while (ingredientResults.next()) {
-                    int id = ingredientResults.getInt("meal_id");
-                    String ingredient = ingredientResults.getString("ingredient");
-                    meals.get(id).addIngredient(ingredient);
-                }
+    public List<Meal> findByCategory(Meal.Category category) {
+        String query = """
+                SELECT m.meal_id, meal, ingredient
+                FROM (SELECT meal_id, meal FROM meals WHERE category = '%s') AS m
+                JOIN ingredients AS i
+                    ON m.meal_id = i.meal_id
+                ORDER BY m.meal_id, i.ingredient_id""".formatted(category);
+
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery(query)) {
+            Map<Integer, Meal.Builder> meals = new LinkedHashMap<>();
+            while (results.next()) {
+                int id = results.getInt("meal_id");
+                String name = results.getString("meal");
+                String ingredient = results.getString("ingredient");
+                meals.computeIfAbsent(id, __ -> new Meal.Builder(category, name))
+                        .addIngredient(ingredient);
             }
             return meals.values().stream().map(Meal.Builder::build).toList();
         } catch (SQLException e) {
-            throw new RuntimeException("Encountered SQL exception while retrieving all meals");
+            throw new RuntimeException(
+                    "Encountered SQL exception while retrieving meals by category");
         }
     }
 
     @Override
     public void add(Meal meal) {
-        Integer mealId = null;
+        Integer mealID = null;
         String insertMeal = "INSERT INTO meals (category, meal) VALUES (?, ?)";
         String insertIngredient = "INSERT INTO ingredients (ingredient, meal_id) VALUES (?, %d)";
         try {
@@ -72,14 +69,14 @@ public class DbMealDao implements MealDao {
                 mealStatement.setString(2, meal.name());
                 mealStatement.executeUpdate();
                 try (ResultSet mealIdResults = mealStatement.getGeneratedKeys()) {
-                    if (mealIdResults.next()) mealId = mealIdResults.getInt(1);
+                    if (mealIdResults.next()) mealID = mealIdResults.getInt(1);
                 }
             }
-            if (mealId == null) {
+            if (mealID == null) {
                 throw new RuntimeException("Unable to retrieve auto-generated meal_id key");
             }
             try (PreparedStatement ingredientStatement =
-                         conn.prepareStatement(insertIngredient.formatted(mealId))) {
+                         conn.prepareStatement(insertIngredient.formatted(mealID))) {
                 for (String ingredient : meal.ingredients()) {
                     ingredientStatement.setString(1, ingredient);
                     ingredientStatement.executeUpdate();

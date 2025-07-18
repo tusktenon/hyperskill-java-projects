@@ -1,0 +1,13 @@
+# Docker Compose file for PostgreSQL
+
+services:
+
+  db:
+    image: postgres
+    container_name: mealplanner-postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: meals_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111

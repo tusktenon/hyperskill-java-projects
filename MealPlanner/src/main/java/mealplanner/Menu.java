@@ -10,11 +10,11 @@ public class Menu {
     private static final Pattern VALID_NAME = Pattern.compile("[A-Za-z ]+");
 
     private final Scanner in;
-    private final List<Meal> meals;
+    private final MealDao mealDao;
 
-    public Menu(Scanner in, List<Meal> meals) {
+    public Menu(Scanner in, MealDao mealDao) {
         this.in = in;
-        this.meals = meals;
+        this.mealDao = mealDao;
     }
 
     public void run() {
@@ -35,7 +35,7 @@ public class Menu {
         Category category = getCategory();
         String name = getName();
         String[] ingredients = getIngredients();
-        meals.add(new Meal(category, name, ingredients));
+        mealDao.add(new Meal(category, name, ingredients));
         System.out.println("The meal has been added!");
     }
 
@@ -83,6 +83,7 @@ public class Menu {
     }
 
     private void displayMeals() {
+        List<Meal> meals = mealDao.findAll();
         if (meals.isEmpty()) {
             System.out.println("No meals saved. Add a meal first.");
         } else {

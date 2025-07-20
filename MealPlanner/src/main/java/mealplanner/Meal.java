@@ -5,7 +5,14 @@ import java.util.List;
 
 public record Meal(Category category, String name, String[] ingredients) {
 
-    public enum Category {breakfast, lunch, dinner}
+    public enum Category {
+        breakfast, lunch, dinner;
+
+        public String capitalize() {
+            String lowercase = this.toString();
+            return lowercase.substring(0, 1).toUpperCase() + lowercase.substring(1);
+        }
+    }
 
     public static class Builder {
 

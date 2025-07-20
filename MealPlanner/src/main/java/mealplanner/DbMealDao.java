@@ -5,14 +5,14 @@ import java.util.*;
 
 public class DbMealDao implements MealDao {
 
-    public static final String CREATE_TABLE_MEALS = """
+    private static final String CREATE_TABLE_MEALS = """
             CREATE TABLE IF NOT EXISTS meals (
                 meal_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                 category varchar NOT NULL,
                 meal varchar NOT NULL
             )""";
 
-    public static final String CREATE_TABLE_INGREDIENTS = """
+    private static final String CREATE_TABLE_INGREDIENTS = """
             CREATE TABLE IF NOT EXISTS ingredients (
                 ingredient_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                 ingredient varchar,
@@ -28,32 +28,6 @@ public class DbMealDao implements MealDao {
             statement.executeUpdate(CREATE_TABLE_INGREDIENTS);
         } catch (SQLException e) {
             throw new RuntimeException("Encountered SQL exception while creating tables");
-        }
-    }
-
-    @Override
-    public List<Meal> findByCategory(Meal.Category category) {
-        String query = """
-                SELECT m.meal_id, meal, ingredient
-                FROM (SELECT meal_id, meal FROM meals WHERE category = '%s') AS m
-                JOIN ingredients AS i
-                    ON m.meal_id = i.meal_id
-                ORDER BY m.meal_id, i.ingredient_id""".formatted(category);
-
-        try (Statement statement = conn.createStatement();
-             ResultSet results = statement.executeQuery(query)) {
-            Map<Integer, Meal.Builder> meals = new LinkedHashMap<>();
-            while (results.next()) {
-                int id = results.getInt("meal_id");
-                String name = results.getString("meal");
-                String ingredient = results.getString("ingredient");
-                meals.computeIfAbsent(id, __ -> new Meal.Builder(category, name))
-                        .addIngredient(ingredient);
-            }
-            return meals.values().stream().map(Meal.Builder::build).toList();
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Encountered SQL exception while retrieving meals by category");
         }
     }
 
@@ -84,6 +58,50 @@ public class DbMealDao implements MealDao {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Encountered SQL exception while adding a meal");
+        }
+    }
+
+    @Override
+    public List<Meal> findByCategory(Meal.Category category) {
+        String query = """
+                SELECT m.meal_id, meal, ingredient
+                FROM (SELECT meal_id, meal FROM meals WHERE category = '%s') AS m
+                JOIN ingredients AS i
+                    ON m.meal_id = i.meal_id
+                ORDER BY m.meal_id, i.ingredient_id""".formatted(category);
+
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery(query)) {
+            Map<Integer, Meal.Builder> meals = new LinkedHashMap<>();
+            while (results.next()) {
+                int id = results.getInt("meal_id");
+                String name = results.getString("meal");
+                String ingredient = results.getString("ingredient");
+                meals.computeIfAbsent(id, __ -> new Meal.Builder(category, name))
+                        .addIngredient(ingredient);
+            }
+            return meals.values().stream().map(Meal.Builder::build).toList();
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Encountered SQL exception while retrieving meals by category");
+        }
+    }
+
+    @Override
+    public SortedMap<String, Integer> findNamesByCategory(Meal.Category category) {
+        String query = "SELECT meal_id, meal FROM meals WHERE category = '%s'".formatted(category);
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery(query)) {
+            TreeMap<String, Integer> names = new TreeMap<>();
+            while (results.next()) {
+                int id = results.getInt("meal_id");
+                String name = results.getString("meal");
+                names.put(name, id);
+            }
+            return names;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Encountered SQL exception while retrieving meal names by category");
         }
     }
 }

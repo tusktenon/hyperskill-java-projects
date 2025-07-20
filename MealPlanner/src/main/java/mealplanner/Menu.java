@@ -11,18 +11,22 @@ public class Menu {
 
     private final Scanner in;
     private final MealDao mealDao;
+    private final PlanDao planDao;
 
-    public Menu(Scanner in, MealDao mealDao) {
+    public Menu(Scanner in, MealDao mealDao, PlanDao planDao) {
         this.in = in;
         this.mealDao = mealDao;
+        this.planDao = planDao;
     }
 
     public void run() {
         while (true) {
-            System.out.println("What would you like to do (add, show, exit)?");
+            System.out.println("What would you like to do (add, show, plan, list plan, exit)?");
             switch (in.nextLine()) {
                 case "add" -> addMeal();
                 case "show" -> displayMeals();
+                case "plan" -> planMeals();
+                case "list plan" -> displayPlan();
                 case "exit" -> {
                     System.out.println("Bye!");
                     return;
@@ -32,16 +36,17 @@ public class Menu {
     }
 
     private void addMeal() {
-        Category category =
-                getCategory("Which meal do you want to add (breakfast, lunch, dinner)?");
+        System.out.println("Which meal do you want to add (breakfast, lunch, dinner)?");
+        Category category = getCategory();
+        System.out.println("Input the meal's name:");
         String name = getName();
+        System.out.println("Input the ingredients:");
         String[] ingredients = getIngredients();
         mealDao.add(new Meal(category, name, ingredients));
         System.out.println("The meal has been added!");
     }
 
-    private Category getCategory(String prompt) {
-        System.out.println(prompt);
+    private Category getCategory() {
         while (true) {
             try {
                 return Category.valueOf(in.nextLine());
@@ -52,7 +57,6 @@ public class Menu {
     }
 
     private String getName() {
-        System.out.println("Input the meal's name:");
         while (true) {
             try {
                 return trimAndValidate(in.nextLine());
@@ -63,7 +67,6 @@ public class Menu {
     }
 
     private String[] getIngredients() {
-        System.out.println("Input the ingredients:");
         while (true) {
             try {
                 return Arrays.stream(in.nextLine().split(","))
@@ -84,8 +87,8 @@ public class Menu {
     }
 
     private void displayMeals() {
-        Category category =
-                getCategory("Which category do you want to print (breakfast, lunch, dinner)?");
+        System.out.println("Which category do you want to print (breakfast, lunch, dinner)?");
+        Category category = getCategory();
         List<Meal> meals = mealDao.findByCategory(category);
         if (meals.isEmpty()) {
             System.out.println("No meals found.");
@@ -93,6 +96,51 @@ public class Menu {
             System.out.println("Category: " + category);
             meals.forEach(meal -> System.out.printf("%nName: %s%nIngredients:%n%s%n",
                     meal.name(), String.join("\n", meal.ingredients())));
+            System.out.println();
+        }
+    }
+
+    private void planMeals() {
+        planDao.clear();
+        var mealsByCategory = new EnumMap<Category, SortedMap<String, Integer>>(Category.class);
+        Arrays.stream(Category.values()).forEach(
+                category -> mealsByCategory.put(category, mealDao.findNamesByCategory(category)));
+        for (Day day : Day.values()) {
+            System.out.println(day);
+            for (Category category : Category.values()) {
+                setPlanEntry(day, category, mealsByCategory.get(category));
+            }
+            System.out.printf("Yeah! We planned the meals for %s.%n%n", day);
+        }
+        displayPlan();
+    }
+
+    private void setPlanEntry(Day day, Category category, SortedMap<String, Integer> mealOptions) {
+        mealOptions.sequencedKeySet().forEach(System.out::println);
+        System.out.printf("Choose the %s for %s from the list above:%n", category, day);
+        while (true) {
+            Integer selectionId = mealOptions.get(in.nextLine());
+            if (selectionId == null) {
+                System.out.println("This meal doesn’t exist. Choose a meal from the list above.");
+            } else {
+                planDao.set(day, category, selectionId);
+                break;
+            }
+        }
+    }
+
+    private void displayPlan() {
+        if (planDao.isEmpty()) {
+            System.out.println("Database does not contain any meal plans");
+            return;
+        }
+        var mealMap = planDao.getMealNames();
+        for (Day day : Day.values()) {
+            System.out.println(day);
+            for (Category category : Category.values()) {
+                System.out.println(
+                        category.capitalize() + ": " + mealMap.get(new PlanKey(day, category)));
+            }
             System.out.println();
         }
     }

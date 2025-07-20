@@ -13,7 +13,7 @@ public class Main {
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              Scanner in = new Scanner(System.in)) {
             conn.setAutoCommit(true);
-            new Menu(in, new DbMealDao(conn)).run();
+            new Menu(in, new DbMealDao(conn), new DbPlanDao(conn)).run();
         }
     }
 }

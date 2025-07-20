@@ -20,12 +20,23 @@ public class InMemoryPlanDao implements PlanDao {
     public Map<PlanKey, String> getMealNames() {
         HashMap<PlanKey, String> map = new HashMap<>(DAYS_PER_WEEK * MEALS_PER_DAY);
         int i = 0;
-        for (Day day: Day.values()) {
-            for (Category category: Category.values()) {
+        for (Day day : Day.values()) {
+            for (Category category : Category.values()) {
                 map.put(new PlanKey(day, category), mealDao.findNameById(mealIds[i++]));
             }
         }
-       return map;
+        return map;
+    }
+
+    @Override
+    public Map<String, Integer> getIngredients() {
+        Map<String, Integer> ingredients = new HashMap<>();
+        for (int id : mealIds) {
+            for (String ingredient : mealDao.findIngredientsById(id)) {
+                ingredients.merge(ingredient, 1, Integer::sum);
+            }
+        }
+        return ingredients;
     }
 
     @Override

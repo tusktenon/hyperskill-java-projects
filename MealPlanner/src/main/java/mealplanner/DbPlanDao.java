@@ -52,6 +52,30 @@ public class DbPlanDao implements PlanDao {
     }
 
     @Override
+    public Map<String, Integer> getIngredients() {
+        String query = """
+                SELECT ingredient
+                FROM ingredients
+                JOIN meals
+                    ON ingredients.meal_id = meals.meal_id
+                JOIN plan
+                    ON meals.meal_id = plan.meal_id""";
+
+        try (Statement statement = conn.createStatement();
+             ResultSet results = statement.executeQuery(query)) {
+            Map<String, Integer> ingredients = new HashMap<>();
+            while (results.next()) {
+                String ingredient = results.getString("ingredient");
+                ingredients.merge(ingredient, 1, Integer::sum);
+            }
+            return ingredients;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Encountered SQL exception while retrieving plan ingredients");
+        }
+    }
+
+    @Override
     public void set(Day day, Category category, int mealId) {
         String sql = "INSERT INTO plan (meal_option, meal_category, meal_id) VALUES (?, ?, ?)";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {

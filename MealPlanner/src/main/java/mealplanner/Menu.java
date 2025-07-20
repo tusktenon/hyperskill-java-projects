@@ -1,5 +1,7 @@
 package mealplanner;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -21,12 +23,14 @@ public class Menu {
 
     public void run() {
         while (true) {
-            System.out.println("What would you like to do (add, show, plan, list plan, exit)?");
+            System.out.println(
+                    "What would you like to do (add, show, plan, list plan, save, exit)?");
             switch (in.nextLine()) {
                 case "add" -> addMeal();
                 case "show" -> displayMeals();
                 case "plan" -> planMeals();
                 case "list plan" -> displayPlan();
+                case "save" -> saveShoppingList();
                 case "exit" -> {
                     System.out.println("Bye!");
                     return;
@@ -142,6 +146,22 @@ public class Menu {
                         category.capitalize() + ": " + mealMap.get(new PlanKey(day, category)));
             }
             System.out.println();
+        }
+    }
+
+    private void saveShoppingList() {
+        if (planDao.isEmpty()) {
+            System.out.println("Unable to save. Plan your meals first.");
+            return;
+        }
+        System.out.println("Input a filename:");
+        try (PrintWriter out = new PrintWriter(in.nextLine())) {
+            planDao.getIngredients().forEach((ingredient, count) -> {
+                out.println(ingredient + (count > 1 ? " x" + count : ""));
+            });
+            System.out.println("Saved!");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Encountered an exception while writing the shopping list");
         }
     }
 }

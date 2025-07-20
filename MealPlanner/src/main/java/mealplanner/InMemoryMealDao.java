@@ -31,4 +31,8 @@ public class InMemoryMealDao implements MealDao {
     public String findNameById(int id) {
         return meals.get(id).name();
     }
+
+    public String[] findIngredientsById(int id) {
+        return meals.get(id).ingredients();
+    }
 }

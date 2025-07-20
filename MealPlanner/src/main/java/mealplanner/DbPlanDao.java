@@ -26,6 +26,7 @@ public class DbPlanDao implements PlanDao {
         }
     }
 
+    @Override
     public Map<PlanKey, String> getMealNames() {
         String query = """
                 SELECT meal_option, meal_category, meal
@@ -50,6 +51,7 @@ public class DbPlanDao implements PlanDao {
         }
     }
 
+    @Override
     public void set(Day day, Category category, int mealId) {
         String sql = "INSERT INTO plan (meal_option, meal_category, meal_id) VALUES (?, ?, ?)";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -62,6 +64,7 @@ public class DbPlanDao implements PlanDao {
         }
     }
 
+    @Override
     public void clear() {
         try (Statement statement = conn.createStatement()) {
             statement.executeUpdate("DELETE FROM plan");
@@ -70,6 +73,7 @@ public class DbPlanDao implements PlanDao {
         }
     }
 
+    @Override
     public boolean isEmpty() {
         try (Statement statement = conn.createStatement();
              ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM plan")) {

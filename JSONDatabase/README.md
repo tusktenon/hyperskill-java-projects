@@ -152,3 +152,101 @@ Received: A record # 12 was sent!
 
 > [!NOTE]
 > Here, number 12 in the examples was chosen arbitrarily. You can use any integer number of your liking.
+
+
+## Stage 3/6: Add new functionalities
+
+### Description
+
+In this stage, you will build upon the functionality of the program that you wrote in the first stage. The server should be able to receive messages with the operations `get`, `set`, and `delete`, each with an index of the cell.
+
+For now, there is no need to save the database to a file on the hard drive, so if the server reboots, all the data in the database will be lost. The server should serve one client at a time in a loop, and the client should only send one request to the server, get one reply, and exit. After that, the server should wait for another connection from a client.
+
+To send a request to the server, the client should get all the information through command-line arguments. There is a useful library called `JCommander` to parse all the arguments. It is included in our project setup, so you can use it without the need for any installation yourself. Before you get started with it, we recommend you check out a [JCommander tutorial](http://jcommander.org/).
+
+The arguments will be passed to the client in the following format:
+```sh
+java Main -t <type> -i <index> [-m <message>]
+```
+- `-t` is the type of the request.
+- `-i` is the index of the cell.
+- `-m` is the value/message to save in the database (only needed for set requests).
+
+For example: `java Main -t set -i 148 -m "Here is some text to store on the server"`
+
+### Objectives
+
+1. Implement the ability for the server to handle `get`, `set`, and `delete` operations with an index.
+2. Ensure the server can serve one client at a time in a loop.
+3. Since the server cannot shut down on its own and testing requires the program to stop at some point, you should implement a way to stop the server (after closing the socket), when the client sends an `exit` request. Note that in a normal situation, this behavior should not be allowed.
+4. The client should send requests to the server using command-line arguments. These arguments include the type of the request (`set`, `get`, or `delete`), the index of the cell, and, in the case of the `set` request, a text value/message.
+
+> [!NOTE]
+> The server and the client are different programs that run separately. Your server should run from the `main` method of the `/server/Main` class, and the client should run from the `main` method of the `/client/Main` class.
+
+### Example
+
+The greater-than symbol followed by a space (`> `) represents the user input. Note that it's not part of the input.
+
+Starting the server:
+```text
+> java Main
+Server started!
+```
+
+Starting the clients:
+```text
+> java Main -t get -i 1
+Client started!
+Sent: get 1
+Received: ERROR
+```
+
+```text
+> java Main -t set -i 1 -m "Hello world!"
+Client started!
+Sent: set 1 Hello world!
+Received: OK
+```
+
+```text
+> java Main -t set -i 1 -m HelloWorld!
+Client started!
+Sent: set 1 HelloWorld!
+Received: OK
+```
+
+```text
+> java Main -t get -i 1
+Client started!
+Sent: get 1
+Received: HelloWorld!
+```
+
+```text
+> java Main -t delete -i 1
+Client started!
+Sent: delete 1
+Received: OK
+```
+
+```text
+> java Main -t delete -i 1
+Client started!
+Sent: delete 1
+Received: OK
+```
+
+```text
+> java Main -t get -i 1
+Client started!
+Sent: get 1
+Received: ERROR
+```
+
+```text
+> java Main -t exit
+Client started!
+Sent: exit
+Received: OK
+```

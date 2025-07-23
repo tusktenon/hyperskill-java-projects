@@ -255,3 +255,151 @@ Client started!
 Sent: exit
 Received: OK
 ```
+
+
+## Stage 4/6: Start work with JSON
+
+### Description
+
+In this stage, you will store the database in JSON format, but keep in mind that this database will still be in memory and not saved as a file on the hard drive. To work with JSON, we recommend using the GSON library by Google. It is included in our project setup, so you can use it without the need for any installation yourself. It is also a good idea to get familiar with this library beforehand. You'd already have learned about it in before getting here. For more examples and explanations, visit [here](http://zetcode.com/java/gson/)!
+
+You should store the database as a Java JSON object. The keys should be strings (now, no more limited to integer indexes like it was in the previous stages), and the values should be strings as well.
+
+Example of a JSON database:
+```json
+{
+    "key1": "some string value",
+    "key2": "another string value",
+    "key3": "yet another string value"
+}
+```
+
+Note that we still use command-line arguments, but the client has to send JSON to the server and receive JSON from the server. Similarly, the server should process the received JSON and respond with JSON.
+
+The format of the command-line arguments for the client should be as follows:
+```text
+java Main -t <type> -k <key> [-v <value>]
+```
+- `-t` specifies the type of request (`get`, `set`, or `delete`).
+- `-k` specifies the key.
+- `-v` specifies the value (only needed for `set` requests).
+
+Note that based on the command-line arguments, the client should send to the server, a valid JSON which includes all the parameters needed to execute the request. Similarly, the server should respond with a valid JSON, for a valid request from a client.
+
+Below are a few examples for the `set`, `get`, and `delete` requests, and the respective response from the server.
+
+Here is what the `set` request format should look like:
+```json
+{ "type": "set", "key": "some key", "value": "some value" }
+```
+
+The respective response from the server, for that `set` request:
+```json
+{ "response": "OK" }
+```
+
+The `get` request format:
+```json
+{ "type": "get", "key": "some key" }
+```
+
+The `delete` request format:
+```json
+{ "type": "delete", "key": "a key that doesn't exist" }
+```
+
+In the case of a `get` request with a key stored in the database:
+```json
+{ "response": "OK", "value": "some value" }
+```
+
+In the case of a `get` or `delete` request with a key that doesn't exist:
+```json
+{ "response": "ERROR", "reason": "No such key" }
+```
+
+### Objectives
+
+1. Implement a Java JSON object to store the database records.
+2. Implement the `set`, `get`, and `delete` requests and the `OK` and `ERROR` responses.
+
+### Example
+
+The greater-than symbol followed by a space (`> `) represents the user input. Note that it's not part of the input.
+
+Starting the server:
+```text
+> java Main
+Server started!
+```
+
+Starting the clients:
+```text
+> java Main -t get -k 1
+Client started!
+Sent: {"type":"get","key":"1"}
+Received: {"response":"ERROR","reason":"No such key"}
+```
+
+```text
+> java Main -t set -k 1 -v "Hello World!"
+Client started!
+Sent: {"type":"set","key":"1","value":"Hello World!"}
+Received: {"response":"OK"}
+```
+
+```text
+> java Main -t set -k 1 -v HelloWorld!
+Client started!
+Sent: {"type":"set","key":"1","value":"HelloWorld!"}
+Received: {"response":"OK"}
+```
+
+```text
+> java Main -t get -k 1
+Client started!
+Sent: {"type":"get","key":"1"}
+Received: {"response":"OK","value":"HelloWorld!"}
+```
+
+```text
+> java Main -t delete -k 1
+Client started!
+Sent: {"type":"delete","key":"1"}
+Received: {"response":"OK"}
+```
+
+```text
+> java Main -t delete -k 1
+Client started!
+Sent: {"type":"delete","key":"1"}
+Received: {"response":"ERROR","reason":"No such key"}
+```
+
+```text
+> java Main -t get -k 1
+Client started!
+Sent: {"type":"get","key":"1"}
+Received: {"response":"ERROR","reason":"No such key"}
+```
+
+```text
+> java Main -t set -k name -v "Sorabh Tomar"
+Client started!
+Sent: {"type":"set","key":"name","value":"Sorabh Tomar"}
+Received: {"response":"OK"}
+```
+
+```text
+> java Main -t get -k name
+Client started!
+Sent: {"type":"get","key":"name"}
+Received: {"response":"OK","value":"Sorabh Tomar"}
+```
+
+```text
+> java Main -t exit
+Client started!
+Sent: {"type":"exit"}
+Received: {"response":"OK"}
+```

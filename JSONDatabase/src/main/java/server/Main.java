@@ -1,58 +1,54 @@
 package server;
 
+import shared.Request;
+
 import java.io.*;
 import java.net.*;
 
 public class Main {
-
-    private record Response(String text, boolean requestExit) {}
 
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 23456;
 
     private static final String[] data = new String[1000];
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try (ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName(ADDRESS))) {
             System.out.println("Server started!");
-            for (boolean exit = false; !exit; ) {
+            while (true) {
                 try (Socket socket = server.accept();
                      DataInputStream input = new DataInputStream(socket.getInputStream());
                      DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
-                    String request = input.readUTF();
-                    System.out.println("Received: " + request);
-                    Response response = processRequest(request);
-                    output.writeUTF(response.text());
-                    System.out.println("Sent: " + response.text());
-                    exit = response.requestExit();
+                    String received = input.readUTF();
+                    System.out.println("Received: " + received);
+                    Request request = Request.parse(received);
+                    String response = processRequest(request);
+                    output.writeUTF(response);
+                    System.out.println("Sent: " + response);
+                    if (request.type() == Request.Type.exit) break;
+                } catch (Request.RequestFormatException e) {
+                    System.err.println(e.getMessage());
                 }
             }
-        } catch (IOException e) {
-            System.out.println("The server encountered an IO exception");
         }
     }
 
-    private static Response processRequest(String request) {
-        String responseText = "OK";
-        boolean exitRequested = false;
-        String[] tokens = request.split("\\s+", 3);
+    private static String processRequest(Request request) {
+        String response = "OK";
         try {
-            int index = tokens.length > 1 ? Integer.parseInt(tokens[1]) : 0;
-            if ("set".equals(tokens[0]) && tokens.length == 3) {
-                data[index - 1] = tokens[2];
-            } else if ("get".equals(tokens[0]) && tokens.length == 2) {
-                String content = data[index - 1];
-                responseText = content == null ? "ERROR" : content;
-            } else if ("delete".equals(tokens[0]) && tokens.length == 2) {
-                data[index - 1] = null;
-            } else if ("exit".equals(tokens[0]) && tokens.length == 1) {
-                exitRequested = true;
-            } else {
-                responseText = "ERROR";
+            switch (request.type()) {
+                case get -> {
+                    String content = data[request.index() - 1];
+                    response = content == null ? "ERROR" : content;
+                }
+                case set -> data[request.index() - 1] = request.content();
+                case delete -> data[request.index() - 1] = null;
+                case exit -> {
+                }
             }
-        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-            responseText = "ERROR";
+        } catch (ArrayIndexOutOfBoundsException e) {
+            response = "ERROR";
         }
-        return new Response(responseText, exitRequested);
+        return response;
     }
 }

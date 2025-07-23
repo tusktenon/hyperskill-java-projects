@@ -4,6 +4,11 @@
 
 The JSON Database project actually consists of two programs: a client and a server (that are meant to be run simultaneously in separate terminals). I've written custom Gradle tasks for each of these, so they can be built and run with `gradle runClient`, `gradle runServer`. Alternatively, you can just use `gradle build` to compile all the source files, then navigate to the `build/classes/java/main` directory and run `java client.Main` or `java server.Main`.
 
+Starting with Stage 3, the client program has mandatory command-line arguments. These can be provided with Gradle's `--args` option; e.g.,
+```sh
+$ gradle runClient --args='-t set -i 1 -m "Hello world!"'
+```
+
 
 ## Project Description
 

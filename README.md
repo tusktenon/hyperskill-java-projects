@@ -12,9 +12,9 @@ Each project falls into one of three groups:
 - **CLI applications that do not use Spring.** These can be started by executing `gradle run` from the project's root directory (I've added the `console=plain` option to each project's `gradle.properties` file, so the command-line output should be clear of any Gradle-related interference).
 - **Spring Boot applications.** These can be started with `gradle bootRun`.
 - **Special cases.** Some projects have exceptional requirements (at least in their later stages), which are described in detail in their READMEs:
-    - The File Server and JSON Database projects have separate client and server programs;
+    - The File Server and JSON Database projects have separate client and server programs, and the JSON Databases client takes mandatory command-line arguments;
     - Meal Planner requires a connection to a PostgreSQL database;
-    - Simple Banking System has (mandatory) command-line arguments;
+    - Simple Banking System has mandatory command-line arguments;
     - Transaction Aggregator only works if compatible data servers are running on the same machine, so I've created a [companion project](TransactionAggregatorDataServer) that provides a simple implementation for these servers.
 
 

@@ -2,6 +2,7 @@ package client;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.gson.Gson;
 import shared.Request;
 
 import java.io.*;
@@ -12,14 +13,14 @@ public class Main {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 23456;
 
-    @Parameter(names = "-t", required = true, description = "Type of request")
+    @Parameter(names = "-t", required = true, description = "Request type")
     Request.Type type;
 
-    @Parameter(names = "-i", description = "Cell index")
-    Integer index;
+    @Parameter(names = "-k", description = "Key")
+    String key;
 
-    @Parameter(names = "-m", description = "Message to save")
-    String message;
+    @Parameter(names = "-v", description = "Value")
+    String value;
 
     public static void main(String[] args) throws IOException {
         Main main = new Main();
@@ -32,11 +33,10 @@ public class Main {
              DataInputStream input = new DataInputStream(socket.getInputStream());
              DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
             System.out.println("Client started!");
-            String request = new Request(type, index, message).toString();
-            output.writeUTF(request);
-            System.out.println("Sent: " + request);
-            String response = input.readUTF();
-            System.out.println("Received: " + response);
+            String requestJson = new Gson().toJson(new Request(type, key, value));
+            output.writeUTF(requestJson);
+            System.out.println("Sent: " + requestJson);
+            System.out.println("Received: " + input.readUTF());
         }
     }
 }

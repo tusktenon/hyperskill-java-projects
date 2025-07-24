@@ -1,20 +1,18 @@
 package server;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import shared.Request;
 import shared.Response;
 
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Main {
 
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 23456;
 
-    private static final Map<String, String> database = new HashMap<>();
+    private static final JsonObject database = new JsonObject();
 
     public static void main(String[] args) throws IOException {
         try (ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName(ADDRESS))) {
@@ -38,15 +36,17 @@ public class Main {
     private static Response processRequest(Request request) {
         switch (request.type()) {
             case get -> {
-                String value = database.get(request.key());
-                return value == null ? Response.err("No such key") : Response.ok(value);
+                JsonElement value = database.get(request.key());
+                return value == null
+                        ? Response.err("No such key")
+                        : Response.ok(value.getAsString());
             }
             case set -> {
-                database.put(request.key(), request.value());
+                database.addProperty(request.key(), request.value());
                 return Response.ok();
             }
             case delete -> {
-                String deleted = database.remove(request.key());
+                JsonElement deleted = database.remove(request.key());
                 return deleted == null ? Response.err("No such key") : Response.ok();
             }
             default -> { // case exit

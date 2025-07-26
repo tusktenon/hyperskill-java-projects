@@ -15,17 +15,15 @@ public class Main {
 
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 23456;
-    private static final String DATA_FILE = "src/server/data/db.json";
 
-    // Maximum time (in milliseconds) to wait for a new client connection
-    // before checking if an exit request has already been sent
-    private static final int EXIT_CHECK_DELAY = 500;
+    private static ServerSocket server;
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
+    private static volatile boolean exitRequested = false;
+
+    private static final String DATA_FILE = "src/server/data/db.json";
 
     private static final Path dataFilePath = Path.of(System.getProperty("user.dir"), DATA_FILE);
     private static JsonObject database;
-
-    private static final ExecutorService executor = Executors.newCachedThreadPool();
-    private static volatile boolean exitRequested = false;
 
     private static final ReadWriteLock lock = new ReentrantReadWriteLock();
     private static final Lock readLock = lock.readLock();
@@ -34,29 +32,20 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Server started!");
         database = new Gson().fromJson(Files.readString(dataFilePath), JsonObject.class);
-        try (ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName(ADDRESS))) {
-            listen(server);
-        }
-    }
-
-    private static void listen(ServerSocket server) throws IOException {
-        server.setSoTimeout(EXIT_CHECK_DELAY);
+        server = new ServerSocket(PORT, 50, InetAddress.getByName(ADDRESS));
         while (!exitRequested) {
             try {
                 Socket socket = server.accept();
-                executor.execute(() -> {
-                    if (handleClient(socket)) exitRequested = true;
-                });
-            } catch (SocketTimeoutException ignored) {
-            } catch (IOException e) {
-                System.err.println("The server encountered an exception " +
-                        "while waiting for an incoming request.");
+                executor.execute(() -> handleClient(socket));
+            } catch (SocketException ignored) {
+                // This is expected; when a ServerSocket is closed, any thread
+                // currently blocked in accept() will throw a SocketException.
             }
         }
         executor.shutdown();
     }
 
-    private static boolean handleClient(Socket socket) {
+    private static void handleClient(Socket socket) {
         try (socket;
              DataInputStream input = new DataInputStream(socket.getInputStream());
              DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
@@ -66,11 +55,14 @@ public class Main {
             String responseJson = new Gson().toJson(processRequest(request));
             output.writeUTF(responseJson);
             System.out.println("Sent: " + responseJson);
-            return request.type() == Request.Type.exit;
+            if (request.type() == Request.Type.exit) {
+                exitRequested = true;
+                socket.close();
+                server.close();
+            }
         } catch (IOException e) {
             System.err.println("The server encountered an exception " +
                     "while handling a client request.");
-            return false;
         }
     }
 

@@ -29,7 +29,7 @@ public class Database {
 
     public JsonElement get(JsonElement key) {
         readLock.lock();
-        ObjectKeyPair location = traverse(key);
+        ObjectKeyPair location = traverse(key, false);
         JsonElement value = location.object().get(location.key());
         readLock.unlock();
         return value;
@@ -37,25 +37,22 @@ public class Database {
 
     public void set(JsonElement key, JsonElement value) throws IOException {
         writeLock.lock();
-        if (key.isJsonArray()) {
-            set(data, key.getAsJsonArray(), value);
-        } else {
-            data.add(key.getAsString(), value);
-        }
+        ObjectKeyPair location = traverse(key, true);
+        location.object().add(location.key(), value);
         writeLock.unlock();
         writeData();
     }
 
     public JsonElement delete(JsonElement key) throws IOException {
         writeLock.lock();
-        ObjectKeyPair location = traverse(key);
+        ObjectKeyPair location = traverse(key, false);
         JsonElement deleted = location.object().remove(location.key());
         writeLock.unlock();
         if (deleted != null) writeData();
         return deleted;
     }
 
-    private ObjectKeyPair traverse(JsonElement keyElement) {
+    private ObjectKeyPair traverse(JsonElement keyElement, boolean createAsNeeded) {
         if (!keyElement.isJsonArray()) {
             return new ObjectKeyPair(data, keyElement.getAsString());
         }
@@ -63,19 +60,18 @@ public class Database {
         JsonArray keys = keyElement.getAsJsonArray();
         String finalKey = keys.remove(keys.size() - 1).getAsString();
         for (JsonElement key : keys) {
-            object = object.getAsJsonObject(key.getAsString());
+            String currentKey = key.getAsString();
+            if (object.has(currentKey)) {
+                object = object.getAsJsonObject(currentKey);
+            } else if (createAsNeeded) {
+                JsonObject newObject = new JsonObject();
+                object.add(currentKey, newObject);
+                object = newObject;
+            } else {
+                throw new IllegalArgumentException("Key \"%s\" not found".formatted(currentKey));
+            }
         }
         return new ObjectKeyPair(object, finalKey);
-    }
-
-    private JsonObject set(JsonObject object, JsonArray keys, JsonElement value) {
-        String firstKey = keys.remove(0).getAsString();
-        if (keys.isEmpty()) {
-            object.add(firstKey, value);
-        } else {
-            object.add(firstKey, set(object.getAsJsonObject(firstKey), keys, value));
-        }
-        return object;
     }
 
     private void writeData() throws IOException {

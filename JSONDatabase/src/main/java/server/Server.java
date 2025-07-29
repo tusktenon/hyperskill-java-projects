@@ -15,7 +15,6 @@ public class Server {
     private final Database database;
     private final ServerSocket serverSocket;
     private final ExecutorService executor = Executors.newCachedThreadPool();
-    private volatile boolean exitRequested = false;
 
     public Server(String address, int port, Database database) throws IOException {
         this.database = database;
@@ -23,7 +22,7 @@ public class Server {
     }
 
     public void listen() throws IOException {
-        while (!exitRequested) {
+        while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
                 executor.execute(() -> handleClient(socket));
@@ -46,7 +45,6 @@ public class Server {
             output.writeUTF(responseJson);
             System.out.println("Sent: " + responseJson);
             if (request.type() == Request.Type.exit) {
-                exitRequested = true;
                 socket.close();
                 serverSocket.close();
             }

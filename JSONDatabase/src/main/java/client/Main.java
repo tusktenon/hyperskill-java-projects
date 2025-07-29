@@ -2,7 +2,7 @@ package client;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.google.gson.Gson;
+import com.google.gson.*;
 import shared.Request;
 
 import java.io.*;
@@ -39,13 +39,21 @@ public class Main {
              DataInputStream input = new DataInputStream(socket.getInputStream());
              DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
             System.out.println("Client started!");
-            String requestJson = fileName == null
-                    ? new Gson().toJson(new Request(type, key, value))
-                    : Files.readString(Path.of(
-                    System.getProperty("user.dir"), REQUESTS_DIR, fileName));
+            String requestJson = buildRequestJson();
             output.writeUTF(requestJson);
             System.out.println("Sent: " + requestJson);
             System.out.println("Received: " + input.readUTF());
         }
+    }
+
+    String buildRequestJson() throws IOException {
+        if (fileName != null) {
+            Path path = Path.of(System.getProperty("user.dir"), REQUESTS_DIR, fileName);
+            return Files.readString(path);
+        }
+        JsonElement keyElement = key == null ? null : new JsonPrimitive(key);
+        JsonElement valueElement = value == null ? null : new JsonPrimitive(value);
+        Request request = new Request(type, keyElement, valueElement);
+        return new Gson().toJson(request);
     }
 }

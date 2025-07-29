@@ -62,7 +62,7 @@ public class Server {
                 JsonElement value = database.get(request.key());
                 return value == null
                         ? Response.err("No such key")
-                        : Response.ok(value.getAsString());
+                        : Response.ok(value);
             }
             case set -> {
                 database.set(request.key(), request.value());

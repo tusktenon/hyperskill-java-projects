@@ -10,53 +10,41 @@ import java.util.Scanner;
 class Client {
 
     private final Scanner userInput;
+    private final Socket socket;
     private final DataInputStream in;
     private final DataOutputStream out;
     private final String dataDirectory;
 
-    static void request(String address, int port, String dataDirectory) {
-        try (var userInput = new Scanner(System.in);
-             var socket = new Socket(InetAddress.getByName(address), port);
-             var in = new DataInputStream(socket.getInputStream());
-             var out = new DataOutputStream(socket.getOutputStream())
-        ) {
-            Client client = new Client(userInput, in, out, dataDirectory);
-            client.run();
-        } catch (IOException e) {
-            System.out.println("The client encountered an exception:");
-            e.printStackTrace();
-        }
-    }
-
-    private Client(Scanner userInput, DataInputStream in, DataOutputStream out,
-                   String dataDirectory) throws IOException {
-        this.userInput = userInput;
-        this.in = in;
-        this.out = out;
+    public Client(String address, int port, String dataDirectory) throws IOException {
+        userInput = new Scanner(System.in);
+        socket = new Socket(InetAddress.getByName(address), port);
+        in = new DataInputStream(socket.getInputStream());
+        out = new DataOutputStream(socket.getOutputStream());
         this.dataDirectory = dataDirectory;
     }
 
-    private void run() throws IOException {
+    public void run() throws IOException {
         System.out.print("Enter action (1 - get a file, 2 - create a file, 3 - delete a file): ");
-
-        switch (userInput.nextLine()) {
-            case "1" -> {
-                buildAndSendFileReferenceRequest("GET");
-                receiveAndProcessGetResponse();
+        try (userInput; socket; in; out) {
+            switch (userInput.nextLine()) {
+                case "1" -> {
+                    buildAndSendFileReferenceRequest("GET");
+                    receiveAndProcessGetResponse();
+                }
+                case "2" -> {
+                    buildAndSendPutRequest();
+                    receiveAndDisplayPutResponse();
+                }
+                case "3" -> {
+                    buildAndSendFileReferenceRequest("DELETE");
+                    receiveAndDisplayDeleteResponse();
+                }
+                case "exit" -> {
+                    out.writeUTF("EXIT");
+                    System.out.println("The request was sent.");
+                }
+                default -> System.out.println("Invalid action.");
             }
-            case "2" -> {
-                buildAndSendPutRequest();
-                receiveAndDisplayPutResponse();
-            }
-            case "3" -> {
-                buildAndSendFileReferenceRequest("DELETE");
-                receiveAndDisplayDeleteResponse();
-            }
-            case "exit" -> {
-                out.writeUTF("EXIT");
-                System.out.println("The request was sent.");
-            }
-            default -> System.out.println("Invalid action.");
         }
     }
 

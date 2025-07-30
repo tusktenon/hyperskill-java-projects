@@ -1,5 +1,6 @@
 package stage4.client;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -14,13 +15,8 @@ public class Main {
     // private static final String DATA_DIRECTORY = "src/client/data";
     private static final String DATA_DIRECTORY = "data/stage4/client";
 
-    public static void main(String[] args) {
-        try {
-            Path ignored = Files.createDirectories(Path.of(DATA_DIRECTORY));
-            Client.request(ADDRESS, PORT, DATA_DIRECTORY);
-        } catch (Exception e) {
-            System.out.println("Unable to create or access the data directory.");
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws IOException {
+        Files.createDirectories(Path.of(DATA_DIRECTORY));
+        new Client(ADDRESS, PORT, DATA_DIRECTORY).run();
     }
 }

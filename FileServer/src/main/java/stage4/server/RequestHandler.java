@@ -1,52 +1,54 @@
 package stage4.server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Optional;
 
 class RequestHandler {
 
-    private final FileRegistry registry;
+    // Because of the unusual design in which clients can send exit requests to the server,
+    // a RequestHandler requires a reference to the underlying ServerSocket (to close it)
+    private final ServerSocket serverSocket;
+
+    private final Socket socket;
     private final DataInputStream input;
     private final DataOutputStream output;
     private final String[] tokens;
-    private volatile boolean isExitRequest = false;
+    private final FileRegistry registry;
 
-    static boolean handle(Socket socket, FileRegistry registry) {
-        try (socket;
-             var input = new DataInputStream(socket.getInputStream());
-             var output = new DataOutputStream(socket.getOutputStream())
-        ) {
-            String[] tokens = input.readUTF().split(" ");
-            RequestHandler handler = new RequestHandler(tokens, input, output, registry);
-            handler.processRequest();
-            return handler.isExitRequest;
+    static void handle(ServerSocket serverSocket, Socket socket, FileRegistry registry) {
+        try {
+            new RequestHandler(serverSocket, socket, registry).processRequest();
         } catch (IOException e) {
             System.out.println("The request handler encountered an exception.");
             e.printStackTrace();
-            return false;
         }
     }
 
-    private RequestHandler(String[] tokens, DataInputStream input, DataOutputStream output,
-                           FileRegistry registry) {
-        this.tokens = tokens;
-        this.input = input;
-        this.output = output;
+    private RequestHandler(ServerSocket serverSocket, Socket socket, FileRegistry registry)
+            throws IOException {
+        this.serverSocket = serverSocket;
+        this.socket = socket;
+        input = new DataInputStream(socket.getInputStream());
+        output = new DataOutputStream(socket.getOutputStream());
+        tokens = input.readUTF().split(" ");
         this.registry = registry;
     }
 
     private void processRequest() throws IOException {
-        switch (tokens[0]) {
-            case "GET" -> handleGetRequest();
-            case "PUT" -> handlePutRequest();
-            case "DELETE" -> handleDeleteRequest();
-            case "EXIT" -> isExitRequest = true;
-            default -> output.writeUTF("400");
+        try (socket; input; output) {
+            switch (tokens[0]) {
+                case "GET" -> handleGetRequest();
+                case "PUT" -> handlePutRequest();
+                case "DELETE" -> handleDeleteRequest();
+                case "EXIT" -> {
+                    socket.close();
+                    serverSocket.close();
+                }
+                default -> output.writeUTF("400");
+            }
         }
     }
 

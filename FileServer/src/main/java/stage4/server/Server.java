@@ -1,9 +1,7 @@
 package stage4.server;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,8 +9,7 @@ class Server {
 
     private final ServerSocket serverSocket;
     private final FileRegistry registry;
-    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
-    private volatile boolean exitRequested = false;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     Server(ServerSocket serverSocket, FileRegistry registry) {
         this.serverSocket = serverSocket;
@@ -20,15 +17,13 @@ class Server {
     }
 
     void listen() {
-        while (!exitRequested) {
+        while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
-                executor.execute(() -> {
-                    if (RequestHandler.handle(socket, registry)) {
-                        exitRequested = true;
-                        sendFollowUpExitRequest();
-                    }
-                });
+                executor.execute(() -> RequestHandler.handle(serverSocket, socket, registry));
+            } catch (SocketException ignored) {
+                // This is expected; when a ServerSocket is closed, any thread
+                // currently blocked in accept() will throw a SocketException.
             } catch (IOException e) {
                 System.out.println("The server encountered an exception " +
                         "while waiting for an incoming connection.");
@@ -36,17 +31,5 @@ class Server {
             }
         }
         executor.shutdown();
-    }
-
-    // By the time exitRequested is set to true in the request handler thread, the listen method
-    // has already moved on to the next loop iteration, and is blocked on ServerSocket.accept.
-    // We need to send a "dummy" request to allow the loop to continue and listen to terminate.
-    void sendFollowUpExitRequest() {
-        try (var socket = new Socket(serverSocket.getInetAddress(), serverSocket.getLocalPort());
-             var out = new DataOutputStream(socket.getOutputStream())
-        ) {
-            out.writeUTF("SHUTDOWN");
-        } catch (IOException ignored) {
-        }
     }
 }

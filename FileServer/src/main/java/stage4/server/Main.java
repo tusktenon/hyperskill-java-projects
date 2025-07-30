@@ -15,17 +15,17 @@ public class Main {
     // Select a directory for file storage:
     // - the first option is required for successful submission on Hyperskill
     // - the second seems more reasonable for a multi-stage project repository
-    // private static final String DATA_DIRECTORY = "src/server/data";
+    // private static final String DATA_DIRECTORY = "server/data";
     private static final String DATA_DIRECTORY = "data/stage4/server";
 
     // Select a location (file) to store the serialized file registry
-    //  private static final String FILE_REGISTRY_STORAGE = "src/server/data/.file_registry";
+    // private static final String FILE_REGISTRY_STORAGE = "server/data/.file_registry";
     private static final String FILE_REGISTRY_STORAGE = "data/stage4/server/.file_registry";
 
     public static void main(String[] args) {
         // Create the data directory if it does not already exist
         try {
-            Path ignored = Files.createDirectories(Path.of(DATA_DIRECTORY));
+            Files.createDirectories(Path.of(DATA_DIRECTORY));
         } catch (Exception e) {
             System.out.println("Unable to create or access the data directory.");
             e.printStackTrace();

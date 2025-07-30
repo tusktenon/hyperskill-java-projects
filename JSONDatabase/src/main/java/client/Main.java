@@ -51,9 +51,9 @@ public class Main {
             Path path = Path.of(System.getProperty("user.dir"), REQUESTS_DIR, fileName);
             return Files.readString(path);
         }
-        JsonElement keyElement = key == null ? null : new JsonPrimitive(key);
-        JsonElement valueElement = value == null ? null : new JsonPrimitive(value);
-        Request request = new Request(type, keyElement, valueElement);
-        return new Gson().toJson(request);
+        String typePair = "\"type\":\"%s\"".formatted(type);
+        String keyPair = key == null ? "" : ",\"key\":\"%s\"".formatted(key);
+        String valuePair = value == null ? "" : ",\"value\":\"%s\"".formatted(value);
+        return "{" + typePair + keyPair + valuePair + "}";
     }
 }

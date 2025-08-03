@@ -10,6 +10,6 @@ public record Solution(int[] answer) {
     }
 
     public boolean solves(Quiz quiz) {
-        return Arrays.equals(answer, quiz.answer());
+        return Arrays.equals(answer, quiz.getAnswer());
     }
 }

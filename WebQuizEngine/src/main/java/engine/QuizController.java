@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,31 +17,33 @@ public class QuizController {
     private static final QuizResult wrong =
             new QuizResult(false, "Wrong answer! Please, try again.");
 
-    private final QuizService quizService;
+    private final QuizRepository quizRepository;
 
-    public QuizController(QuizService quizService) {
-        this.quizService = quizService;
+    public QuizController(QuizRepository quizRepository) {
+        this.quizRepository = quizRepository;
     }
 
     @GetMapping
     public List<Quiz> getAll() {
-        return quizService.getAll();
+        List<Quiz> quizzes = new ArrayList<>((int) quizRepository.count());
+        quizRepository.findAll().forEach(quizzes::add);
+        return quizzes;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Quiz> getById(@PathVariable int id) {
-        return ResponseEntity.of(quizService.getById(id));
+    public ResponseEntity<Quiz> getById(@PathVariable long id) {
+        return ResponseEntity.of(quizRepository.findById(id));
     }
 
     @PostMapping
-    public Quiz add(@Valid @RequestBody ProposedQuiz proposed) {
-        return quizService.add(proposed);
+    public Quiz add(@Valid @RequestBody Quiz quiz) {
+        return quizRepository.save(quiz);
     }
 
     @PostMapping("/{id}/solve")
-    public ResponseEntity<QuizResult> answerQuiz(@PathVariable int id,
+    public ResponseEntity<QuizResult> answerQuiz(@PathVariable long id,
                                                  @RequestBody Solution solution) {
         return ResponseEntity.of(
-                quizService.getById(id).map(quiz -> solution.solves(quiz) ? correct : wrong));
+                quizRepository.findById(id).map(quiz -> solution.solves(quiz) ? correct : wrong));
     }
 }

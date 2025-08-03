@@ -1,5 +1,6 @@
 package engine;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +33,14 @@ public class QuizController {
     }
 
     @PostMapping
-    public Quiz add(@RequestBody ProposedQuiz proposed) {
+    public Quiz add(@Valid @RequestBody ProposedQuiz proposed) {
         return quizService.add(proposed);
     }
 
     @PostMapping("/{id}/solve")
-    public ResponseEntity<QuizResult> answerQuiz(@PathVariable int id, @RequestParam int answer) {
+    public ResponseEntity<QuizResult> answerQuiz(@PathVariable int id,
+                                                 @RequestBody Solution solution) {
         return ResponseEntity.of(
-                quizService.getById(id).map(quiz -> answer == quiz.answer() ? correct : wrong));
+                quizService.getById(id).map(quiz -> solution.solves(quiz) ? correct : wrong));
     }
 }

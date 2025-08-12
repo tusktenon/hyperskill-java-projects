@@ -1,5 +1,5 @@
 package engine;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface QuizRepository extends CrudRepository<Quiz, Long> {}
+public interface QuizRepository extends JpaRepository<Quiz, Long> {}

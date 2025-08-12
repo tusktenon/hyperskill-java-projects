@@ -1,9 +1,11 @@
 package engine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -12,8 +14,7 @@ import java.util.Arrays;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-public final class Quiz {
+public class Quiz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +36,11 @@ public final class Quiz {
     @Fetch(value = FetchMode.SUBSELECT)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int[] answer;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    AppUser creator;
 
     public void setAnswer(int[] answer) {
         if (answer == null) answer = new int[0];

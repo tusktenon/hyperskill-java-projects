@@ -52,4 +52,4 @@ Each project falls into one of three groups:
 
 ### Challenging
 
-- [Web Quiz Engine with Java](https://hyperskill.org/projects/91) (Spring Boot, Spring Data JPA and Spring Web MVC)
+- [Web Quiz Engine with Java](https://hyperskill.org/projects/91) (Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC)

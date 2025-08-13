@@ -1,11 +1,13 @@
 package engine;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -13,28 +15,32 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/api/quizzes")
 public class QuizController {
 
-    private static final QuizResult correct =
-            new QuizResult(true, "Congratulations, you're right!");
-
-    private static final QuizResult wrong =
-            new QuizResult(false, "Wrong answer! Please, try again.");
+    private static final int PAGE_SIZE = 10;
 
     private final QuizRepository quizRepository;
-    private final AppUserRepository userRepository;
+    private final CompletionRepository completionRepository;
 
-    public QuizController(QuizRepository quizRepository, AppUserRepository userRepository) {
+    public QuizController(QuizRepository quizRepository,
+                          CompletionRepository completionRepository) {
         this.quizRepository = quizRepository;
-        this.userRepository = userRepository;
+        this.completionRepository = completionRepository;
     }
 
     @GetMapping
-    public List<Quiz> getAll() {
-        return quizRepository.findAll();
+    public Page<Quiz> getAll(@RequestParam int page) {
+        return quizRepository.findAll(PageRequest.of(page, PAGE_SIZE));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Quiz> getById(@PathVariable long id) {
         return ResponseEntity.of(quizRepository.findById(id));
+    }
+
+    @GetMapping("/completed")
+    public Page<QuizCompletion> getCompletions(@RequestParam int page,
+                                               @AuthenticationPrincipal AppUser user) {
+        return completionRepository.findByUserId(
+                user.getId(), PageRequest.of(page, PAGE_SIZE, Sort.by("completedAt").descending()));
     }
 
     @PostMapping
@@ -44,23 +50,27 @@ public class QuizController {
     }
 
     @PostMapping("/{id}/solve")
-    public ResponseEntity<QuizResult> answerQuiz(@PathVariable long id,
-                                                 @RequestBody Solution solution) {
-        return ResponseEntity.of(
-                quizRepository.findById(id).map(quiz -> solution.solves(quiz) ? correct : wrong));
+    public QuizResult answerQuiz(@PathVariable long id, @RequestBody Solution solution,
+                                 @AuthenticationPrincipal AppUser user) {
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+
+        if (solution.solves(quiz)) {
+            completionRepository.save(new QuizCompletion(0, user.getId(), id, LocalDateTime.now()));
+            return new QuizResult(true, "Congratulations, you're right!");
+        }
+        return new QuizResult(false, "Wrong answer! Please, try again.");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteQuiz(@PathVariable long id,
-                                        @AuthenticationPrincipal AppUser user) {
-        return quizRepository.findById(id)
-                .map(quiz -> {
-                    if (user.getId() == quiz.getCreator().getId()) {
-                        quizRepository.delete(quiz);
-                        return new ResponseEntity<>(NO_CONTENT);
-                    }
-                    return new ResponseEntity<>(FORBIDDEN);
-                })
-                .orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
+    @ResponseStatus(NO_CONTENT)
+    public void deleteQuiz(@PathVariable long id, @AuthenticationPrincipal AppUser user) {
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+
+        if (user.getId() != quiz.getCreator().getId()) {
+            throw new ResponseStatusException(FORBIDDEN);
+        }
+        quizRepository.delete(quiz);
     }
 }

@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.util.Arrays;
 
@@ -33,7 +31,6 @@ public class Quiz {
     private String[] options;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int[] answer;
 

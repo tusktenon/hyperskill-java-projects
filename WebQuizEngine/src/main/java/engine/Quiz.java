@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,9 +36,12 @@ public class Quiz {
     private int[] answer;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     @JsonIgnore
     AppUser creator;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<QuizCompletion> completions;
 
     public void setAnswer(int[] answer) {
         if (answer == null) answer = new int[0];

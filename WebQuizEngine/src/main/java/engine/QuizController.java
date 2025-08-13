@@ -39,8 +39,8 @@ public class QuizController {
     @GetMapping("/completed")
     public Page<QuizCompletion> getCompletions(@RequestParam int page,
                                                @AuthenticationPrincipal AppUser user) {
-        return completionRepository.findByUserId(
-                user.getId(), PageRequest.of(page, PAGE_SIZE, Sort.by("completedAt").descending()));
+        return completionRepository.findByUser(
+                user, PageRequest.of(page, PAGE_SIZE, Sort.by("completedAt").descending()));
     }
 
     @PostMapping
@@ -56,7 +56,7 @@ public class QuizController {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         if (solution.solves(quiz)) {
-            completionRepository.save(new QuizCompletion(0, user.getId(), id, LocalDateTime.now()));
+            completionRepository.save(new QuizCompletion(user, quiz, LocalDateTime.now()));
             return new QuizResult(true, "Congratulations, you're right!");
         }
         return new QuizResult(false, "Wrong answer! Please, try again.");

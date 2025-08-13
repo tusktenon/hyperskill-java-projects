@@ -8,7 +8,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -19,11 +18,24 @@ public class QuizCompletion {
     @JsonIgnore
     private long id;
 
+    @ManyToOne
     @JsonIgnore
-    private long userId;
+    private AppUser user;
 
-    @JsonProperty("id")
-    private long quizId;
+    @ManyToOne
+    @JsonIgnore
+    private Quiz quiz;
 
     private LocalDateTime completedAt;
+
+    public QuizCompletion(AppUser user, Quiz quiz, LocalDateTime completedAt) {
+        this.user = user;
+        this.quiz = quiz;
+        this.completedAt = completedAt;
+    }
+
+    @JsonProperty("id")
+    public long getQuizId() {
+        return quiz.getId();
+    }
 }

@@ -7,8 +7,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 @Entity
 @Getter
@@ -27,6 +26,12 @@ public class AppUser implements UserDetails {
     @NotNull
     @Size(min = 5)
     private String password;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    private List<Quiz> quizzes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<QuizCompletion> completions;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

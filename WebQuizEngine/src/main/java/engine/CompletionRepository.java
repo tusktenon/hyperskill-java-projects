@@ -8,5 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface CompletionRepository extends CrudRepository<QuizCompletion, Long>,
         PagingAndSortingRepository<QuizCompletion, Long> {
 
-    Page<QuizCompletion> findByUserId(long userid, Pageable pageable);
+    Page<QuizCompletion> findByUser(AppUser user, Pageable pageable);
 }

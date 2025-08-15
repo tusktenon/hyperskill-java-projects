@@ -341,10 +341,10 @@ There are only two modified operations for creating and solving quizzes. All oth
 
 **1.** Update handing of `POST` requests sent to the `/api/quizzes` endpoint. The requests must contain a JSON as the request's body with the four fields:
 
-    - `title`: a string, **required**;
-    - `text`: a string, **required**;
-    - `options`: an array of strings, **required**, should contain at least **2** items;
-    - `answer`: an array of integer indexes of correct options, can be absent or empty if all options are wrong.
+- `title`: a string, **required**;
+- `text`: a string, **required**;
+- `options`: an array of strings, **required**, should contain at least **2** items;
+- `answer`: an array of integer indexes of correct options, can be absent or empty if all options are wrong.
 
 Here is the new structure of the request body:
 ```json
@@ -706,19 +706,19 @@ If you would like your service to support more operations, add `PUT` or `PATCH` 
 
 *Response:* `401 UNAUTHORIZED`
 
-**Example 6:** *deleting a quiz created by the same user, providing a valid authentication:* email=test@mail.org and password=strongpassword.
+**Example 6:** *deleting a quiz created by the same user, providing a valid authentication: `email=test@mail.org` and `password=strongpassword`:*
 
 *Request:* `DELETE /api/quizzes/2`
 
 *Response:* `204 NO CONTENT`
 
-**Example 7:** *deleting a non-existing quiz, providing a valid authentication:* email=test@mail.org and password=strongpassword:
+**Example 7:** *deleting a non-existing quiz, providing a valid authentication: `email=test@mail.org` and `password=strongpassword`:*
 
 *Request:* `DELETE /api/quizzes/20`
 
 *Response:* `404 NOT FOUND`
 
-**Example 8:** *deleting a quiz created by another user, providing a valid authentication:* email=test@mail.org and password=strongpassword:
+**Example 8:** *deleting a quiz created by another user, providing a valid authentication: `email=test@mail.org` and `password=strongpassword`:*
 
 *Request:* `DELETE /api/quizzes/5`
 

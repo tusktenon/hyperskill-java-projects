@@ -1,20 +1,13 @@
 package webCalendarSpring;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-public interface EventRepository extends CrudRepository<Event, Long> {
+public interface EventRepository extends ListCrudRepository<Event, Long> {
 
-    public default List<Event> findAllEvents() {
-        List<Event> events = new ArrayList<>((int) count());
-        findAll().forEach(events::add);
-        return events;
-    }
+    List<Event> findByDate(LocalDate date);
 
-    public List<Event> findByDate(LocalDate date);
-
-    public List<Event> findByDateBetween(LocalDate start, LocalDate end);
+    List<Event> findByDateBetween(LocalDate start, LocalDate end);
 }

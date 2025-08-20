@@ -24,7 +24,7 @@ public class EventController {
             @RequestParam(name = "end_time", required = false) LocalDate end
     ) {
         List<Event> events = start == null && end == null
-                ? eventRepository.findAllEvents()
+                ? eventRepository.findAll()
                 : eventRepository.findByDateBetween(start, end);
         return events.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)

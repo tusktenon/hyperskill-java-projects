@@ -37,34 +37,34 @@ public class QuizController {
     }
 
     @GetMapping("/completed")
-    public Page<QuizCompletion> getCompletions(@RequestParam int page,
-                                               @AuthenticationPrincipal AppUser user) {
+    public Page<Completion> getCompletions(@RequestParam int page,
+                                           @AuthenticationPrincipal User user) {
         return completionRepository.findByUser(
                 user, PageRequest.of(page, PAGE_SIZE, Sort.by("completedAt").descending()));
     }
 
     @PostMapping
-    public Quiz add(@Valid @RequestBody Quiz quiz, @AuthenticationPrincipal AppUser creator) {
+    public Quiz add(@Valid @RequestBody Quiz quiz, @AuthenticationPrincipal User creator) {
         quiz.setCreator(creator);
         return quizRepository.save(quiz);
     }
 
     @PostMapping("/{id}/solve")
-    public QuizResult answerQuiz(@PathVariable long id, @RequestBody Solution solution,
-                                 @AuthenticationPrincipal AppUser user) {
+    public Feedback answer(@PathVariable long id, @RequestBody Solution solution,
+                               @AuthenticationPrincipal User user) {
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         if (solution.solves(quiz)) {
-            completionRepository.save(new QuizCompletion(user, quiz, LocalDateTime.now()));
-            return new QuizResult(true, "Congratulations, you're right!");
+            completionRepository.save(new Completion(user, quiz, LocalDateTime.now()));
+            return new Feedback(true, "Congratulations, you're right!");
         }
-        return new QuizResult(false, "Wrong answer! Please, try again.");
+        return new Feedback(false, "Wrong answer! Please, try again.");
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void deleteQuiz(@PathVariable long id, @AuthenticationPrincipal AppUser user) {
+    public void delete(@PathVariable long id, @AuthenticationPrincipal User user) {
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 

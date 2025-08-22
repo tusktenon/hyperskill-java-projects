@@ -35,7 +35,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(AppUserRepository repository) {
+    public UserDetailsService userDetailsService(UserRepository repository) {
         return username -> repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Not found: " + username));
     }

@@ -11,9 +11,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
+@Table(name = "ACCOUNT") // "USER" is a SQL reserved word
 @Getter
 @Setter
-public class AppUser implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -5,8 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface CompletionRepository extends CrudRepository<QuizCompletion, Long>,
-        PagingAndSortingRepository<QuizCompletion, Long> {
+public interface CompletionRepository extends CrudRepository<Completion, Long>,
+        PagingAndSortingRepository<Completion, Long> {
 
-    Page<QuizCompletion> findByUser(AppUser user, Pageable pageable);
+    Page<Completion> findByUser(User user, Pageable pageable);
 }

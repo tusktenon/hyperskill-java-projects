@@ -37,11 +37,11 @@ public class Quiz {
 
     @ManyToOne
     @JsonIgnore
-    AppUser creator;
+    User creator;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<QuizCompletion> completions;
+    private List<Completion> completions;
 
     public void setAnswer(int[] answer) {
         if (answer == null) answer = new int[0];

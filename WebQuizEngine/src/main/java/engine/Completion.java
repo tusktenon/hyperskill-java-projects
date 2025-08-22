@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class QuizCompletion {
+public class Completion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class QuizCompletion {
 
     @ManyToOne
     @JsonIgnore
-    private AppUser user;
+    private User user;
 
     @ManyToOne
     @JsonIgnore
@@ -28,7 +28,7 @@ public class QuizCompletion {
 
     private LocalDateTime completedAt;
 
-    public QuizCompletion(AppUser user, Quiz quiz, LocalDateTime completedAt) {
+    public Completion(User user, Quiz quiz, LocalDateTime completedAt) {
         this.user = user;
         this.quiz = quiz;
         this.completedAt = completedAt;

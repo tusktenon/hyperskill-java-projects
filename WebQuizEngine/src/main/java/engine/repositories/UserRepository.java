@@ -1,5 +1,6 @@
-package engine;
+package engine.repositories;
 
+import engine.models.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

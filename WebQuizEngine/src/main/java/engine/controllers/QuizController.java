@@ -1,5 +1,8 @@
-package engine;
+package engine.controllers;
 
+import engine.models.*;
+import engine.repositories.CompletionRepository;
+import engine.repositories.QuizRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +54,7 @@ public class QuizController {
 
     @PostMapping("/{id}/solve")
     public Feedback answer(@PathVariable long id, @RequestBody Solution solution,
-                               @AuthenticationPrincipal User user) {
+                           @AuthenticationPrincipal User user) {
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 

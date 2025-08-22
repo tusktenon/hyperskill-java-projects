@@ -1,5 +1,7 @@
-package engine;
+package engine.controllers;
 
+import engine.models.User;
+import engine.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;

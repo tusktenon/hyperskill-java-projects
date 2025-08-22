@@ -1,4 +1,4 @@
-package engine;
+package engine.models;
 
 import java.util.Arrays;
 

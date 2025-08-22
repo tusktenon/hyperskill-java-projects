@@ -1,5 +1,6 @@
-package engine;
+package engine.config;
 
+import engine.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,8 +26,7 @@ public class SecurityConfig {
         return http.httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable) // for POST requests via Postman
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/actuator/shutdown").permitAll() //
-                        // required for testing
+                        .requestMatchers(HttpMethod.POST, "/actuator/shutdown").permitAll() // required for testing
                         .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
                         .requestMatchers("/api/quizzes/**").authenticated()
                         .anyRequest().denyAll()

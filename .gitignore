@@ -1,5 +1,6 @@
 bin
 .classpath
+.project
 .settings
 
 # H2 data file for Web Calendar project

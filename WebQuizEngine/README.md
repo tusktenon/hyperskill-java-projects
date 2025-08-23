@@ -874,3 +874,14 @@ If you would like to continue the project, you can develop a web or mobile clien
 *Request:* `GET /api/quizzes/completed?page=1`
 
 *Response:* `401 UNAUTHORIZED`
+
+### *My Comment*
+
+From a design perspective, there's a good argument to be made for splitting my `models.User` class into two or three separate classes:
+- a `RegistrationRequest` class (or preferably, a record) to model the JSON body of registration requests;
+- a `User` JPA entity class to model users persisted in the database;
+- a `UserAdapter` class that wraps a `User` object and implements the `UserDetails` interface.
+
+This is the approach taken in the Hyperskill [Custom User Store](https://hyperskill.org/learn/step/32430) lecture and (to certain extent) in Craig Walls's *[Spring in Action, 6th edition](https://www.manning.com/books/spring-in-action-sixth-edition)* (Section 5.2.2, pp. 119-124) and in Laurentiu Spilca's *[Spring Security in Action, 2nd edition](https://www.manning.com/books/spring-security-in-action-second-edition)* (Section 3.2.5, pp. 53-55).
+
+I'll likely adopt this design in future projects, but decided not to here. A single class fulfilling all three roles works just fine from a technical standpoint, and it's probably instructive to have at least one Spring Data + Security + Web project that proves this.

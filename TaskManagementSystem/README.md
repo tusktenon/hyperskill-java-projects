@@ -108,3 +108,139 @@ and responds with a `200 OK` status code. Check the request body. If the `email`
 **Example 5.** *GET request to /api/tasks endpoint with incorrect credentials:*
 
 *Response code:* `401 UNAUTHORIZED`
+
+
+## Stage 2/5: Creating tasks
+
+### Description
+
+In the last stage, you enabled users to register on the Task Management System. They should now be able to create tasks and view those created by others. Additionally, you need to implement a function that allows filtering tasks by their author for user convenience.
+
+A task should be a straightforward object encompassing a title, which should never be blank or empty, a description explaining the task's essence, and a status indicating its current state. The task should also hold information about the user who created it and who will own the task.
+
+Any authenticated user should have the ability to create a task and view a list of all tasks in the system. To make it user-friendly, arrange the task list so that the most recent tasks show up first.
+
+### Objectives
+
+- Create the `POST /api/tasks` endpoint to accept a JSON request body with new task details:
+    ```text
+    {
+      "title": <string, not null, not blank>,
+      "description": <string, not null, not blank>
+    }
+    ```
+If the request body is valid, the endpoint should respond with `200 OK` status code and a JSON response body:
+    ```text
+    {
+      "id": <string>,
+      "title": <string>,
+      "description": <string>,
+      "status": "CREATED",
+      "author": <string>
+    }
+    ```
+The `id` field is a string representation of the task's unique identifier. This doesn't mean that the identifier must be a string, but the response body should present it as a string value to not depend on the database implementation. The `author` field should feature the author email in lowercase. If the request body is not valid, the endpoint should return a `400 BAD REQUEST` status code.
+
+- Modify the `GET /api/tasks` endpoint to respond with `200 OK` status code and return a JSON array of all created tasks, or an empty array if no tasks exist. Each array's element should follow the same format as mentioned above:
+    ```text
+    [
+      {
+        "id": <string>,
+        "title": <string>,
+        "description": <string>,
+        "status": "CREATED",
+        "author": <string>
+      },
+      // other tasks
+    ]
+    ```
+The array should display newer tasks first.
+
+- The `GET /api/tasks` endpoint should also accept an optional `author` parameter to return an array of tasks authored by a particular user. Treat this parameter as case insensitive:
+    ```text
+    GET /api/tasks?author=address@domain.net
+    ```
+
+- Only authenticated users should have access to the tasks endpoints. If accessed by unauthorized users, respond with a `401 UNAUTHORIZED` status code.
+
+- Store all data in the database.
+
+### Examples
+
+**Example 1.** *POST request to /api/tasks endpoint by a registered user with valid credentials (username=user1@mail.com):*
+
+*Request body:*
+```json
+{
+  "title": "new task",
+  "description": "a task for anyone"
+}
+```
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": "1",
+  "title": "new task",
+  "description": "a task for anyone",
+  "status": "CREATED",
+  "author": "user1@mail.com"
+}
+```
+
+**Example 2.** *POST request to /api/tasks endpoint with an invalid request body by an authenticated user:*
+
+*Request body:*
+```json
+{
+  "title": "",
+  "description": "a task for anyone"
+}
+```
+*Response code:* `400 BAD REQUEST`
+
+**Example 3.** *POST request to /api/developers/signup endpoint with invalid credentials:*
+
+*Request body:*
+```json
+{
+  "title": "new task",
+  "description": "a task for anyone"
+}
+```
+*Response code:* `401 UNAUTHORIZED`
+
+**Example 4.** *GET request to /api/tasks endpoint with valid user credentials:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "1",
+    "title": "new task",
+    "description": "a task for anyone",
+    "status": "CREATED",
+    "author": "user1@mail.com"
+  }
+]
+```
+
+**Example 5.** *GET request to /api/tasks?author=USER1@mail.com with valid user credentials:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "1",
+    "title": "new task",
+    "description": "a task for anyone",
+    "status": "CREATED",
+    "author": "user1@mail.com"
+  }
+]
+```

@@ -52,4 +52,5 @@ Each project falls into one of three groups:
 
 ### Challenging
 
+- [Task Management System](https://hyperskill.org/projects/423) (Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC)
 - [Web Quiz Engine with Java](https://hyperskill.org/projects/91) (Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC)

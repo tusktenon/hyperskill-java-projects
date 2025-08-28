@@ -1,6 +1,6 @@
 package taskmanagement.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +13,7 @@ public class Task {
 
     @Id
     @GeneratedValue
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
 
     @NotBlank
@@ -37,9 +38,8 @@ public class Task {
         this.author = author;
     }
 
-    @JsonProperty("id")
-    public String getIdAsString() {
-        return id.toString();
+    public Long getId() {
+        return id;
     }
 
     public String getTitle() {

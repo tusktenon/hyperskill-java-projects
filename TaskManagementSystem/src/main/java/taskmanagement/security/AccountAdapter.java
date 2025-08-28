@@ -15,6 +15,10 @@ public class AccountAdapter implements UserDetails {
         this.account = account;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();

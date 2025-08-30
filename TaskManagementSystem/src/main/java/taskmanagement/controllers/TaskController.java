@@ -1,14 +1,12 @@
 package taskmanagement.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import taskmanagement.models.ProposedTask;
-import taskmanagement.models.Task;
+import taskmanagement.models.*;
 import taskmanagement.repositories.AccountRepository;
 import taskmanagement.repositories.TaskRepository;
-import taskmanagement.security.AccountAdapter;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,9 +32,10 @@ public class TaskController {
     }
 
     @PostMapping("/api/tasks")
-    Task add(@Valid @RequestBody ProposedTask proposed,
-             @AuthenticationPrincipal AccountAdapter adapter) {
-        Task task = new Task(proposed.title(), proposed.description(), adapter.getAccount());
+    Task add(@Valid @RequestBody ProposedTask proposed, Principal principal) {
+        Account account = accountRepository.findByEmailIgnoreCase(principal.getName())
+                .orElseThrow();
+        Task task = new Task(proposed.title(), proposed.description(), account);
         return taskRepository.save(task);
     }
 }

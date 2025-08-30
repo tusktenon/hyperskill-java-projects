@@ -244,3 +244,111 @@ The array should display newer tasks first.
   }
 ]
 ```
+
+
+## Stage 3/5: Authenticating with JWT
+
+### Description
+
+Great job so far! It's now time to enhance the sign-in process to improve user experience. Instead of making a user supply their login details for every request, you should let them give the details only once to receive an authentication token. They can then use this token for future sign ins.
+
+This will make the user experience better without compromising security.
+
+The normal way to put such token-based sign ins into action is by using JWT. However, the tests won't make you use the JWT format, and you're free to use any opaque token, as long as the service can recognize the user by that token.
+
+To put the bearer token sign in to use, you need to create an endpoint for users to sign in and get their tokens. This endpoint should be available only to registered users using basic HTTP sign ins. Any other endpoint, apart from the `POST /api/accounts`, should be available if a request has the Authorization header with a functioning bearer token:
+```text
+Authorization: Bearer <token value>
+```
+
+The rest of the service should work as it did in the previous stage.
+
+### Objectives
+
+- Create the `POST /api/auth/token` endpoint that should be accessible using basic HTTP sign in. If the user signs in successfully, the endpoint should respond with the status code `200 OK` and a JSON response body:
+    ```text
+    {
+    "token": <string>
+    }
+    ```
+The `token` field contains a string representation of the access token provided to the user. The token should have a reasonable expiration time, allowing the user to utilize the token without frequently signing in again. If the user does not provide valid details, the endpoint should respond with a `401 UNAUTHORIZED` status code.
+
+- Update the security settings so that any other secure endpoint can be accessed using the bearer token sign in with the granted access tokens.
+
+- From now on, any requests to the API will be tested using access tokens that will be added to the `Authorization` header:
+    ```text
+    Authorization: Bearer <string token value>
+    ```
+But remember, in this project you don't need to turn off the basic HTTP sign in completely.
+
+- All other endpoints should work the same way as they did in the previous stage.
+
+### Examples
+
+**Example 1**. *POST request to the /api/auth/token endpoint by a registered user with valid details (username=user2@mail.com):*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "token": "eyJraWQiOiJkM2E4YWY0NC0xNzc3LTRmOTAtYjc5Yy03NDRkMTI4MDQxNGQiLCJhbGciOiJSUzI1NiJ9
+            .eyJzdWIiOiJ1c2VyMkBtYWlsLmNvbSIsImV4cCI6MTcwMzA4MTIyNiwiaWF0IjoxNzAzMDc3NjI2LCJ
+            zY29wZSI6WyJST0xFX1VTRVIiXX0.g069OwkofwRPa1vuIU-Vc30UYXzmJihlg9KzxQ7LqJzKsJJO4_o
+            sSVwq7eqniiYurIBToXiW_PttteuOOps6ryDZXKqg3FBoHEiRLoUgn9vNgRydFOBo1WwB_fHxOB0xFW2
+            RrGbDlWpFs9F_8ap-O9BHf74VU4L1HRn6vTA7yhtqfBdAZscPY6XCVjUdPwXMQnNqJy2vOTdFNd1-V9X
+            X5GEFbndXMyTsQAKfhTnjdn151unbzYnllUwtb4xtRfpCLr47KuVSGrOTfDbBbjx91SB2i0wfq46b5ty
+            lCOMR7nsMWuhBxV8oqlIICLPokEejB8jAVcZXcsxSqQz9AHopGg"
+}
+```
+
+**Example 2**. *POST request to the /api/tasks endpoint with the token from Example 1:*
+
+*Request body:*
+```json
+{
+  "title": "second task",
+  "description": "another task"
+}
+```
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": "2",
+  "title": "second task",
+  "description": "another task",
+  "status": "CREATED",
+  "author": "user2@mail.com"
+}
+```
+
+**Example 3**. *GET request to the /api/tasks endpoint with the token from Example 1:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "2",
+    "title": "second task",
+    "description": "another task",
+    "status": "CREATED",
+    "author": "user2@mail.com"
+  },
+  {
+    "id": "1",
+    "title": "new task",
+    "description": "a task for anyone",
+    "status": "CREATED",
+    "author": "user1@mail.com"
+  }
+]
+```
+
+**Example 4**. *GET request to the /api/tasks with an expired access token:*
+
+*Response code:* `401 UNAUTHORIZED`

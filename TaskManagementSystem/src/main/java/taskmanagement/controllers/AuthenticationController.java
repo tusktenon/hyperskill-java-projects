@@ -17,7 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 @RestController
-public class RegistrationController {
+public class AuthenticationController {
 
     @Value("${authentication.tokenExpiration}")
     long tokenExpiration;
@@ -26,8 +26,8 @@ public class RegistrationController {
     private final PasswordEncoder passwordEncoder;
     private final JwtEncoder jwtEncoder;
 
-    public RegistrationController(AccountRepository repository, PasswordEncoder passwordEncoder,
-                                  JwtEncoder jwtEncoder) {
+    public AuthenticationController(AccountRepository repository, PasswordEncoder passwordEncoder,
+                                    JwtEncoder jwtEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtEncoder = jwtEncoder;

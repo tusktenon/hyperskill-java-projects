@@ -352,3 +352,164 @@ But remember, in this project you don't need to turn off the basic HTTP sign in 
 **Example 4**. *GET request to the /api/tasks with an expired access token:*
 
 *Response code:* `401 UNAUTHORIZED`
+
+
+## Stage 4/5: Assigning tasks
+
+### Description
+
+In this stage, you'll set up task management. Task creators should be able to assign their tasks to other users. Additionally, both task creators and assignees should have the option to update the task's status.
+
+Besides listing all tasks and filtering them by creator, a client should also be capable of filtering tasks by assignee.
+
+Let's delve into this functionality.
+
+When a user makes a task, it gets the status `CREATED` and doesn't have an assignee. The creator can pick another user by their email and assign the task to them. Plus, the creator can remove the assignee from the task. Other users can still see the tasks made by others but they can't modify them.
+
+Moreover, the creator can alter the task's status. The possible statuses, besides `CREATED`, are `IN_PROGRESS` and `COMPLETED`. If the task has an assignee, that assignee can also update the task status. No other user has the authorization to change the status of the task.
+
+This is the beginning of actual task management. Remember, previous functionalities should remain operational.
+
+### Objectives
+
+- Refine the `POST /api/tasks` endpoint. It should take the same request body as before but its response body should now include the assignee field with the value `"none"` since the new task isn't assigned:
+    ```text
+    {
+      "id": <string>,
+      "title": <string>,
+      "description": <string>,
+      "status": "CREATED",
+      "author": <string>,
+      "assignee": "none"
+    }
+    ```
+
+- Make the `PUT /api/tasks/<taskId>/assign` endpoint. It should accept the following JSON request body:
+    ```text
+    { 
+      "assignee": <email address|"none"> 
+    }
+    ```
+and respond with the status code `200 OK` and a response body mirroring the updated task state:
+    ```text
+    {
+      "id": <string>,
+      "title": <string>,
+      "description": <string>,
+      "status": <string>,
+      "author": <string>,
+      "assignee": <assignee's email>
+    }
+    ```
+The `assignee` field should contain either the valid email address of a registered user or `"none"` if the author wants to remove the previous assignment. If the `taskId` path variable doesn't reflect the ID of a task, the endpoint should respond with the status code `404 NOT FOUND`. Likewise, if the assignee's email isn't associated with a registered user, the endpoint should reply with the status code `404 NOT FOUND`. If the `assignee` isn't a valid email address or `"none"`, return the status code `400 BAD REQUEST`. If the user who's trying to assign the task isn't its author, respond with the status code `403 FORBIDDEN`.
+
+- Create the `PUT /api/tasks/<taskId>/status` endpoint that should accept the following JSON request body:
+    ```text
+    {
+      "status": <"CREATED"|"IN_PROGRESS"|"COMPLETED">
+    }
+    ```
+and reply with the status code `200 OK` and a response body that shows the updated task state:
+    ```text
+    {
+      "id": <string>,
+      "title": <string>,
+      "description": <string>,
+      "status": <new status>,
+      "author": <string>,
+      "assignee": <string>
+    }
+    ```
+The `status` field should only have one of the permitted values, which are `CREATED`, `IN_PROGRESS`, or `COMPLETED`. If it's not one of these, return the response code `400 BAD REQUEST`. If the user trying to change the task status isn't the author or assignee, respond with the status code `403 FORBIDDEN`. If the `taskId` path variable doesn't refer to an existing task ID, the endpoint should respond with the status code `404 NOT FOUND`.
+
+- Alter the `GET /api/tasks` endpoint. Now it should accept a new optional parameter, assignee, for filtering tasks. The assignee parameter holds a user's email address and should be treated case insensitive. A request can contain any, both or none of the parameters to filter tasks by author, assignee, or both, or just return a list of all tasks:
+    ```text
+    [
+      {
+        "id": <string>,
+        "title": <string>,
+        "description": <string>,
+        "status": <string>,
+        "author": <string>,
+        "assignee": <string>
+      },
+      // other tasks
+    ]
+    ```
+
+### Examples
+
+**Example 1**. *PUT request to the /api/tasks/1/assign endpoint by the task's creator: Request body:*
+```json
+{
+  "assignee": "user2@mail.com"
+}
+```
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": "1",
+  "title": "new task",
+  "description": "a task for anyone",
+  "status": "CREATED",
+  "author": "user1@mail.com",
+  "assignee": "user2@mail.com"
+}
+```
+
+**Example 2**. *PUT request to the /api/tasks/1/status endpoint by the task's assignee:*
+
+*Request body:*
+```json
+{
+  "status": "COMPLETED"
+}
+```
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": "1",
+  "title": "new task",
+  "description": "a task for anyone",
+  "status": "COMPLETED",
+  "author": "user1@mail.com",
+  "assignee": "user2@mail.com"
+}
+```
+
+**Example 3**. *GET request to the /api/tasks?assignee=user2@mail.com endpoint by an authenticated user:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "1",
+    "title": "new task",
+    "description": "a task for anyone",
+    "status": "COMPLETED",
+    "author": "user1@mail.com",
+    "assignee": "user2@mail.com"
+  }
+]
+```
+
+**Example 4**. *GET request to the /api/tasks?author=user2@mail.com&assignee=user1@mail.com by an authenticated user:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[]
+```
+
+**Example 5**. *GET request to the /api/tasks?author=user2@mail.com&assignee=user1@mail.com by an unauthenticated user:*
+
+*Response code:* `401 UNAUTHORIZED`

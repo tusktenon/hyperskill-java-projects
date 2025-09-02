@@ -33,7 +33,6 @@ public class TaskController {
 
     @PostMapping("/api/tasks")
     Task add(@Valid @RequestBody ProposedTask proposed, @AuthenticatedAccount Account author) {
-        Task task = new Task(proposed.title(), proposed.description(), author);
-        return taskRepository.save(task);
+        return taskRepository.save(proposed.toTask(author));
     }
 }

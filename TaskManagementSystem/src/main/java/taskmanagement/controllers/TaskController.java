@@ -25,10 +25,10 @@ public class TaskController {
     List<Task> getAll(@RequestParam(name = "author", required = false) String email) {
         if (email != null) {
             return accountRepository.findByEmailIgnoreCase(email)
-                    .map(taskRepository::findByAuthorOrderByIdDesc)
+                    .map(taskRepository::findByAuthorOrderByCreatedAtDesc)
                     .orElseGet(Collections::emptyList);
         }
-        return taskRepository.findAllByOrderByIdDesc();
+        return taskRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @PostMapping("/api/tasks")

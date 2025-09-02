@@ -1,10 +1,11 @@
 package taskmanagement.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Task {
@@ -28,6 +29,9 @@ public class Task {
     @ManyToOne
     private Account author;
 
+    @JsonIgnore
+    private LocalDateTime createdAt;
+
     public Task() {
     }
 
@@ -36,6 +40,7 @@ public class Task {
         this.description = description;
         this.status = Status.CREATED;
         this.author = author;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {

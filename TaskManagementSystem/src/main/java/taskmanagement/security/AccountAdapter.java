@@ -2,7 +2,7 @@ package taskmanagement.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import taskmanagement.models.Account;
+import taskmanagement.business.entities.Account;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package taskmanagement.models;
+package taskmanagement.business.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;

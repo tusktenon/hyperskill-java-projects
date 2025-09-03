@@ -1,7 +1,8 @@
-package taskmanagement.models;
+package taskmanagement.presentation.models;
 
 import jakarta.validation.constraints.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import taskmanagement.business.entities.Account;
 
 public record RegistrationRequest(
         @NotNull

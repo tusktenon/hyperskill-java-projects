@@ -1,4 +1,4 @@
-package taskmanagement.models;
+package taskmanagement.business.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

@@ -2,8 +2,8 @@ package taskmanagement.security;
 
 import org.springframework.security.oauth2.jwt.JwtClaimAccessor;
 import org.springframework.stereotype.Service;
-import taskmanagement.models.Account;
-import taskmanagement.repositories.AccountRepository;
+import taskmanagement.business.entities.Account;
+import taskmanagement.persistence.repositories.AccountRepository;
 
 @Service
 public class JwtAccountLookup {

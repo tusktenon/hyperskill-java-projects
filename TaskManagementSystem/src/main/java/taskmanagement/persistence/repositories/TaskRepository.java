@@ -1,8 +1,8 @@
-package taskmanagement.repositories;
+package taskmanagement.persistence.repositories;
 
 import org.springframework.data.repository.CrudRepository;
-import taskmanagement.models.Account;
-import taskmanagement.models.Task;
+import taskmanagement.business.entities.Account;
+import taskmanagement.business.entities.Task;
 
 import java.util.List;
 

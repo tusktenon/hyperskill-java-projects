@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Task {
 
-    public enum Status {CREATED}
+    public enum Status {CREATED, IN_PROGRESS, COMPLETED}
 
     @Id
     @GeneratedValue
@@ -24,13 +24,16 @@ public class Task {
     private String description;
 
     @NotNull
-    private Status status;
+    private Status status = Status.CREATED;
 
     @ManyToOne
     private Account author;
 
+    @ManyToOne
+    private Account assignee;
+
     @JsonIgnore
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Task() {
     }
@@ -38,9 +41,7 @@ public class Task {
     public Task(String title, String description, Account author) {
         this.title = title;
         this.description = description;
-        this.status = Status.CREATED;
         this.author = author;
-        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -59,8 +60,21 @@ public class Task {
         return status;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @JsonProperty("author")
     public String getAuthorEmail() {
         return author.getEmail();
+    }
+
+    @JsonProperty("assignee")
+    public String getAssigneeEmail() {
+        return assignee == null ? "none" : assignee.getEmail();
+    }
+
+    public void setAssignee(Account assignee) {
+        this.assignee = assignee;
     }
 }

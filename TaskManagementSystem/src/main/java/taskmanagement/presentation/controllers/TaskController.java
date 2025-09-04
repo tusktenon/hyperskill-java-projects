@@ -1,16 +1,21 @@
 package taskmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import taskmanagement.business.entities.Account;
 import taskmanagement.business.entities.Task;
 import taskmanagement.business.services.TaskService;
-import taskmanagement.presentation.models.ProposedTask;
+import taskmanagement.presentation.models.*;
 import taskmanagement.security.AuthenticatedAccount;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService service;
@@ -19,13 +24,38 @@ public class TaskController {
         this.service = service;
     }
 
-    @GetMapping("/api/tasks")
-    List<Task> getAll(@RequestParam(required = false) String author) {
-        return author == null ? service.getAll() : service.get(author);
+    @GetMapping
+    List<Task> get(@RequestParam(required = false) String author,
+                   @RequestParam(required = false) String assignee) {
+        return service.get(author, assignee);
     }
 
-    @PostMapping("/api/tasks")
+    @PostMapping
     Task add(@Valid @RequestBody ProposedTask proposed, @AuthenticatedAccount Account author) {
         return service.add(proposed, author);
+    }
+
+    @PutMapping("/{taskId}/assign")
+    Task setAssignee(@PathVariable long taskId, @Valid @RequestBody AssigneeUpdate update,
+                     Principal assigner) {
+        try {
+            return service.setAssignee(taskId, update.assignee(), assigner.getName());
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (TaskService.UnauthorizedAccountException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PutMapping("/{taskId}/status")
+    Task setStatus(@PathVariable long taskId, @Valid @RequestBody StatusUpdate update,
+                   Principal updater) {
+        try {
+            return service.setStatus(taskId, update.status(), updater.getName());
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (TaskService.UnauthorizedAccountException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 }

@@ -6,7 +6,7 @@ import taskmanagement.business.entities.Account;
 
 public record RegistrationRequest(
         @NotNull
-        @Email(regexp = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)+")
+        @Email(regexp = "\\w+([.-]\\w+)*@\\w+(\\.\\w+)+")
         String email,
 
         @NotBlank

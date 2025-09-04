@@ -13,7 +13,7 @@ public class Account {
 
     @Column(unique = true)
     @NotNull
-    @Email(regexp = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)+")
+    @Email(regexp = "\\w+([.-]\\w+)*@\\w+(\\.\\w+)+")
     private String email;
 
     @NotNull

@@ -78,7 +78,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/token").authenticated()
-                        .requestMatchers("/api/tasks").authenticated()
+                        .requestMatchers("/api/tasks/**").authenticated()
                 )
                 // allow modifying requests from tests
                 .csrf(AbstractHttpConfigurer::disable)

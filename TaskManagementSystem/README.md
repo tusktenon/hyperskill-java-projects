@@ -513,3 +513,137 @@ The `status` field should only have one of the permitted values, which are `CREA
 **Example 5**. *GET request to the /api/tasks?author=user2@mail.com&assignee=user1@mail.com by an unauthenticated user:*
 
 *Response code:* `401 UNAUTHORIZED`
+
+
+## Stage 5/5: Leaving comments
+
+### Description
+
+In this stage, you need to create ways for users to interact. Any logged-in user should have the option to leave comments on any task. Moreover, they should be able to request all the comments on any given task. To make things easier for the users, comments should include the author's details and should be sorted from newest to oldest.
+
+Furthermore, when a user asks for a task list, the details of each task should include the total comments it received. As you add this function, keep performance in mind and try to limit the number of database requests.
+
+All functions from previous stages should remain functional.
+
+After completing this stage, you will have a solid foundation of a task management system that you can further enhance by introducing features such as modifying and deleting tasks and comments, enabling file attachments, and more.
+
+### Objectives
+
+- Create the `POST /api/tasks/<taskId>/comments` endpoint to accept a JSON body with the comment text:
+    ```text
+    {
+      "text": <string, not blank>
+    }
+    ```
+and reply with the status code `200 OK`. If the request body is not valid, return the status code `400 BAD REQUEST`. If you cannot find any task using the supplied `taskId` path variable, answer with the status code `404 NOT FOUND`. Only logged-in users can post comments, otherwise, reply with the status code `401 UNAUTHORIZED`.
+
+- Create the `GET /api/tasks/<taskId>/comments` endpoint to fetch all the comments for the task identified by an identifier. The endpoint should reply with the status code `200 OK` and a JSON array of comments containing the following details:
+    ```text
+    [
+      {
+        "id": <string>,
+        "task_id": <string>,
+        "text": <string>,
+        "author": <string>
+      },
+      // other comments
+    ]
+    ```
+where `id` is the unique identifier of the comment, `task_id` is the identifier of the task the comment pertains to, `text` is the comment's text and `author` is the email of the user who made the comment. The array should be sorted so that newer comments appear first.
+If the user is not logged in, return `401 UNAUTHORIZED`. If no task can be found using the provided `taskId` path variable, answer with the status code `404 NOT FOUND`.
+
+- Update the `GET /api/tasks` endpoint. Now the fetched list of tasks should include the total number of comments for each task:
+    ```text
+    [
+      {
+        "id": <string>,
+        "title": <string>,
+        "description": <string>,
+        "status": <string>,
+        "author": <string>,
+        "assignee": <string>,
+        "total_comments": <integer>
+      },
+      // other tasks
+    ]
+    ```
+Other requirements for this endpoint must remain the same, including filtering.
+
+### Examples
+
+**Example 1.** *POST request to the /api/tasks/1/comments endpoint by a logged-in user:*
+
+*Request body:*
+```json
+{
+  "text": "I'll be happy to take it!"
+}
+```
+
+*Response code:* `200 OK`
+
+**Example 2.** *POST request to the /api/tasks/1/comments endpoint by a logged-in user:*
+
+*Request body:*
+```json
+{
+  "text": ""
+}
+```
+
+*Response code:* `400 BAD REQUEST`
+
+**Example 3.** *POST request to the /api/tasks/300/comments endpoint by a logged-in user:*
+
+*Request body:*
+```json
+{
+  "text": "I'll be happy to take it!"
+}
+```
+
+*Response code:* `404 NOT FOUND`
+
+**Example 4.** *GET request to the /api/tasks endpoint by a logged-in user:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "2",
+    "title": "second task",
+    "description": "another task",
+    "status": "CREATED",
+    "author": "user2@mail.com",
+    "assignee": "none",
+    "total_comments": 0
+  },
+  {
+    "id": "1",
+    "title": "new task",
+    "description": "a task for anyone",
+    "status": "COMPLETED",
+    "author": "user1@mail.com",
+    "assignee": "user2@mail.com",
+    "total_comments": 1
+  }
+]
+```
+
+**Example 5.** *GET request to the /api/tasks/1/comments by a logged-in user:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "id": "1",
+    "task_id": "1",
+    "text": "I'll be happy to take it!",
+    "author": "user3@mail.com"
+  }
+]
+```

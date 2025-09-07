@@ -68,7 +68,7 @@ and responds with a `200 OK` status code. Check the request body. If the `email`
 
 ### Examples
 
-**Example 1.** *POST request to /api/accounts endpoint:*
+**Example 1.** *POST request to `/api/accounts` endpoint:*
 
 *Request body:*
 ```json
@@ -79,7 +79,7 @@ and responds with a `200 OK` status code. Check the request body. If the `email`
 ```
 *Response code:* `200 OK`
 
-**Example 2.** *POST request to /api/accounts endpoint with an invalid request body:*
+**Example 2.** *POST request to `/api/accounts` endpoint with an invalid request body:*
 
 *Request body:*
 ```json
@@ -90,7 +90,7 @@ and responds with a `200 OK` status code. Check the request body. If the `email`
 ```
 *Response code:* `400 BAD REQUEST`
 
-**Example 3.** *POST request to /api/accounts endpoint with an email address that's already taken:*
+**Example 3.** *POST request to `/api/accounts` endpoint with an email address that's already taken:*
 
 *Request body:*
 ```json
@@ -101,11 +101,11 @@ and responds with a `200 OK` status code. Check the request body. If the `email`
 ```
 *Response code:* `409 CONFLICT`
 
-**Example 4.** *GET request to /api/tasks endpoint with correct credentials:*
+**Example 4.** *GET request to `/api/tasks` endpoint with correct credentials:*
 
 *Response code:* `200 OK`
 
-**Example 5.** *GET request to /api/tasks endpoint with incorrect credentials:*
+**Example 5.** *GET request to `/api/tasks` endpoint with incorrect credentials:*
 
 *Response code:* `401 UNAUTHORIZED`
 
@@ -167,7 +167,7 @@ The array should display newer tasks first.
 
 ### Examples
 
-**Example 1.** *POST request to /api/tasks endpoint by a registered user with valid credentials (username=user1@mail.com):*
+**Example 1.** *POST request to `/api/tasks` endpoint by a registered user with valid credentials (`username=user1@mail.com`):*
 
 *Request body:*
 ```json
@@ -189,7 +189,7 @@ The array should display newer tasks first.
 }
 ```
 
-**Example 2.** *POST request to /api/tasks endpoint with an invalid request body by an authenticated user:*
+**Example 2.** *POST request to `/api/tasks` endpoint with an invalid request body by an authenticated user:*
 
 *Request body:*
 ```json
@@ -200,7 +200,7 @@ The array should display newer tasks first.
 ```
 *Response code:* `400 BAD REQUEST`
 
-**Example 3.** *POST request to /api/developers/signup endpoint with invalid credentials:*
+**Example 3.** *POST request to `/api/developers/signup` endpoint with invalid credentials:*
 
 *Request body:*
 ```json
@@ -211,7 +211,7 @@ The array should display newer tasks first.
 ```
 *Response code:* `401 UNAUTHORIZED`
 
-**Example 4.** *GET request to /api/tasks endpoint with valid user credentials:*
+**Example 4.** *GET request to `/api/tasks` endpoint with valid user credentials:*
 
 *Response code:* `200 OK`
 
@@ -228,7 +228,7 @@ The array should display newer tasks first.
 ]
 ```
 
-**Example 5.** *GET request to /api/tasks?author=USER1@mail.com with valid user credentials:*
+**Example 5.** *GET request to `/api/tasks?author=USER1@mail.com` with valid user credentials:*
 
 *Response code:* `200 OK`
 
@@ -268,7 +268,7 @@ The rest of the service should work as it did in the previous stage.
 - Create the `POST /api/auth/token` endpoint that should be accessible using basic HTTP sign in. If the user signs in successfully, the endpoint should respond with the status code `200 OK` and a JSON response body:
     ```text
     {
-    "token": <string>
+      "token": <string>
     }
     ```
 The `token` field contains a string representation of the access token provided to the user. The token should have a reasonable expiration time, allowing the user to utilize the token without frequently signing in again. If the user does not provide valid details, the endpoint should respond with a `401 UNAUTHORIZED` status code.
@@ -285,7 +285,7 @@ But remember, in this project you don't need to turn off the basic HTTP sign in 
 
 ### Examples
 
-**Example 1**. *POST request to the /api/auth/token endpoint by a registered user with valid details (username=user2@mail.com):*
+**Example 1**. *POST request to the `/api/auth/token` endpoint by a registered user with valid details (`username=user2@mail.com`):*
 
 *Response code:* `200 OK`
 
@@ -302,7 +302,7 @@ But remember, in this project you don't need to turn off the basic HTTP sign in 
 }
 ```
 
-**Example 2**. *POST request to the /api/tasks endpoint with the token from Example 1:*
+**Example 2**. *POST request to the `/api/tasks` endpoint with the token from Example 1:*
 
 *Request body:*
 ```json
@@ -325,7 +325,7 @@ But remember, in this project you don't need to turn off the basic HTTP sign in 
 }
 ```
 
-**Example 3**. *GET request to the /api/tasks endpoint with the token from Example 1:*
+**Example 3**. *GET request to the `/api/tasks` endpoint with the token from Example 1:*
 
 *Response code:* `200 OK`
 
@@ -349,7 +349,7 @@ But remember, in this project you don't need to turn off the basic HTTP sign in 
 ]
 ```
 
-**Example 4**. *GET request to the /api/tasks with an expired access token:*
+**Example 4**. *GET request to the `/api/tasks` with an expired access token:*
 
 *Response code:* `401 UNAUTHORIZED`
 
@@ -439,7 +439,9 @@ The `status` field should only have one of the permitted values, which are `CREA
 
 ### Examples
 
-**Example 1**. *PUT request to the /api/tasks/1/assign endpoint by the task's creator: Request body:*
+**Example 1**. *PUT request to the `/api/tasks/1/assign` endpoint by the task's creator:*
+
+*Request body:*
 ```json
 {
   "assignee": "user2@mail.com"
@@ -460,7 +462,7 @@ The `status` field should only have one of the permitted values, which are `CREA
 }
 ```
 
-**Example 2**. *PUT request to the /api/tasks/1/status endpoint by the task's assignee:*
+**Example 2**. *PUT request to the `/api/tasks/1/status` endpoint by the task's assignee:*
 
 *Request body:*
 ```json
@@ -483,7 +485,7 @@ The `status` field should only have one of the permitted values, which are `CREA
 }
 ```
 
-**Example 3**. *GET request to the /api/tasks?assignee=user2@mail.com endpoint by an authenticated user:*
+**Example 3**. *GET request to the `/api/tasks?assignee=user2@mail.com` endpoint by an authenticated user:*
 
 *Response code:* `200 OK`
 
@@ -501,7 +503,7 @@ The `status` field should only have one of the permitted values, which are `CREA
 ]
 ```
 
-**Example 4**. *GET request to the /api/tasks?author=user2@mail.com&assignee=user1@mail.com by an authenticated user:*
+**Example 4**. *GET request to the `/api/tasks?author=user2@mail.com&assignee=user1@mail.com` by an authenticated user:*
 
 *Response code:* `200 OK`
 
@@ -510,7 +512,7 @@ The `status` field should only have one of the permitted values, which are `CREA
 []
 ```
 
-**Example 5**. *GET request to the /api/tasks?author=user2@mail.com&assignee=user1@mail.com by an unauthenticated user:*
+**Example 5**. *GET request to the `/api/tasks?author=user2@mail.com&assignee=user1@mail.com` by an unauthenticated user:*
 
 *Response code:* `401 UNAUTHORIZED`
 
@@ -571,7 +573,7 @@ Other requirements for this endpoint must remain the same, including filtering.
 
 ### Examples
 
-**Example 1.** *POST request to the /api/tasks/1/comments endpoint by a logged-in user:*
+**Example 1.** *POST request to the `/api/tasks/1/comments` endpoint by a logged-in user:*
 
 *Request body:*
 ```json
@@ -582,7 +584,7 @@ Other requirements for this endpoint must remain the same, including filtering.
 
 *Response code:* `200 OK`
 
-**Example 2.** *POST request to the /api/tasks/1/comments endpoint by a logged-in user:*
+**Example 2.** *POST request to the `/api/tasks/1/comments` endpoint by a logged-in user:*
 
 *Request body:*
 ```json
@@ -593,7 +595,7 @@ Other requirements for this endpoint must remain the same, including filtering.
 
 *Response code:* `400 BAD REQUEST`
 
-**Example 3.** *POST request to the /api/tasks/300/comments endpoint by a logged-in user:*
+**Example 3.** *POST request to the `/api/tasks/300/comments` endpoint by a logged-in user:*
 
 *Request body:*
 ```json
@@ -604,7 +606,7 @@ Other requirements for this endpoint must remain the same, including filtering.
 
 *Response code:* `404 NOT FOUND`
 
-**Example 4.** *GET request to the /api/tasks endpoint by a logged-in user:*
+**Example 4.** *GET request to the `/api/tasks` endpoint by a logged-in user:*
 
 *Response code:* `200 OK`
 
@@ -632,7 +634,7 @@ Other requirements for this endpoint must remain the same, including filtering.
 ]
 ```
 
-**Example 5.** *GET request to the /api/tasks/1/comments by a logged-in user:*
+**Example 5.** *GET request to the `/api/tasks/1/comments` by a logged-in user:*
 
 *Response code:* `200 OK`
 

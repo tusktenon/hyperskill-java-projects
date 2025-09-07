@@ -3,10 +3,9 @@ package taskmanagement.business.services;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import taskmanagement.business.entities.Account;
-import taskmanagement.business.entities.Task;
-import taskmanagement.persistence.repositories.AccountRepository;
-import taskmanagement.persistence.repositories.TaskRepository;
+import taskmanagement.business.entities.*;
+import taskmanagement.persistence.repositories.*;
+import taskmanagement.presentation.models.CommentSubmission;
 import taskmanagement.presentation.models.ProposedTask;
 
 import java.util.Collections;
@@ -17,10 +16,13 @@ public class TaskService {
 
     private final AccountRepository accountRepository;
     private final TaskRepository taskRepository;
+    private final CommentRepository commentRepository;
 
-    public TaskService(AccountRepository accountRepository, TaskRepository taskRepository) {
+    public TaskService(AccountRepository accountRepository, TaskRepository taskRepository,
+                       CommentRepository commentRepository) {
         this.accountRepository = accountRepository;
         this.taskRepository = taskRepository;
+        this.commentRepository = commentRepository;
     }
 
     public List<Task> get(String author, String assignee) {
@@ -45,6 +47,10 @@ public class TaskService {
         return taskRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    public List<Comment> getComments(long taskId) {
+        return commentRepository.findByTaskOrderByCreatedAtDesc(findTaskById(taskId));
+    }
+
     public Task add(ProposedTask proposed, Account author) {
         return taskRepository.save(proposed.toTask(author));
     }
@@ -66,6 +72,11 @@ public class TaskService {
         }
         task.setStatus(status);
         return taskRepository.save(task);
+    }
+
+    public void addComment(long taskId, CommentSubmission submission, Account author) {
+        Task task = findTaskById(taskId);
+        commentRepository.save(submission.toComment(task, author));
     }
 
     private Account findAccountByUsername(String username) {

@@ -118,3 +118,128 @@ Response code: `201 CREATED`
   }
 ]
 ```
+
+
+## Stage 2/5: Developer registration
+
+### Description
+
+The first version of the API is ready, so it's time to consider the client applications. Since we're creating a public API, we won't make any client applications ourselves. Instead, we'll allow all developers to make whatever applications they like, such as web, mobile, desktop, IoT or any other kind, that can utilize our API.
+
+We also aim to monitor these applications, for instance, to set different service levels for free and premium clients in future. Here's the plan: we let developers sign up, register their applications with our service, and then we'll implement an authentication process to ensure the `/api/tracker` endpoints are accessible to registered applications only.
+
+Now, let's begin with the developer sign-up process.
+
+To activate Spring Security in the project, add the `spring-boot-starter-security` starter to the dependencies section of the `build.gradle` file.
+
+Create two new endpoints: `POST /api/developers/signup` for new developer registration and `GET /api/developers/<id>` for accessing the profile of the appropriate developer. Use basic **HTTP authentication** for this endpoint.
+
+The `POST /api/developers/signup` endpoint should accept a JSON request body with two fields, `email` and `password`. As registration data is vital, you need to validate the input to ensure both fields meet the requirements. If the email isn't null, matches the email pattern and is unique, and if the password isn't null and not blank, the service should return the status code `201 CREATED` and the response header `Location` containing the URL of the newly created developer. If either field isn't valid, including if a developer with the submitted email address is already registered, the service should return the status code `400 BAD REQUEST`. You might find the `spring-boot-starter-validation` starter useful for this purpose.
+
+The `GET /api/developers/<id>` endpoint should be accessible only to the authenticated developer with the matching id. If access is granted, the endpoint should return the status code `200 OK` and a response body in JSON format, containing the id and the email of the corresponding developer. If an unauthenticated developer tries to access this endpoint, it should respond with the status code `401 UNAUTHORIZED`. If an authenticated client tries to access the endpoint but their id doesn't match the id in the request path, the service should respond with the status code `403 FORBIDDEN`.
+
+At this stage, don't limit access to the `/api/tracker` endpoints, they should be accessible by all.
+
+Also, when setting up access rules for the API, ensure the `/actuator/shutdown` endpoint remains accessible, or else some tests may not pass. As we're building a REST API, don't use sessions. Plus, if you're using tools like Postman and H2 console, remember to add the necessary methods to the security filter chain configuration:
+```java
+// other methods
+.csrf(csrf -> csrf.disable()) // For Postman
+.headers(headers -> headers.frameOptions().disable()) // For the H2 console
+.authorizeHttpRequests(auth -> auth
+        .requestMatchers("/actuator/shutdown").permitAll() // for tests
+        .requestMatchers("/error").permitAll() // to prevent access errors for validation exceptions
+        // other matchers
+)
+.sessionManagement(sessions -> sessions
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session
+)
+// other methods
+```
+
+### Objectives
+
+- Activate Spring Security in the project.
+
+- Add the `POST /api/developers/signup` endpoint that should be accessible to all users. The endpoint should accept a JSON response body with an email address and a password for a new developer. The email must be unique, not null and match the email pattern. The password must be not null and not blank:
+    ```text
+    {
+      "email": <string, unique, not null, matches the email pattern>,
+      "password": <string, not null, not blank>
+    }
+    ```
+If the request body is valid, the endpoint should respond with the status code `201 CREATED` and the response header `Location` showing the URL of the created developer:
+    ```text
+    Location: /api/developers/<id>
+    ```
+If any of the request body fields fail to meet the requirements, the endpoint should respond with the status code `400 BAD REQUEST`.
+
+- Add the `GET /api/developers/<id>` endpoint to return the profile of the corresponding developer as a JSON object:
+    ```text
+    {
+      "id": <id>,
+      "email": <string>
+    }
+    ```
+This endpoint should be accessible only by the authenticated developer with the same id as in the request path. In case the request is made by an unauthenticated client, the endpoint should respond with the status code `401 UNAUTHORIZED`. If the request is made by an authenticated developer but their id doesn't match the id in the request path, the endpoint should respond with the status code `403 FORBIDDEN`.
+
+- Save all registered developer data in the database.
+
+- The `/api/tracker` endpoints should be open to all.
+
+### Examples
+
+**Example 1.** *POST request to the /api/developers/signup endpoint:*
+
+*Request body:*
+```json
+{
+  "email": "johndoe@gmail.com",
+  "password": "qwerty"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /api/developers/9062
+```
+
+**Example 2.** *POST request to the /api/developers/signup endpoint lacking a password:*
+
+*Request body:*
+```json
+{
+  "email": "johndoe@gmail.com"
+}
+```
+
+*Response code:* `400 BAD REQUEST`
+
+**Example 3.** *POST request to the /api/developers/signup endpoint with an email already registered:*
+
+*Request body:*
+```json
+{
+  "email": "johndoe@gmail.com",
+  "password": "qwerty"
+}
+```
+
+*Response code:* `400 BAD REQUEST`
+
+**Example 4.** *GET request to the /api/developers/9062 with login=johndoe@gmail.com and password=qwerty:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": 9062,
+  "email": "johndoe@gmail.com"
+}
+```
+
+**Example 5.** *GET request to the /api/developers/0165 with login=johndoe@gmail.com and password=qwerty:*
+
+*Response code:* `403 FORBIDDEN`

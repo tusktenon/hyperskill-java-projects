@@ -1,5 +1,7 @@
-package fitnesstracker;
+package fitnesstracker.presentation;
 
+import fitnesstracker.persistence.Session;
+import fitnesstracker.persistence.SessionRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

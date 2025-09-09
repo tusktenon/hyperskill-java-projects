@@ -1,4 +1,4 @@
-package fitnesstracker;
+package fitnesstracker.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 

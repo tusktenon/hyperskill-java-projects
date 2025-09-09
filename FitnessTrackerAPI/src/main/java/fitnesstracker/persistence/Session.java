@@ -1,4 +1,4 @@
-package fitnesstracker;
+package fitnesstracker.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

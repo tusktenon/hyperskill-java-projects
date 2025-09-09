@@ -243,3 +243,142 @@ Location: /api/developers/9062
 **Example 5.** *GET request to the /api/developers/0165 with login=johndoe@gmail.com and password=qwerty:*
 
 *Response code:* `403 FORBIDDEN`
+
+
+## Stage 3/5: Application registration
+
+### Description
+
+Now that we've completed the developer registration flow, let's allow authenticated developers to sign their applications up with our service.
+
+To sign an application up, a developer needs to specify its name and description. In return, our service assigns a unique API key to each application which will later be used to authenticate them.
+
+This API key uniquely identifies the application it's assigned to. As the API key serves as an authentication mechanism, it should be tough to guess or predict. One way to approach this is generating a random string, sufficiently long. For instance, you can generate a random byte array and convert it into a hex string. If the key length is considerable, the likelihood of API keys clashing is very low.
+
+You also need to make changes to the `GET /api/developers/<id>` endpoint. Now, it should include an array of all applications listed according to the order they were registered in, with newer applications showing up first.
+
+### Objectives
+
+- Add the `POST /api/applications/register` endpoint. This will accept the following request body in JSON format:
+    ```text
+    {
+      "name": <string, not null, not blank, unique>,
+      "description": <string, not null>
+    }
+    ```
+`name` is the application's name and should be a unique non-blank string; `description` is the application's description and can be empty or blank. If registration is successful, the endpoint should return a status code `201 CREATED`, plus the response body below:
+    ```text
+    {
+      "name": <string>,
+      "apikey": <string, not null, not blank, unique>
+    }
+    ```
+The response should comprise the application's name and the assigned unique API key. If the request body contains an invalid field, the endpoint should respond with a status code `400 BAD REQUEST`. If an unauthenticated developer sends the request, the endpoint should send a response with the status code `401 UNAUTHORIZED`.
+
+- Update the `GET /api/developers/<id>` endpoint. It should now include a JSON array of all applications of the requested developer, covering each application's id, name, description, and API key. Applications in the array should be arranged according to when they were registered, with newer applications listed first:
+    ```text
+    {
+      "id": <id>,
+      "email": <string>,
+      "applications": [
+        {
+          "id": <id>,
+          "name": <string>,
+          "description": <string>,
+          "apikey": <string>
+        },
+        {
+          "id": <id>,
+          "name": <string>,
+          "description": <string>,
+          "apikey": <string>
+        },
+        ...
+      ]
+    }
+    ```
+
+- The access rules from the previous stage still apply.
+
+### Examples
+
+**Example 1.** *POST request to the /api/developers/signup endpoint:*
+
+*Request body:*
+```json
+{
+  "email": "johndoe@gmail.com",
+  "password": "qwerty"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /api/developers/9062
+```
+
+**Example 2.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+
+*Request body:*
+```json
+{
+  "name": "Fitness App",
+  "description": "demo application"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response body:*
+```json
+{
+  "name": "Fitness App",
+  "apikey": "21da3cc8020517ecaf2e0781b9f679c56fe0f119"
+}
+```
+
+**Example 3.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+
+*Request body:*
+```json
+{
+  "name": "Fitness App",
+  "description": "demo application"
+}
+```
+
+*Response code:* `400 BAD REQUEST`
+
+**Example 4.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+
+*Request body:*
+```json
+{
+  "name": "",
+  "description": "demo application"
+}
+```
+
+*Response code:* `400 BAD REQUEST`
+
+**Example 5.** *GET request to the /api/developers/9062 endpoint with login=johndoe@gmail.com and password=qwerty:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+{
+  "id": 9062,
+  "email": "johndoe@gmail.com",
+  "applications": [
+    {
+      "id": 4624,
+      "name": "Fitness App",
+      "description": "demo application",
+      "apikey": "21da3cc8020517ecaf2e0781b9f679c56fe0f119"
+    }
+  ]
+}
+```

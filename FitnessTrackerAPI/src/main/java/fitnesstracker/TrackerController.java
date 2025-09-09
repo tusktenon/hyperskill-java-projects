@@ -7,11 +7,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tracker")
-public class Controller {
+public class TrackerController {
 
     private final SessionRepository repository;
 
-    public Controller(SessionRepository repository) {
+    public TrackerController(SessionRepository repository) {
         this.repository = repository;
     }
 

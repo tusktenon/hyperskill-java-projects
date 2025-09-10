@@ -6,9 +6,9 @@ import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 
@@ -25,13 +25,10 @@ public class DeveloperController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("#securityDeveloper.developer.id == #id")
     public Developer getProfile(@PathVariable long id,
                                 @AuthenticationPrincipal SecurityDeveloper securityDeveloper) {
-        Developer developer = securityDeveloper.getDeveloper();
-        if (developer.getId() != id) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-        return developer;
+        return securityDeveloper.getDeveloper();
     }
 
     @PostMapping("/signup")

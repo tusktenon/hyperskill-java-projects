@@ -2,12 +2,11 @@ package fitnesstracker.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Developer {
 
     @Id
@@ -20,7 +19,7 @@ public class Developer {
     @JsonIgnore
     private String password;
 
-    public Developer(String email, String password) {
+    Developer(String email, String password) {
         this.email = email;
         this.password = password;
     }

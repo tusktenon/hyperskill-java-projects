@@ -1,8 +1,6 @@
 package fitnesstracker.presentation;
 
-import fitnesstracker.persistence.Developer;
 import jakarta.validation.constraints.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public record RegistrationRequest(
         @NotNull
@@ -11,8 +9,4 @@ public record RegistrationRequest(
 
         @NotBlank
         String password
-) {
-    public Developer toDeveloper(PasswordEncoder encoder) {
-        return new Developer(email, encoder.encode(password));
-    }
-}
+) {}

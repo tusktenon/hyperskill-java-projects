@@ -1,13 +1,11 @@
 package fitnesstracker.presentation;
 
-import fitnesstracker.persistence.Developer;
-import fitnesstracker.persistence.DeveloperRepository;
+import fitnesstracker.persistence.*;
 import fitnesstracker.security.SecurityDeveloper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,11 +16,11 @@ import java.net.URI;
 public class DeveloperController {
 
     private final DeveloperRepository repository;
-    private final PasswordEncoder encoder;
+    private final DeveloperMapper mapper;
 
-    public DeveloperController(DeveloperRepository repository, PasswordEncoder encoder) {
+    public DeveloperController(DeveloperRepository repository, DeveloperMapper mapper) {
         this.repository = repository;
-        this.encoder = encoder;
+        this.mapper = mapper;
     }
 
     @GetMapping("/{id}")
@@ -40,7 +38,7 @@ public class DeveloperController {
         if (repository.existsByEmail(request.email())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Developer developer = repository.save(request.toDeveloper(encoder));
+        Developer developer = repository.save(mapper.convert(request));
         return ResponseEntity.created(URI.create("/api/developers/" + developer.getId())).build();
     }
 }

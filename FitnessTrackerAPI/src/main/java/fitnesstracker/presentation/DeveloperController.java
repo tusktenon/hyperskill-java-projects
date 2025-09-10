@@ -3,6 +3,7 @@ package fitnesstracker.presentation;
 import fitnesstracker.persistence.*;
 import fitnesstracker.security.SecurityDeveloper;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,10 +36,12 @@ public class DeveloperController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> register(@Valid @RequestBody RegistrationRequest request) {
-        if (repository.existsByEmail(request.email())) {
+        try {
+            Developer developer = repository.save(mapper.convert(request));
+            URI location = URI.create("/api/developers/" + developer.getId());
+            return ResponseEntity.created(location).build();
+        } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Developer developer = repository.save(mapper.convert(request));
-        return ResponseEntity.created(URI.create("/api/developers/" + developer.getId())).build();
     }
 }

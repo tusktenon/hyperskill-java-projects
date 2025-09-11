@@ -413,3 +413,125 @@ public Developer getProfile(
 ```
 
 We could avoid doing two queries, perhaps by defining an alternative, eager-lookup implementation of `UserDetailsService` and selecting it with the `expression` element of `@AuthenticationPrincipal`. However, we'd then be performing the expensive, eager lookup of the developer with applications, before even checking if the requesting developer's ID matches the path variable. It seems reasonable to first perform a relatively fast lookup (without applications) and checking that the IDs match before proceeding to the slower query.
+
+
+## Stage 4/5: API-key authentication
+
+### Description
+
+Once everything is set up, developers can register their applications and receive API keys. With these keys, you can finally protect your tracker API using API key authentication.
+
+The authentication process goes like this:
+
+When an application sends a request to the `POST /api/tracker` or `GET /api/tracker` endpoint, it needs to include the `X-API-Key` header in the request. This header should contain the application's unique API key. If the supplied API key is valid, the application becomes authenticated. However, if the necessary header is missing or fails to contain a valid API key, the authentication gets rejected, and the `401 UNAUTHENTICATED` status code is returned.
+
+You might want to build a custom security filter and add it to the existing security filter chain to secure this API protection method.
+
+Besides, you'll want to track which application is uploading data to your service. This can be achieved by storing the name of the publisher application in each fitness data record.
+
+The basic HTTP authentication for developers should continue to function as before. Any unauthenticated access to the `POST /api/tracker` and `GET /api/tracker` endpoints should be blocked.
+
+### Objectives
+
+- Enable API key authentication for the `POST /api/tracker` or `GET /api/tracker` endpoints.
+
+- Now, the `POST /api/tracker` endpoint should be available only to authenticated applications. An application becomes authenticated by providing a valid API key in the `X-API-Key` header. In addition to the fields provided in the request body, include the publisher application name in each record.
+
+- Similarly, the `GET /api/tracker` endpoint should only be available to authenticated applications. An application becomes authenticated by providing a valid API key in the `X-API-Key` header. Fitness data records now need to contain the names of the applications that published them:
+    ```text
+    [
+      {
+        "id": <id>,
+        "username": <string>,
+        "activity": <string>,
+        "duration": <integer>,
+        "calories": <integer>,
+        "application": <string>
+      },
+      {
+        "id": <id>,
+        "username": <string>,
+        "activity": <string>,
+        "duration": <integer>,
+        "calories": <integer>,
+        "application": <string>
+      },
+      ...
+    ]
+    ```
+
+- Continue to support basic HTTP authentication for the `GET /api/developers/<id>` and `POST /api/applications/register` endpoints.
+
+### Examples
+
+**Example 1.** *POST request to the /api/developers/signup endpoint:*
+
+*Request body:*
+```json
+{
+  "email": "johndoe@gmail.com",
+  "password": "qwerty"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /api/developers/9062
+```
+
+**Example 2.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+
+*Request body:*
+```json
+{
+  "name": "Fitness App",
+  "description": "demo application"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response body:*
+```json
+{
+  "name": "Fitness App",
+  "apikey": "21da3cc8020517ecaf2e0781b9f679c56fe0f119"
+}
+```
+
+**Example 3.** *POST request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+
+*Request body:*
+```json
+{
+  "username": "user-12",
+  "activity": "swimming",
+  "duration": 950,
+  "calories": 320
+}
+```
+
+*Response code:* `201 CREATED`
+
+**Example 4.** *GET request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+
+*Response code:* `200 OK`
+
+*Response body:*
+```json
+[
+  {
+    "username": "user-12",
+    "activity": "swimming",
+    "duration": 950,
+    "calories": 320,
+    "application": "Fitness App"
+  }
+]
+```
+
+**Example 5.** *GET request to the /api/tracker endpoint with X-API-Key=abc:*
+
+*Response code:* `401 UNAUTHENTICATED`

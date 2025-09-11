@@ -1,6 +1,5 @@
 package fitnesstracker.persistence;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +15,6 @@ public class Developer {
     @Column(unique = true)
     private String email;
 
-    @JsonIgnore
     private String password;
 
     Developer(String email, String password) {

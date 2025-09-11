@@ -26,9 +26,9 @@ public class DeveloperController {
 
     @GetMapping("/{id}")
     @PreAuthorize("#securityDeveloper.developer.id == #id")
-    public Developer getProfile(@PathVariable long id,
-                                @AuthenticationPrincipal SecurityDeveloper securityDeveloper) {
-        return securityDeveloper.getDeveloper();
+    public DeveloperProfile getProfile(
+            @PathVariable long id, @AuthenticationPrincipal SecurityDeveloper securityDeveloper) {
+        return mapper.convert(securityDeveloper.getDeveloper());
     }
 
     @PostMapping("/signup")

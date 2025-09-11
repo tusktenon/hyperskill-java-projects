@@ -2,7 +2,7 @@ package fitnesstracker.presentation;
 
 import jakarta.validation.constraints.*;
 
-public record RegistrationRequest(
+public record DeveloperRegistration(
         @NotNull
         @Email(regexp = "\\w+([.-]\\w+)*@\\w+(\\.\\w+)+")
         String email,

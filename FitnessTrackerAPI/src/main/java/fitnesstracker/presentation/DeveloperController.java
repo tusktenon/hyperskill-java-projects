@@ -32,7 +32,7 @@ public class DeveloperController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<Void> register(@Valid @RequestBody DeveloperRegistration request) {
         try {
             Developer developer = repository.save(mapper.convert(request));
             URI location = URI.create("/api/developers/" + developer.getId());

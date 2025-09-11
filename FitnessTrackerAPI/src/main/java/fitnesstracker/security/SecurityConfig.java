@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/shutdown").permitAll()
                         // to prevent access errors for validation exceptions
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/applications/register").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/developers/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/developers/*").authenticated()
                         .requestMatchers("/api/tracker").permitAll()

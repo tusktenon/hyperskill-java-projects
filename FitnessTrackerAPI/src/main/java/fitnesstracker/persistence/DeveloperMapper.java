@@ -1,6 +1,5 @@
 package fitnesstracker.persistence;
 
-import fitnesstracker.presentation.DeveloperProfile;
 import fitnesstracker.presentation.DeveloperRegistration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,9 +15,5 @@ public class DeveloperMapper {
 
     public Developer convert(DeveloperRegistration request) {
         return new Developer(request.email(), encoder.encode(request.password()));
-    }
-
-    public DeveloperProfile convert(Developer developer) {
-        return new DeveloperProfile(developer.getId(), developer.getEmail());
     }
 }

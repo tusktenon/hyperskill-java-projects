@@ -2,6 +2,7 @@ package fitnesstracker.presentation;
 
 import fitnesstracker.persistence.*;
 import fitnesstracker.security.SecurityDeveloper;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,9 +27,10 @@ public class DeveloperController {
 
     @GetMapping("/{id}")
     @PreAuthorize("#securityDeveloper.developer.id == #id")
-    public DeveloperProfile getProfile(
+    @Transactional
+    public Developer getProfile(
             @PathVariable long id, @AuthenticationPrincipal SecurityDeveloper securityDeveloper) {
-        return mapper.convert(securityDeveloper.getDeveloper());
+        return repository.findById(id).orElseThrow();
     }
 
     @PostMapping("/signup")

@@ -382,3 +382,34 @@ Location: /api/developers/9062
   ]
 }
 ```
+
+### *My Comment*
+
+Consider the `DeveloperController.getProfile()` method. At first glance, it would seem that the following implementation should work:
+```java
+@GetMapping("/{id}")
+@PreAuthorize("#securityDeveloper.developer.id == #id")
+public Developer getProfile(
+        @PathVariable long id, @AuthenticationPrincipal SecurityDeveloper securityDeveloper) {
+    return securityDeveloper.getDeveloper();
+}
+```
+
+The problem is that the `Developer.applications` field is fetched lazily, so we'll encounter a `LazyInitializationException`.
+
+Simply adding the `@Transactional` annotation does not work: this annotation applies to the code within the method body, not to any database queries done as part of authentication.
+
+One solution is to switch to eager initialization, by adding the `fetch = FetchType.EAGER` element to the `@OneToMany` annotation above the `Developer.applications` declaration. But this is a terrible idea in terms of overall application performance: most `Developer` lookups don't require the set of applications (in particular, consider that a `Developer` lookup is performed by the `UserDetailsService` bean for *every* request to *any* authenticated endpoint).
+
+Instead, we opt to do a second, eager lookup of the current developer:
+```java
+@GetMapping("/{id}")
+@PreAuthorize("#securityDeveloper.developer.id == #id")
+@Transactional
+public Developer getProfile(
+        @PathVariable long id, @AuthenticationPrincipal SecurityDeveloper securityDeveloper) {
+    return repository.findById(id).orElseThrow();
+}
+```
+
+We could avoid doing two queries, perhaps by defining an alternative, eager-lookup implementation of `UserDetailsService` and selecting it with the `expression` element of `@AuthenticationPrincipal`. However, we'd then be performing the expensive, eager lookup of the developer with applications, before even checking if the requesting developer's ID matches the path variable. It seems reasonable to first perform a relatively fast lookup (without applications) and checking that the IDs match before proceeding to the slower query.

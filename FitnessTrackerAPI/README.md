@@ -383,9 +383,17 @@ Location: /api/developers/9062
 }
 ```
 
-### *My Comment*
+### *My Comments*
 
-Consider the `DeveloperController.getProfile()` method. At first glance, it would seem that the following implementation should work:
+**1.** I implemented the API key as a Version 4 UUID, generated with `UUID.randomUUID()`. Another option, more in line with approach suggested in the instructions, is to use the [`KeyGenerators`](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/crypto/keygen/KeyGenerators.html) class from the Spring Security Crypto module:
+```java
+byte[] bytes = KeyGenerators.secureRandom(16).generateKey(); // 16 bytes = 128-bit key
+String key = new BigInteger(1, bytes).toString(16); // 16 bytes as hex string
+```
+
+This is also the approach taken in the Hyperskill lecture [Custom authentication: Configuration](https://hyperskill.org/learn/step/38745#token-generation). I don't know if one option (Version 4 UUID or random bytes produced by [`SecureRandom`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/security/SecureRandom.html)) is preferable to the other in this situation, but since the API keys are assigned permanently and it's essential that no two applications have the same key, perhaps UUID is more appropriate?
+
+**2.** Consider the `DeveloperController.getProfile()` method. At first glance, it would seem that the following implementation should work:
 ```java
 @GetMapping("/{id}")
 @PreAuthorize("#securityDeveloper.developer.id == #id")

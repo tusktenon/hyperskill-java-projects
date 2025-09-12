@@ -6,6 +6,7 @@ During the project implementation, you will learn the basics of SQL and work wit
 
 [View more](https://hyperskill.org/projects/140)
 
+***Note:*** Throughout all the stages of this project, the `Main.java` file in this repository contains a small modification from the file submitted to Hyperskill: the database storage directory has been changed from `./src/carsharing/db/` (which is required by Hyperskill's tests) to `./db/` (which seems like a more sensible location).
 
 ## Stage 1/4: Initialization
 
@@ -31,10 +32,6 @@ The database file name is obtained from the command-line arguments. Here is an e
 
 > [!NOTE]
 > To pass the tests, you have to enable the auto-commit mode so that all changes are automatically saved in the database file. To do that, call the method `connection.setAutoCommit(true)` of the `Connection` object.
-
-### *My Comment*
-
-I made a small modification to the `Main.java` file submitted to Hyperskill: The database storage directory has been changed from `./src/carsharing/db/` (which is required by Hyperskill's tests) to `./db/`.
 
 
 ## Stage 2/4: Companies

@@ -1,4 +1,4 @@
-# Transaction Aggregator (WebClient implementation)
+# Transaction Aggregator: WebClient Implementation
 
 This project is an alternative implementation of the full (Stage 4) **Transaction Aggregator** application, using `WebClient` in place of `RestClient`.
 

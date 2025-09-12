@@ -4,8 +4,8 @@
 
 Have you ever used any task management systems like Jira or Trello? This project is the perfect starting point to build a small yet feature rich application on your own. In this project, you will develop a task management system that allows users to create, update, and manage tasks. You'll implement JWT authentication to protect your system and create aggregate views of tasks. This will give you a good practice in creating advance CRUD applications and provide you with the necessary skills to create a useful web service for your portfolio and daily use.
 
-[View more](https://hyperskill.org/projects/423)
-
+- [View more](https://hyperskill.org/projects/423) (official project page)
+- [My notes](./NOTES.md) on this project
 
 ## Stage 1/5: Registering users
 
@@ -353,10 +353,6 @@ But remember, in this project you don't need to turn off the basic HTTP sign in 
 
 *Response code:* `401 UNAUTHORIZED`
 
-### *My Comment*
-
-See this [discussion](./JWT_README.md) for an explanation of the custom `@AuthenticatedAccount` annotation.
-
 
 ## Stage 4/5: Assigning tasks
 
@@ -653,29 +649,3 @@ Other requirements for this endpoint must remain the same, including filtering.
   }
 ]
 ```
-
-### *My Comments*
-
-**1.** Note that the instructions (and Hyperskill's tests) require that the `total_comments` element appear in the responses to `GET` requests for the list of tasks, but *not* in the responses to `POST` requests to add a new task, nor to `PUT` requests to update a task's status or assignee.
-
-We could handle this by introducing one or (for symmetry) two DTOs to represent a `Task` with or without comment counts: say, `TaskWithCommentCount` and `TaskWithoutCommentCount` records. I used the Jackson library's `@JsonView` feature instead; it solves the same problem without the extra classes and duplicated boilerplate code that DTOs entail.
-
-**2.** Consider the `TaskService.addComment()` method:
-```java
-public void addComment(long taskId, CommentSubmission submission, Account author) {
-    Task task = findTaskById(taskId);
-    commentRepository.save(submission.toComment(task, author));
-}
-```
-
-While this implementation correctly persists the new comment in the database, the `task` object does *not* reflect this change. That's fine here since `task` goes out of scope immediately, but if we intended to use `task` further, we'd need to update its state:
-```java
-public Task addComment(long taskId, CommentSubmission submission, Account author) {
-    Task task = findTaskById(taskId);
-    Comment comment = submission.toComment(task, author);
-    task.addComment(comment);
-    commentRepository.save(comment);
-    return task;
-}
-```
-This is a general point to keep in mind with JPA: you still need to manage the business-logic associations of in-memory entities yourself. \[For a good discussion of this, see [*Java Persistence with Spring Data and Hibernate*](https://www.manning.com/books/java-persistence-with-spring-data-and-hibernate), pp. 59-60.\]

@@ -4,7 +4,8 @@
 
 Java developers often face the need to store and process data conveniently. The Java Collections Framework can help with this issue, as developers usually don't need to create new collections from scratch – they only need to apply or slightly extend the existing ones to solve their needs. However, there are some design drawbacks inherited in the Java Collections Framework, which can even lead to bugs in your programs. Some approaches used in this library are considered obsolete now and are normally avoided in modern libraries. Besides, sometimes developers face rare issues, for which the standard collections aren't enough. In such cases, alternative libraries such as Google Guava Collections or Apache Common Collections may help. These libraries contain more collections and an abundance of auxiliary algorithms to work with. Another solution is to write your problem-specific collections. This is much more complicated and not always the best solution, but it isn't forbidden either.
 
-[View more](https://hyperskill.org/projects/319)
+- [View more](https://hyperskill.org/projects/319) (official project page)
+- [My notes](./NOTES.md) on this project 
 
 
 ## Stage 1/4: Immutable Collections
@@ -63,10 +64,6 @@ System.out.println(collection.size()); // 5
 ```
 
 Note: you don't need to implement the `main` method. 
-
-### *My Comment*
-
-The Hyperskill tests require a no-argument version of the `of` method, but note that it isn't actually needed: the varargs overload handles this case correctly.
 
 
 ## Stage 2/4: BiMaps and MultiSets
@@ -173,18 +170,6 @@ System.out.println(multiset); // [b, b, b, b, c, c]
 
 Note: you don't need to implement the `main` method.
 
-### *My Comments*
-
-Consider the expected outputs shown in the examples: in addition to implementing the methods listed above, you'll need to override `toString()` for both classes.
-
-The method descriptions are a little vague, and the messages from failing tests don't provide much help. For `Multiset` in particular, I found myself examining the source code for the tests to figure out the expected behaviour of the methods:
-
-- `add(element, occurrences)` and `remove(element, occurrences)` should simply do nothing if `occurrences` is zero or negative.
-- `setCount(element, count)` should remove `element` from the multiset if `count` is zero and do nothing if `count` is negative.
-- Similarly, `setCount(element, oldCount, newCount)` should do nothing if `newCount` is negative, and remove `element` if `newCount` is zero and `oldCount` matches the current count.
-- The `toString()` method must list elements in insertion order (i.e., the backing `Map` should be a `LinkedHashMap`).
-
-
 
 ## Stage 3/4: Size Limited Queues
 
@@ -255,12 +240,6 @@ System.out.println(collection.toArray(new Integer[0]).getClass()); // class [Lja
 ```
 
 Note: you don't need to implement the `main` method.
-
-### *My Comments*
-
-The descriptions of both `toArray` methods seem to suggest that the tail of the queue should be element `0` of the returned array, while the head should be element `size - 1`; in fact, the tests require the opposite ordering.
-
-I used an array as the backing collection, but most learners used a `Queue<E>` implementation – namely, `ArrayDeque<E>` – from the Java Collections Framework. Using a `Queue<E>` is obviously much simpler, while using an array feels more "in the spirit" of the exercise.
 
 
 ## Stage 4/4: Ranges
@@ -396,11 +375,3 @@ System.out.println(Range.closedOpen(10,10).intersection(Range.closed(10,10))); /
 System.out.println(Range.closedOpen(10,10).intersection(Range.openClosed(10,10))); //EMPTY
 System.out.println(Range.closedOpen(10,10).intersection(Range.closedOpen(10,10))); //EMPTY
 ```
-
-### *My Comments*
-
-I chose to implement the `encloses`, `intersection` and `span` methods using *double dispatch*, a classic OOP technique. The Hyperskill tests demand an implementation that uses Java language level 17, which introduced sealed classes; had they allowed Java 21, which added pattern matching for `switch` statements, I might have taken that approach instead.
-
-Note that the advantages of pattern matching for `switch` (over `if`-`else` chains using `instanceof`) go beyond more legible code. The compiler can verify that the `switch` cases are exhaustive, and there's also a potential performance improvement: the compiler can emit code that will jump to the correct branch in constant time, instead of having to go through the `if` clauses sequentially until reaching a match. See the [JEP](https://openjdk.org/jeps/441) for a good explanation.
-
-Since Ranges are immutable, I went to some length to avoid creating new ones whenever possible: the all and empty ranges are singletons, and whenever the span or intersection of two ranges happens to be one of the input ranges (a common occurrence), those methods return that range, not a new one with identical bounds. If minimizing the creating of new objects isn't a concern, it's possible to write a much shorter solution.

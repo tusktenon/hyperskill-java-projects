@@ -9,11 +9,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tracker")
-public class TrackerController {
+public class SessionController {
 
     private final SessionRepository repository;
 
-    public TrackerController(SessionRepository repository) {
+    public SessionController(SessionRepository repository) {
         this.repository = repository;
     }
 

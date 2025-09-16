@@ -2,4 +2,10 @@ package fitnesstracker.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface ApplicationRepository extends CrudRepository<Application, Long> {}
+import java.util.Optional;
+import java.util.UUID;
+
+public interface ApplicationRepository extends CrudRepository<Application, Long> {
+
+    Optional<Application> findByApiKey(UUID apiKey);
+}

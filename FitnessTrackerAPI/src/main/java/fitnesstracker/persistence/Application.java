@@ -1,7 +1,6 @@
 package fitnesstracker.persistence;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import fitnesstracker.presentation.Views;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,7 +26,8 @@ public class Application {
     private String description;
 
     @JsonView(Views.ApplicationViews.RegistrationSummary.class)
-    private final UUID apikey = UUID.randomUUID();
+    @JsonProperty("apikey")
+    private final UUID apiKey = UUID.randomUUID();
 
     @ManyToOne
     @JsonIgnore

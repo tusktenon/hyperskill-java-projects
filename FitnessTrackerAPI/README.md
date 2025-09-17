@@ -505,3 +505,131 @@ Location: /api/developers/9062
 **Example 5.** *GET request to the /api/tracker endpoint with X-API-Key=abc:*
 
 *Response code:* `401 UNAUTHENTICATED`
+
+
+## Stage 5/5: Rate limits
+
+### Description
+
+It's time to think about adding different categories of applications. In this project, you'll work with two of them, **basic** and **premium**. Whenever a developer registers an application, they get to choose its category. This requires us to update both the application registration request body and the application entity as needed.
+
+Moreover, we're going to set some limits on the number of requests a basic application can make per second. In our case, this rate will be 1 request per second or *r* = 1. Premium applications won't have such restrictions.
+
+Request rate limiting can be applied using a token bucket. Here is the basic form of this algorithm:
+
+- Create an appropriate data structure for storing token buckets for clients.
+- Each bucket can hold a maximum of 1 token and a minimum of 0 tokens.
+- Whenever a client makes a request, verify whether the client has a personal token bucket in the data structure.
+- If not, create a token bucket for the client and fill it with the initial number of tokens, which in our case will be 1.
+- Check whether the token bucket contains more than 0 tokens. If so, remove a token and grant the request.
+- If the number of available tokens in the bucket is 0, deny the request with the response code `429 TOO MANY REQUESTS`.
+- Add 1 token to each bucket every 1 / r seconds. In our case, this operation occurs once per second. If a bucket already contains the maximum allowed number of tokens, then disregard the new token.
+ 
+This rate limit should apply to both the `GET /api/tracker` and `POST /api/tracker` endpoints.
+
+### Objectives
+
+- Modify the `POST /api/applications/register` endpoint to accept this request body:
+    ```text
+    {
+      "name": <string, not null, not blank, unique>,
+      "description": <string, not null>,
+      "category": <string, either "basic" or "premium">
+    }
+    ```
+In the case of a successful registration, this endpoint should reply with the status code `201 CREATED` and this response body:
+    ```text
+    {
+      "name": <string>,
+      "apikey": <string, not null, not blank, unique>,
+      "category": <string>
+    }
+    ```
+
+- Adapt the `GET /api/developers/<id>` endpoint; the list of applications should now include the `category` field:
+    ```text
+    {
+      "id": <id>,
+      "email": <string>,
+      "applications": [
+        {
+          "id": <id>,
+          "name": <string>,
+          "description": <string>,
+          "apikey": <string>,
+          "category": <string>
+        },
+        ...
+      ]
+    }
+    ```
+- Set a rate limit of 1 request per second for all basic application requests to the `GET /api/tracker` and `POST /api/tracker` endpoints. If an application exceeds the allowed number of requests, the endpoints should respond with the code `429 TOO MANY REQUESTS`. This rate limit applies universally to both endpoints, not individually for each one.
+
+### Examples
+
+**Example 1.** *POST request to the /api/developers/signup endpoint:*
+
+*Request body:*
+```json
+{
+  "email": "johndoe@gmail.com",
+  "password": "qwerty"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response header:*
+```text
+Location: /api/developers/9062
+```
+
+**Example 2.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+
+*Request body:*
+```json
+{
+  "name": "Fitness App",
+  "description": "demo application",
+  "category": "basic"
+}
+```
+
+*Response code:* `201 CREATED`
+
+*Response body:*
+```json
+{
+  "name": "Fitness App",
+  "apikey": "21da3cc8020517ecaf2e0781b9f679c56fe0f119",
+  "category": "basic"
+}
+```
+
+**Example 3.** *POST request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+
+*Request body:*
+```json
+{
+  "username": "user-12",
+  "activity": "swimming",
+  "duration": 950,
+  "calories": 320
+}
+```
+
+*Response code:* `201 CREATED`
+
+**Example 4.** *The immediate GET request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+
+*Request body:*
+```json
+{
+  "username": "user-12",
+  "activity": "running",
+  "duration": 50,
+  "calories": 20
+}
+```
+
+*Response code:* `429 TOO MANY REQUESTS`

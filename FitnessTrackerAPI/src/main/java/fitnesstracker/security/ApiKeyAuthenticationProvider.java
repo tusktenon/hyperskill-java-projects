@@ -1,0 +1,35 @@
+package fitnesstracker.security;
+
+import fitnesstracker.persistence.Application;
+import fitnesstracker.persistence.ApplicationRepository;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+@Component
+public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
+
+    private final ApplicationRepository repository;
+
+    public ApiKeyAuthenticationProvider(ApplicationRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        UUID key = (UUID) authentication.getCredentials();
+        Application application = repository.findByApiKey(key)
+                .orElseThrow(() -> new BadCredentialsException(
+                        "Invalid API Key: matching application not found"));
+        return new ApiKeyAuthentication(application, key);
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return ApiKeyAuthentication.class.equals(authentication);
+    }
+}

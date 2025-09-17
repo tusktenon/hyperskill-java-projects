@@ -19,6 +19,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final ApiKeyAuthenticationProvider provider;
+    private final DeveloperRepository repository;
+
+    public SecurityConfig(ApiKeyAuthenticationProvider provider, DeveloperRepository repository) {
+        this.provider = provider;
+        this.repository = repository;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -29,15 +37,17 @@ public class SecurityConfig {
         return http
                 // enable basic HTTP authentication
                 .httpBasic(Customizer.withDefaults())
+                .userDetailsService(userDetailsService(repository))
+                // enable custom API-key authentication
+                .with(new ApiKeyHttpConfigurer(), Customizer.withDefaults())
+                .authenticationProvider(provider)
                 .authorizeHttpRequests(auth -> auth
                         // required for tests
                         .requestMatchers("/actuator/shutdown").permitAll()
                         // to prevent access errors for validation exceptions
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/applications/register").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/developers/signup").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/developers/*").authenticated()
-                        .requestMatchers("/api/tracker").permitAll()
+                        .anyRequest().authenticated()
                 )
                 // for testing with Postman
                 .csrf(AbstractHttpConfigurer::disable)

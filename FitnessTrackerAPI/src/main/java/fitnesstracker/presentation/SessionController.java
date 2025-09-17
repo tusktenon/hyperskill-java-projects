@@ -2,46 +2,31 @@ package fitnesstracker.presentation;
 
 import fitnesstracker.persistence.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tracker")
 public class SessionController {
 
-    private final ApplicationRepository applicationRepository;
-    private final SessionRepository sessionRepository;
+    private final SessionRepository repository;
 
-    public SessionController(ApplicationRepository applicationRepository,
-                             SessionRepository sessionRepository) {
-        this.applicationRepository = applicationRepository;
-        this.sessionRepository = sessionRepository;
+    public SessionController(SessionRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping
-    public List<Session> getSessions(
-            @RequestHeader(name = "X-API-Key", required = false) String keyHeader) {
-        Application application = getApplicationByApiKey(keyHeader);
-        return sessionRepository.findAllByOrderByUploadedAtDesc();
+    public List<Session> getSessions() {
+        return repository.findAllByOrderByUploadedAtDesc();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addSession(@RequestHeader(value = "X-API-Key", required = false) String keyHeader,
-                           @RequestBody Session session) {
-        Application application = getApplicationByApiKey(keyHeader);
+    public void addSession(@RequestBody Session session,
+                           @AuthenticationPrincipal Application application) {
         session.setApplication(application);
-        sessionRepository.save(session);
-    }
-
-    private Application getApplicationByApiKey(String keyString) {
-        try {
-            UUID key = UUID.fromString(Objects.requireNonNull(keyString));
-            return applicationRepository.findByApiKey(key).orElseThrow();
-        } catch (NullPointerException | IllegalArgumentException | NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        repository.save(session);
     }
 }

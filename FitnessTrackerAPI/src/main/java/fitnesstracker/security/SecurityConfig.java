@@ -1,6 +1,5 @@
 package fitnesstracker.security;
 
-import fitnesstracker.persistence.DeveloperRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,8 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,11 +17,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final ApiKeyAuthenticationProvider provider;
-    private final DeveloperRepository repository;
+    private final SecurityDeveloperService service;
 
-    public SecurityConfig(ApiKeyAuthenticationProvider provider, DeveloperRepository repository) {
+    public SecurityConfig(ApiKeyAuthenticationProvider provider, SecurityDeveloperService service) {
         this.provider = provider;
-        this.repository = repository;
+        this.service = service;
     }
 
     @Bean
@@ -37,7 +34,7 @@ public class SecurityConfig {
         return http
                 // enable basic HTTP authentication
                 .httpBasic(Customizer.withDefaults())
-                .userDetailsService(userDetailsService(repository))
+                .userDetailsService(service)
                 // enable custom API-key authentication
                 .with(new ApiKeyHttpConfigurer(), Customizer.withDefaults())
                 .authenticationProvider(provider)
@@ -58,12 +55,5 @@ public class SecurityConfig {
                         sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(DeveloperRepository repository) {
-        return username -> repository.findByEmail(username)
-                .map(SecurityDeveloper::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Not found: " + username));
     }
 }

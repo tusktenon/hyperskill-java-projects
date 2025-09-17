@@ -123,5 +123,5 @@ For defining a custom security filter and then configuring the filter chain to u
     ```
 It turns out that the `AuthenticationManager` object isn't accessible during `SecurityFilterChain` building, and the `manager` variable obtained above is simply `null`.
 
-3. We're still using Basic HTTP authentication for most endpoints. Note that we now have to explicitly add our `UserDetailsService` bean while building the `HttpSecurity` object used to define our `SecurityFilterChain` (to be honest, I don't know why this is so).
+3. We're still using Basic HTTP authentication for most endpoints. Note that we now have to explicitly add our `UserDetailsService` bean while building the `HttpSecurity` object used to define our `SecurityFilterChain` (to be honest, I don't know why this is so). That being the case, I decided to move the `UserDetailsService` implementation from a lambda-defined bean in `SecurityConfig` to its own named class. This change results in a better matching pair of fields for `SecurityConfig` (an `AuthenticationProvider` has a closer semantic relationship to a `UserDetailsService` than to a `CrudRepository`), and also makes it clear that this `UserDetailsService` applies to `Developer`, not `Application`.
 

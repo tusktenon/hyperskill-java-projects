@@ -53,6 +53,24 @@ We could avoid doing two queries, perhaps by defining an alternative, eager-look
 
 ## Stage 4/5: API-key authentication
 
+### The odd API design of the `GET /api/tracker` endpoint
+
+In light of the new functionality added in Stage 4, it seems strange that the behaviour of the `GET /api/tracker` endpoint, and its implementation via the `SessionController.getSessions` method, should remain unchanged from Stage 1:
+```java
+@GetMapping
+public List<Session> getSessions() {
+    return repository.findAllByOrderByUploadedAtDesc();
+}
+```
+That is, having authenticated the `GET` request as having been made by a specific application, we still return the list of *all* tracker data from *all* applications. I would have thought this endpoint should now return only the tracker data for the requesting application:
+```java
+@GetMapping
+public List<Session> getSessions(@AuthenticationPrincipal Application application) {
+    return repository.findAllByApplicationOrderByUploadedAtDesc(application);
+}
+```
+However, the instructions for Stage 4 make no mention of such a change, and indeed, the Hyperskill tests will pass with the first version of `getSessions` above, but not the second.
+
 ### Completing Stage 4 using basic Spring Web features
 
 The instructions for this stage suggest "you might want to build a custom security filter and add it to the existing security filter chain." Certainly, completing Stage 4 in this manner provides considerable learning value. However, it's entirely possible to just use Spring Web (in particular, the `@RequestHeader` annotation) to implement the required behaviour, without needing to make a single change to the security configuration from Stage 3. All that's required is a few extra lines of code in the `SessionController` class:
@@ -97,7 +115,6 @@ public class SessionController {
 }
 ```
 Compare the ease of this approach with defining and using a custom security filter, which requires four new classes!
-
 
 ### Completing Stage 4 using Spring Security
 

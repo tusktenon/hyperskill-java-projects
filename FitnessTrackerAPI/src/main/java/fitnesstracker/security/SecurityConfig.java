@@ -1,8 +1,10 @@
 package fitnesstracker.security;
 
+import fitnesstracker.persistence.ApplicationRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,14 +16,23 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@EnableScheduling
 public class SecurityConfig {
 
     private final ApiKeyAuthenticationProvider provider;
+    private final ApplicationRepository repository;
     private final SecurityDeveloperService service;
 
-    public SecurityConfig(ApiKeyAuthenticationProvider provider, SecurityDeveloperService service) {
+    public SecurityConfig(ApiKeyAuthenticationProvider provider, ApplicationRepository repository,
+                          SecurityDeveloperService service) {
         this.provider = provider;
+        this.repository = repository;
         this.service = service;
+    }
+
+    @Bean
+    ApplicationRequestRateLimiter applicationRequestRateLimiter() {
+        return ApplicationRequestRateLimiter.initialize(repository);
     }
 
     @Bean

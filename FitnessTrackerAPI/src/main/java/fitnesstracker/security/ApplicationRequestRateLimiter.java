@@ -1,7 +1,6 @@
 package fitnesstracker.security;
 
 import fitnesstracker.persistence.Application;
-import fitnesstracker.persistence.ApplicationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -18,32 +17,20 @@ public class ApplicationRequestRateLimiter {
     // NOTE: request rate limit (in requests per second) is 1000 * MAX_REQUESTS / RESET_INTERVAL
     final static int MAX_REQUESTS = 1;
 
-    private final Map<Application, Integer> counters = new ConcurrentHashMap<>();
-
-    private ApplicationRequestRateLimiter() {
-    }
-
-    public static ApplicationRequestRateLimiter initialize(ApplicationRepository repository) {
-        var limiter = new ApplicationRequestRateLimiter();
-        repository.findAllByCategory(Application.Category.BASIC)
-                .forEach(application -> limiter.counters.put(application, 0));
-        return limiter;
-    }
-
-    public void register(Application application) {
-        counters.put(application, 0);
-    }
+    private final Map<Application, Integer> counts = new ConcurrentHashMap<>();
 
     @Scheduled(fixedRate = RESET_INTERVAL)
     public void reset() {
-        counters.forEach(((application, __) -> counters.put(application, 0)));
+        counts.clear();
     }
 
     public void countRequest(Application application) {
-        Integer updatedCount = counters.computeIfPresent(application,
-                (__, current) -> Math.min(current + 1, MAX_REQUESTS + 1));
-        if (updatedCount != null && updatedCount > MAX_REQUESTS) {
-            throw new RateLimitExceededException();
+        if (application.getCategory() == Application.Category.BASIC) {
+            int updatedCount =
+                    counts.merge(application, 1, (app, count) -> Math.incrementExact(count));
+            if (updatedCount > MAX_REQUESTS) {
+                throw new RateLimitExceededException();
+            }
         }
     }
 

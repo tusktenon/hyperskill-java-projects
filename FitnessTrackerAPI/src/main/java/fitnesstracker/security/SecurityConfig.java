@@ -35,7 +35,7 @@ public class SecurityConfig {
 
     @Bean
     ApplicationRequestRateLimiter applicationRequestRateLimiter() {
-        return ApplicationRequestRateLimiter.initialize(applicationRepository);
+        return new ApplicationRequestRateLimiter();
     }
 
     @Bean

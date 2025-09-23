@@ -140,5 +140,20 @@ For defining a custom security filter and then configuring the filter chain to u
     ```
 It turns out that the `AuthenticationManager` object isn't accessible during `SecurityFilterChain` building, and the `manager` variable obtained above is simply `null`.
 
-3. We're still using Basic HTTP authentication for most endpoints. Note that we now have to explicitly add our `UserDetailsService` bean while building the `HttpSecurity` object used to define our `SecurityFilterChain` (to be honest, I don't know why this is so). That being the case, I decided to move the `UserDetailsService` implementation from a lambda-defined bean in `SecurityConfig` to its own named class. This change results in a better matching pair of fields for `SecurityConfig` (an `AuthenticationProvider` has a closer semantic relationship to a `UserDetailsService` than to a `CrudRepository`), and also makes it clear that this `UserDetailsService` applies to `Developer`, not `Application`.
+3. We need to add our `ApiKeyAuthenticationProvider` while building the `HttpSecurity` object used to define our `SecurityFilterChain`:
+    ```java
+    http.authenticationProvider(apiKeyAuthenticationProvider())
+    ```
+Doing so, however, will break Basic HTTP authentication, and all secured endpoints other than `/api/tracker` will be inaccessible. Spring issues the following warning at program startup, explaining the problem:
 
+    > `Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.`
+
+    As suggested, adding a `DaoAuthenticationProvider` bean fixes the issue. Note that we don't need to add explicitly add this provider while building the `HttpSecurity` object:
+    ```java
+    http.authenticationProvider(developerAuthenticationProvider())
+    ```
+is correct but unnecessary. Technically, we can also resolve this issue without the `DaoAuthenticationProvider` bean, by just adding the `UserDetailsService` bean while building the `HttpSecurity` object:
+    ```java
+    http.userDetailsService(developerDetailsService())
+    ```
+However, while this restores the program's functionality, it does not suppress the Spring warning.

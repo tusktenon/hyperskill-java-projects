@@ -157,3 +157,10 @@ is correct but unnecessary. Technically, we can also resolve this issue without 
     http.userDetailsService(developerDetailsService())
     ```
 However, while this restores the program's functionality, it does not suppress the Spring warning.
+
+
+## Stage 5/5: Rate limits
+
+I wrote two different rate-limiting algorithms (just for fun). To make it easy to switch between them, both implement the `ApplicationRequestRateLimiter` interface, and the `RateLimitingConfig` class can be used to select an implementation and inject it into the Spring context.
+
+I opted to have the `RequestsPerIntervalLimiter.reset()` method simply call `counts.clear()`, but you could also have it reset the value for all keys to 0. It's not obvious to me which option would be faster in practice.

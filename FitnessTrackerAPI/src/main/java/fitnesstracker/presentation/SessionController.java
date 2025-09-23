@@ -1,7 +1,7 @@
 package fitnesstracker.presentation;
 
 import fitnesstracker.persistence.*;
-import fitnesstracker.security.ApplicationRequestRateLimiter;
+import fitnesstracker.ratelimiting.ApplicationRequestRateLimiter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class SessionController {
 
     @GetMapping
     public List<Session> getSessions(@AuthenticationPrincipal Application application) {
-        limiter.countRequest(application);
+        limiter.checkRateLimit(application);
         return repository.findAllByOrderByUploadedAtDesc();
     }
 
@@ -30,7 +30,7 @@ public class SessionController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addSession(@RequestBody Session session,
                            @AuthenticationPrincipal Application application) {
-        limiter.countRequest(application);
+        limiter.checkRateLimit(application);
         session.setApplication(application);
         repository.save(session);
     }

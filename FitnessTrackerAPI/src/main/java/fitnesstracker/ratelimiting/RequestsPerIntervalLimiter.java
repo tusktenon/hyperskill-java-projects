@@ -1,14 +1,12 @@
-package fitnesstracker.security;
+package fitnesstracker.ratelimiting;
 
 import fitnesstracker.persistence.Application;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ApplicationRequestRateLimiter {
+public class RequestsPerIntervalLimiter implements ApplicationRequestRateLimiter {
 
     // period between request count resets, in milliseconds
     final static int RESET_INTERVAL = 1000;
@@ -24,7 +22,8 @@ public class ApplicationRequestRateLimiter {
         counts.clear();
     }
 
-    public void countRequest(Application application) {
+    @Override
+    public void checkRateLimit(Application application) {
         if (application.getCategory() == Application.Category.BASIC) {
             int updatedCount =
                     counts.merge(application, 1, (app, count) -> Math.incrementExact(count));
@@ -33,7 +32,4 @@ public class ApplicationRequestRateLimiter {
             }
         }
     }
-
-    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-    public static class RateLimitExceededException extends RuntimeException {}
 }

@@ -20,6 +20,10 @@ import java.util.UUID;
 
 public class ApiKeyFilter extends OncePerRequestFilter {
 
+    // AntPathRequestMatcher is deprecated in Spring Security 6.5. If Hyperskill updates the
+    // dependencies for this project, the line below should be replaced with
+    // private final RequestMatcher matcher =
+    //        PathPatternRequestMatcher.withDefaults().matcher("/api/tracker");
     private final RequestMatcher matcher = new AntPathRequestMatcher("/api/tracker");
 
     private final AuthenticationEntryPoint authenticationEntryPoint = (request, response, e) -> {

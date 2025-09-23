@@ -1,15 +1,20 @@
 package fitnesstracker.security;
 
 import fitnesstracker.persistence.ApplicationRepository;
+import fitnesstracker.persistence.DeveloperRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,20 +24,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableScheduling
 public class SecurityConfig {
 
-    private final ApiKeyAuthenticationProvider provider;
-    private final ApplicationRepository repository;
-    private final SecurityDeveloperService service;
+    private final ApplicationRepository applicationRepository;
+    private final DeveloperRepository developerRepository;
 
-    public SecurityConfig(ApiKeyAuthenticationProvider provider, ApplicationRepository repository,
-                          SecurityDeveloperService service) {
-        this.provider = provider;
-        this.repository = repository;
-        this.service = service;
+    public SecurityConfig(ApplicationRepository applicationRepository,
+                          DeveloperRepository developerRepository) {
+        this.applicationRepository = applicationRepository;
+        this.developerRepository = developerRepository;
     }
 
     @Bean
     ApplicationRequestRateLimiter applicationRequestRateLimiter() {
-        return ApplicationRequestRateLimiter.initialize(repository);
+        return ApplicationRequestRateLimiter.initialize(applicationRepository);
     }
 
     @Bean
@@ -41,14 +44,33 @@ public class SecurityConfig {
     }
 
     @Bean
+    public UserDetailsService developerDetailsService() {
+        return username -> developerRepository.findByEmail(username)
+                .map(SecurityDeveloper::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Not found: " + username));
+    }
+
+    @Bean
+    AuthenticationProvider developerAuthenticationProvider() {
+        var provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(developerDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    AuthenticationProvider apiKeyAuthenticationProvider() {
+        return new ApiKeyAuthenticationProvider(applicationRepository);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 // enable basic HTTP authentication
                 .httpBasic(Customizer.withDefaults())
-                .userDetailsService(service)
                 // enable custom API-key authentication
                 .with(new ApiKeyHttpConfigurer(), Customizer.withDefaults())
-                .authenticationProvider(provider)
+                .authenticationProvider(apiKeyAuthenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         // required for tests
                         .requestMatchers("/actuator/shutdown").permitAll()

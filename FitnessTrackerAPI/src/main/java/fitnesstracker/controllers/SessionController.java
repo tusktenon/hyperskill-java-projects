@@ -1,7 +1,9 @@
-package fitnesstracker.presentation;
+package fitnesstracker.controllers;
 
-import fitnesstracker.persistence.*;
+import fitnesstracker.models.Application;
+import fitnesstracker.models.Session;
 import fitnesstracker.ratelimiting.ApplicationRequestRateLimiter;
+import fitnesstracker.repositories.SessionRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

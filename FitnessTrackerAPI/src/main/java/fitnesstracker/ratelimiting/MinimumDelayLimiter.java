@@ -1,6 +1,6 @@
 package fitnesstracker.ratelimiting;
 
-import fitnesstracker.persistence.Application;
+import fitnesstracker.models.Application;
 
 import java.time.Instant;
 import java.util.Map;

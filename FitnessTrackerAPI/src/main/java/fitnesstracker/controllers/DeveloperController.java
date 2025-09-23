@@ -1,6 +1,7 @@
-package fitnesstracker.presentation;
+package fitnesstracker.controllers;
 
-import fitnesstracker.persistence.*;
+import fitnesstracker.models.*;
+import fitnesstracker.repositories.DeveloperRepository;
 import fitnesstracker.security.SecurityDeveloper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;

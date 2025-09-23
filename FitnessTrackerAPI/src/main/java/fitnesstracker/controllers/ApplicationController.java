@@ -1,7 +1,8 @@
-package fitnesstracker.presentation;
+package fitnesstracker.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import fitnesstracker.persistence.*;
+import fitnesstracker.models.*;
+import fitnesstracker.repositories.ApplicationRepository;
 import fitnesstracker.security.SecurityDeveloper;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;

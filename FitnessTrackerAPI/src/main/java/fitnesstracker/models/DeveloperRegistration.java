@@ -1,4 +1,4 @@
-package fitnesstracker.presentation;
+package fitnesstracker.models;
 
 import jakarta.validation.constraints.*;
 

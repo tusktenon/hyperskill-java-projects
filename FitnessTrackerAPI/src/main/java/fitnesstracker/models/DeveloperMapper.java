@@ -1,6 +1,5 @@
-package fitnesstracker.persistence;
+package fitnesstracker.models;
 
-import fitnesstracker.presentation.DeveloperRegistration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

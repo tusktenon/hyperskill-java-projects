@@ -1,7 +1,6 @@
-package fitnesstracker.persistence;
+package fitnesstracker.models;
 
 import com.fasterxml.jackson.annotation.*;
-import fitnesstracker.presentation.Views;
 import jakarta.persistence.*;
 import lombok.*;
 

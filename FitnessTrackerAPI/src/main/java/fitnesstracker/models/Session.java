@@ -1,4 +1,4 @@
-package fitnesstracker.persistence;
+package fitnesstracker.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

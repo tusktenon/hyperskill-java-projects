@@ -1,6 +1,6 @@
 package fitnesstracker.ratelimiting;
 
-import fitnesstracker.persistence.Application;
+import fitnesstracker.models.Application;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

@@ -1,6 +1,4 @@
-package fitnesstracker.persistence;
-
-import fitnesstracker.presentation.ApplicationRegistration;
+package fitnesstracker.models;
 
 public class ApplicationMapper {
 

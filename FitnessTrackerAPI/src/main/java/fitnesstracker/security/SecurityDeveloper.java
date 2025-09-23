@@ -1,6 +1,6 @@
 package fitnesstracker.security;
 
-import fitnesstracker.persistence.Developer;
+import fitnesstracker.models.Developer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

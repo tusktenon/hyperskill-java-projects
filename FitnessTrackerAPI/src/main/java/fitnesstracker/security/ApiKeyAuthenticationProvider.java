@@ -1,7 +1,7 @@
 package fitnesstracker.security;
 
-import fitnesstracker.persistence.Application;
-import fitnesstracker.persistence.ApplicationRepository;
+import fitnesstracker.models.Application;
+import fitnesstracker.repositories.ApplicationRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;

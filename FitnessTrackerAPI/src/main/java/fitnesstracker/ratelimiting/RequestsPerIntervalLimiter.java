@@ -1,6 +1,6 @@
 package fitnesstracker.ratelimiting;
 
-import fitnesstracker.persistence.Application;
+import fitnesstracker.models.Application;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Map;

@@ -1,6 +1,5 @@
-package fitnesstracker.presentation;
+package fitnesstracker.models;
 
-import fitnesstracker.persistence.Application;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

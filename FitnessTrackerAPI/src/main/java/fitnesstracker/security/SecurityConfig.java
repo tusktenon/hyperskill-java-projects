@@ -1,7 +1,7 @@
 package fitnesstracker.security;
 
-import fitnesstracker.persistence.ApplicationRepository;
-import fitnesstracker.persistence.DeveloperRepository;
+import fitnesstracker.repositories.ApplicationRepository;
+import fitnesstracker.repositories.DeveloperRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

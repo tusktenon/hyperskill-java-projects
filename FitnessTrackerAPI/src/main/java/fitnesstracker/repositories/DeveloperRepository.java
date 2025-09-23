@@ -1,5 +1,6 @@
-package fitnesstracker.persistence;
+package fitnesstracker.repositories;
 
+import fitnesstracker.models.Developer;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

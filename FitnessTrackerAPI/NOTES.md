@@ -17,7 +17,7 @@ byte[] bytes = KeyGenerators.secureRandom(16).generateKey();
 String key = new BigInteger(1, bytes).toString(16);
 ```
 
-This is also the approach taken in the Hyperskill lecture [Custom authentication: Configuration](https://hyperskill.org/learn/step/38745#token-generation). I don't know if one option (Version 4 UUID or random bytes produced by [`SecureRandom`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/security/SecureRandom.html)) is preferable to the other in this situation, but since the API keys are assigned permanently and it's essential that no two applications have the same key, perhaps UUID is more appropriate?
+This is also the approach taken in the Hyperskill lecture [Custom authentication: Configuration](https://hyperskill.org/learn/step/38745#token-generation). I don't know if one option (Version 4 UUID or random bytes produced by `SecureRandom`) is preferable to the other in this situation, but since the API keys are assigned permanently and it's essential that no two applications have the same key, perhaps UUID is more appropriate?
 
 ### Eager vs. lazy fetching of a `@OneToMany` field
 
@@ -138,25 +138,25 @@ For defining a custom security filter and then configuring the filter chain to u
                     .authorizeHttpRequests(auth -> auth
             // ...
     ```
-It turns out that the `AuthenticationManager` object isn't accessible during `SecurityFilterChain` building, and the `manager` variable obtained above is simply `null`.
+    It turns out that the `AuthenticationManager` object isn't accessible during `SecurityFilterChain` building, and the `manager` variable obtained above is simply `null`.
 
 3. We need to add our `ApiKeyAuthenticationProvider` while building the `HttpSecurity` object used to define our `SecurityFilterChain`:
     ```java
     http.authenticationProvider(apiKeyAuthenticationProvider())
     ```
-Doing so, however, will break Basic HTTP authentication, and all secured endpoints other than `/api/tracker` will be inaccessible. Spring issues the following warning at program startup, explaining the problem:
+    Doing so, however, will break Basic HTTP authentication, and all secured endpoints other than `/api/tracker` will be inaccessible. Spring issues the following warning at program startup, explaining the problem:
 
     > `Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.`
 
-    As suggested, adding a `DaoAuthenticationProvider` bean fixes the issue. Note that we don't need to add explicitly add this provider while building the `HttpSecurity` object:
+    As suggested, adding a `DaoAuthenticationProvider` bean fixes the issue. Note that we don't need to explicitly add this provider while building the `HttpSecurity` object:
     ```java
     http.authenticationProvider(developerAuthenticationProvider())
     ```
-is correct but unnecessary. Technically, we can also resolve this issue without the `DaoAuthenticationProvider` bean, by just adding the `UserDetailsService` bean while building the `HttpSecurity` object:
+    is correct but unnecessary. Technically, we can also resolve this issue without the `DaoAuthenticationProvider` bean, by just adding the `UserDetailsService` bean while building the `HttpSecurity` object:
     ```java
     http.userDetailsService(developerDetailsService())
     ```
-However, while this restores the program's functionality, it does not suppress the Spring warning.
+    However, while this restores the program's functionality, it does not suppress the Spring warning.
 
 
 ## Stage 5/5: Rate limits

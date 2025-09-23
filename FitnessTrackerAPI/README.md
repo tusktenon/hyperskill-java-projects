@@ -45,7 +45,7 @@ spring.h2.console.settings.web-allow-others=false
       "calories": <integer>
     }
     ```
-and respond with `201 CREATED` as the status code. Clients are bound to send accurate data only.
+    and respond with `201 CREATED` as the status code. Clients are bound to send accurate data only.
 
 - Build the `GET /api/tracker` endpoint that responds with a `200 OK` status code and a response body that carries a JSON array. The array is to contain all existing fitness data, sorted by their upload order, positioned from newest to oldest:
     ```text
@@ -70,7 +70,7 @@ and respond with `201 CREATED` as the status code. Clients are bound to send acc
 
 ### Examples
 
-**Example 1.** *POST request to the /api/tracker endpoint:*
+**Example 1.** *POST request to the `/api/tracker` endpoint:*
 
 *Request body:*
 ```json
@@ -84,7 +84,7 @@ and respond with `201 CREATED` as the status code. Clients are bound to send acc
 
 *Response code:* `201 CREATED`
 
-**Example 2.** *Another POST request to the /api/tracker endpoint:*
+**Example 2.** *Another POST request to the `/api/tracker` endpoint:*
 
 *Request body:*
 ```json
@@ -98,7 +98,7 @@ and respond with `201 CREATED` as the status code. Clients are bound to send acc
 
 Response code: `201 CREATED`
 
-**Example 3.** *GET request to the /api/tracker endpoint:*
+**Example 3.** *GET request to the `/api/tracker` endpoint:*
 
 *Response code:* `200 OK`
 
@@ -168,11 +168,11 @@ Also, when setting up access rules for the API, ensure the `/actuator/shutdown` 
       "password": <string, not null, not blank>
     }
     ```
-If the request body is valid, the endpoint should respond with the status code `201 CREATED` and the response header `Location` showing the URL of the created developer:
+    If the request body is valid, the endpoint should respond with the status code `201 CREATED` and the response header `Location` showing the URL of the created developer:
     ```text
     Location: /api/developers/<id>
     ```
-If any of the request body fields fail to meet the requirements, the endpoint should respond with the status code `400 BAD REQUEST`.
+    If any of the request body fields fail to meet the requirements, the endpoint should respond with the status code `400 BAD REQUEST`.
 
 - Add the `GET /api/developers/<id>` endpoint to return the profile of the corresponding developer as a JSON object:
     ```text
@@ -181,7 +181,7 @@ If any of the request body fields fail to meet the requirements, the endpoint sh
       "email": <string>
     }
     ```
-This endpoint should be accessible only by the authenticated developer with the same id as in the request path. In case the request is made by an unauthenticated client, the endpoint should respond with the status code `401 UNAUTHORIZED`. If the request is made by an authenticated developer but their id doesn't match the id in the request path, the endpoint should respond with the status code `403 FORBIDDEN`.
+    This endpoint should be accessible only by the authenticated developer with the same id as in the request path. In case the request is made by an unauthenticated client, the endpoint should respond with the status code `401 UNAUTHORIZED`. If the request is made by an authenticated developer but their id doesn't match the id in the request path, the endpoint should respond with the status code `403 FORBIDDEN`.
 
 - Save all registered developer data in the database.
 
@@ -189,7 +189,7 @@ This endpoint should be accessible only by the authenticated developer with the 
 
 ### Examples
 
-**Example 1.** *POST request to the /api/developers/signup endpoint:*
+**Example 1.** *POST request to the `/api/developers/signup` endpoint:*
 
 *Request body:*
 ```json
@@ -206,7 +206,7 @@ This endpoint should be accessible only by the authenticated developer with the 
 Location: /api/developers/9062
 ```
 
-**Example 2.** *POST request to the /api/developers/signup endpoint lacking a password:*
+**Example 2.** *POST request to the `/api/developers/signup` endpoint lacking a password:*
 
 *Request body:*
 ```json
@@ -217,7 +217,7 @@ Location: /api/developers/9062
 
 *Response code:* `400 BAD REQUEST`
 
-**Example 3.** *POST request to the /api/developers/signup endpoint with an email already registered:*
+**Example 3.** *POST request to the `/api/developers/signup` endpoint with an email already registered:*
 
 *Request body:*
 ```json
@@ -229,7 +229,7 @@ Location: /api/developers/9062
 
 *Response code:* `400 BAD REQUEST`
 
-**Example 4.** *GET request to the /api/developers/9062 with login=johndoe@gmail.com and password=qwerty:*
+**Example 4.** *GET request to the `/api/developers/9062` with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Response code:* `200 OK`
 
@@ -241,7 +241,7 @@ Location: /api/developers/9062
 }
 ```
 
-**Example 5.** *GET request to the /api/developers/0165 with login=johndoe@gmail.com and password=qwerty:*
+**Example 5.** *GET request to the `/api/developers/0165` with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Response code:* `403 FORBIDDEN`
 
@@ -267,14 +267,14 @@ You also need to make changes to the `GET /api/developers/<id>` endpoint. Now, i
       "description": <string, not null>
     }
     ```
-`name` is the application's name and should be a unique non-blank string; `description` is the application's description and can be empty or blank. If registration is successful, the endpoint should return a status code `201 CREATED`, plus the response body below:
+    `name` is the application's name and should be a unique non-blank string; `description` is the application's description and can be empty or blank. If registration is successful, the endpoint should return a status code `201 CREATED`, plus the response body below:
     ```text
     {
       "name": <string>,
       "apikey": <string, not null, not blank, unique>
     }
     ```
-The response should comprise the application's name and the assigned unique API key. If the request body contains an invalid field, the endpoint should respond with a status code `400 BAD REQUEST`. If an unauthenticated developer sends the request, the endpoint should send a response with the status code `401 UNAUTHORIZED`.
+    The response should comprise the application's name and the assigned unique API key. If the request body contains an invalid field, the endpoint should respond with a status code `400 BAD REQUEST`. If an unauthenticated developer sends the request, the endpoint should send a response with the status code `401 UNAUTHORIZED`.
 
 - Update the `GET /api/developers/<id>` endpoint. It should now include a JSON array of all applications of the requested developer, covering each application's id, name, description, and API key. Applications in the array should be arranged according to when they were registered, with newer applications listed first:
     ```text
@@ -303,7 +303,7 @@ The response should comprise the application's name and the assigned unique API 
 
 ### Examples
 
-**Example 1.** *POST request to the /api/developers/signup endpoint:*
+**Example 1.** *POST request to the `/api/developers/signup` endpoint:*
 
 *Request body:*
 ```json
@@ -320,7 +320,7 @@ The response should comprise the application's name and the assigned unique API 
 Location: /api/developers/9062
 ```
 
-**Example 2.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+**Example 2.** *POST request to the `/api/applications/register` endpoint with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Request body:*
 ```json
@@ -340,7 +340,7 @@ Location: /api/developers/9062
 }
 ```
 
-**Example 3.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+**Example 3.** *POST request to the `/api/applications/register` endpoint with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Request body:*
 ```json
@@ -352,7 +352,7 @@ Location: /api/developers/9062
 
 *Response code:* `400 BAD REQUEST`
 
-**Example 4.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+**Example 4.** *POST request to the `/api/applications/register` endpoint with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Request body:*
 ```json
@@ -364,7 +364,7 @@ Location: /api/developers/9062
 
 *Response code:* `400 BAD REQUEST`
 
-**Example 5.** *GET request to the /api/developers/9062 endpoint with login=johndoe@gmail.com and password=qwerty:*
+**Example 5.** *GET request to the `/api/developers/9062` endpoint with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Response code:* `200 OK`
 
@@ -434,7 +434,7 @@ The basic HTTP authentication for developers should continue to function as befo
 
 ### Examples
 
-**Example 1.** *POST request to the /api/developers/signup endpoint:*
+**Example 1.** *POST request to the `/api/developers/signup` endpoint:*
 
 *Request body:*
 ```json
@@ -451,7 +451,7 @@ The basic HTTP authentication for developers should continue to function as befo
 Location: /api/developers/9062
 ```
 
-**Example 2.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+**Example 2.** *POST request to the `/api/applications/register` endpoint with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Request body:*
 ```json
@@ -471,7 +471,7 @@ Location: /api/developers/9062
 }
 ```
 
-**Example 3.** *POST request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+**Example 3.** *POST request to the `/api/tracker` endpoint with `X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119`:*
 
 *Request body:*
 ```json
@@ -485,7 +485,7 @@ Location: /api/developers/9062
 
 *Response code:* `201 CREATED`
 
-**Example 4.** *GET request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+**Example 4.** *GET request to the `/api/tracker` endpoint with `X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119`:*
 
 *Response code:* `200 OK`
 
@@ -502,7 +502,7 @@ Location: /api/developers/9062
 ]
 ```
 
-**Example 5.** *GET request to the /api/tracker endpoint with X-API-Key=abc:*
+**Example 5.** *GET request to the `/api/tracker` endpoint with `X-API-Key=abc`:*
 
 *Response code:* `401 UNAUTHENTICATED`
 
@@ -537,7 +537,7 @@ This rate limit should apply to both the `GET /api/tracker` and `POST /api/track
       "category": <string, either "basic" or "premium">
     }
     ```
-In the case of a successful registration, this endpoint should reply with the status code `201 CREATED` and this response body:
+    In the case of a successful registration, this endpoint should reply with the status code `201 CREATED` and this response body:
     ```text
     {
       "name": <string>,
@@ -563,11 +563,12 @@ In the case of a successful registration, this endpoint should reply with the st
       ]
     }
     ```
+
 - Set a rate limit of 1 request per second for all basic application requests to the `GET /api/tracker` and `POST /api/tracker` endpoints. If an application exceeds the allowed number of requests, the endpoints should respond with the code `429 TOO MANY REQUESTS`. This rate limit applies universally to both endpoints, not individually for each one.
 
 ### Examples
 
-**Example 1.** *POST request to the /api/developers/signup endpoint:*
+**Example 1.** *POST request to the `/api/developers/signup` endpoint:*
 
 *Request body:*
 ```json
@@ -584,7 +585,7 @@ In the case of a successful registration, this endpoint should reply with the st
 Location: /api/developers/9062
 ```
 
-**Example 2.** *POST request to the /api/applications/register endpoint with login=johndoe@gmail.com and password=qwerty:*
+**Example 2.** *POST request to the `/api/applications/register` endpoint with `login=johndoe@gmail.com` and `password=qwerty`:*
 
 *Request body:*
 ```json
@@ -606,7 +607,7 @@ Location: /api/developers/9062
 }
 ```
 
-**Example 3.** *POST request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+**Example 3.** *POST request to the `/api/tracker` endpoint with `X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119`:*
 
 *Request body:*
 ```json
@@ -620,7 +621,7 @@ Location: /api/developers/9062
 
 *Response code:* `201 CREATED`
 
-**Example 4.** *The immediate GET request to the /api/tracker endpoint with X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119:*
+**Example 4.** *The immediate GET request to the `/api/tracker` endpoint with `X-API-Key=21da3cc8020517ecaf2e0781b9f679c56fe0f119`:*
 
 *Request body:*
 ```json

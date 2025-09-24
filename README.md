@@ -52,6 +52,9 @@ Each project falls into one of three groups:
 
 ### Challenging
 
-- [Fitness Tracker API](https://hyperskill.org/projects/408) (Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC)
-- [Task Management System](https://hyperskill.org/projects/423) (Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC)
-- [Web Quiz Engine with Java](https://hyperskill.org/projects/91) (Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC)
+- [Account Service](https://hyperskill.org/projects/217)
+- [Fitness Tracker API](https://hyperskill.org/projects/408)
+- [Task Management System](https://hyperskill.org/projects/423)
+- [Web Quiz Engine with Java](https://hyperskill.org/projects/91)
+
+*All Challenging projects use Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC.*

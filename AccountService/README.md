@@ -365,3 +365,183 @@ The `email` field must contain the user's login who has sent the request. Error 
     "path": "/api/empl/payment"
 }
 ```
+
+
+## Stage 3/7: Security first!
+
+### Description
+
+You have probably heard a lot of stories about how hackers brute-force user passwords or exploit the weaknesses of the authentication mechanism. Let's figure out how to make our authentication procedure more secure. In the field of web application security, the most authoritative source is [OWASP](https://owasp.org/) (Open Web Application Security Project). The project regularly publishes information about the most dangerous risks associated with the web ([Top Ten](https://owasp.org/www-project-top-ten/)), as well as recommendations for fortifying security. For example, such recommendations can be found in the [ASVS](https://github.com/OWASP/ASVS) (Application Security Verification Standard). To ensure the security of the authentication, the standard offers several dozen security measures, but the ACME Security Department has selected only a few of them, namely, the password security requirements.
+
+Here they are:
+
+- Verify that user passwords contain at least **12 characters**;
+- Verify that users can **change** their passwords. Changing the password requires the current and a new password;
+- Verify that the passwords submitted during a registration, login, and password change are checked against **a set of breached passwords**. If the password is breached, the application must require users to set a new non-breached password.
+- Verify that passwords are stored in a form that is resistant to offline attacks. Passwords must be **salted** and **hashed** using an approved one-way key derivation or a password hashing function;
+- If you use `bcrypt`, the work factor must be as large as the verification server performance will allow. Usually, at least 13.
+
+At this stage, your need to implement the API for changing a user's password.
+
+`POST api/auth/changepass` is designed to change the password of a user who was successfully authenticated during a request. It must accept data in the JSON format and update a password to the one specified in the `new_password` field. The old and new passwords must be different. A new password must meet the requirements listed above.
+
+Since the `bcrypt` hashing algorithm uses salt, it is impossible to compare the hashes of the new and old password directly, so use the "matches" method of the `BCryptPasswordEncoder` class:
+```java
+private final BCryptPasswordEncoder encoder;
+
+// ....
+
+encoder.matches("new_password", hashOfOldPassword)
+```
+
+For testing purposes, here is the list of breached passwords:
+```text
+{"PasswordForJanuary", "PasswordForFebruary", "PasswordForMarch", "PasswordForApril",
+ "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
+ "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember"}
+```
+
+### Objectives
+
+Implement the following password checks when registering a user or changing a password:
+
+Passwords contain at least 12 characters; if a password fails this check, respond with `400 Bad Request` and the following JSON body:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Password length must be 12 chars minimum!",
+    "path": "<api>"
+}
+```
+
+Passwords must be stored in a form that is resistant to offline attacks. Use `BCryptPasswordEncoder` with a strength of at least `13` to store the passwords in the database. Check the submitted passwords against the set of breached passwords. If the password is in the list of breached passwords, the service must respond with `400 Bad Request` and the following JSON body:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "The password is in the hacker's database!",
+    "path": "<api>"
+}
+```
+
+Implement the `POST api/auth/changepass` endpoint for changing passwords. The API must be available for authenticated users and accept data in the JSON format:
+```json
+{
+   "new_password": "<String value, not empty>"
+}
+```
+
+If successful, respond with the `HTTP OK` status (`200`) and the body like this:
+```json
+{
+   "email": "<String value, not empty>",
+   "status": "The password has been updated successfully"
+}
+```
+
+After this, update the password for the current user in the database. If the new password fails security checks, respond accordingly, as stated above. If a new password is the same as the current password, the service must respond with `400 Bad Request` and the following JSON body:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "The passwords must be different!",
+    "path": "<api>"
+}
+```
+
+### Examples
+
+**Example 1:** *a POST request for `api/auth/signup`*
+
+*Request body:*
+```json
+{
+   "name": "John",
+   "lastname": "Doe",
+   "email": "johndoe@acme.com",
+   "password": "secret"
+}
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<data>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Password length must be 12 chars minimum!",
+    "path": "/api/auth/signup"
+}
+```
+
+**Example 2:** *a POST request for `api/auth/signup`*
+
+*Request body:*
+```json
+{
+   "name": "John",
+   "lastname": "Doe",
+   "email": "johndoe@acme.com",
+   "password": "PasswordForJune"
+}
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<data>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "The password is in the hacker's database!",
+    "path": "/api/auth/signup"
+}
+```
+
+**Example 3:** *a POST request for `api/auth/changepass` with the correct authentication; `username=johndoe@acme.com`, `password=B3Fagws6zcBa`*
+
+*Request body:*
+```json
+{
+   "new_password": "bZPGqH7fTJWW"
+}
+```
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+    "email": "johndoe@acme.com",
+    "status": "The password has been updated successfully"
+}
+```
+
+**Example 4:** *a POST request for `api/auth/changepass` with the correct authentication; `username=johndoe@acme.com`, `password=bZPGqH7fTJWW`*
+
+*Request body:*
+```json
+{
+   "new_password": "bZPGqH7fTJWW"
+}
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "The passwords must be different!",
+    "path": "/api/auth/changepass"
+}
+```

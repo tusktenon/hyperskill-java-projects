@@ -3,6 +3,9 @@ bin
 .project
 .settings
 
+# H2 data file for Account Service project
+service_db.mv.db
+
 # H2 data file for Fitness Tracker API project
 fitness_db.mv.db
 

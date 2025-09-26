@@ -545,3 +545,298 @@ After this, update the password for the current user in the database. If the new
     "path": "/api/auth/changepass"
 }
 ```
+
+
+## Stage 4/7: Attention to business
+
+### Description
+
+It's time to start with the business functions of our application! We remind you that our service must provide users with information about the employee's salary for the selected period. Also, our service should allow the accountant to upload information about the salary of employees. Take another look at the endpoints:
+
+1. `POST api/acct/payments` uploads payrolls;
+2. `PUT api/acct/payments` changes the salary of a specific user;
+3. `GET api/empl/payment` gives access to the payroll of an employee.
+
+Information about the salary of employees is transmitted as an array of JSON objects. This operation must be transactional. That is, if an error occurs during an update, perform a rollback to the original state. The following requirements are imposed on the data:
+
+- An employee must be among the users of our service;
+- The period for which the salary is paid must be unique for each employee (for `POST`),
+- Salary is calculated in cents and cannot be negative.
+
+Changing the salary must be done in a separate corrective operation, `PUT`. The previous data requirements remain, except for the uniqueness requirement. In this stage, we are not concerned with an employee-period pair.
+
+Salary information is provided to an employee upon successful authentication on the corresponding endpoint, while the request specifies the period for which the information should be provided. If the period is not specified, provide all available information in the form of an array of JSON objects. For convenience, convert the salary to `X dollar(s) Y cent(s)`.
+
+### Objectives
+
+Add the `POST api/acct/payments` endpoint. It must be available to unauthorized users, accept data in JSON format, and store it in the database. The operation must be transactional! The JSON is as follows:
+```text
+[
+    {
+        "employee": "<user email>",
+        "period": "<mm-YYYY>",
+        "salary": <Long>
+    },
+    {
+        "employee": "<user1 email>",
+        "period": "<mm-YYYY>",
+        "salary": <Long>
+    },
+    ...
+    {
+        "employee": "<userN email>",
+        "period": "<mm-YYYY>",
+        "salary": <Long>
+    }
+]
+```
+
+If successful, respond with the `HTTP OK` status (`200`) and the following body:
+```json
+{
+   "status": "Added successfully!"
+}
+```
+
+In case of an error, respond with the `HTTP Bad Request` status (`400`) and the following body:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "<error message>",
+    "path": "/api/acct/payments"
+}
+```
+
+Take into consideration the following reasons for errors:
+
+The salary must be non-negative. The employee-period pair must be unique. In other words, it should not be possible to allocate the money twice (or thrice) during the same period. An employee must be among the users of our service. Error messages are up to you.
+
+Add the `PUT api/acct/payments` endpoint. It must be available to unauthorized users, accept data in JSON format, and update the salary for the specified users in the database. The JSON must be as follows:
+```text
+{
+    "employee": "<user email>",
+    "period": "<mm-YYYY>",
+    "salary": <Long>
+}
+```
+
+If successful, respond with the `HTTP OK` status (`200`) and the following body:
+```json
+{
+   "status": "Updated successfully!"
+}
+```
+In case of errors, respond with the `HTTP Bad Request` status (`400`) and the body below. Error messages are up to you:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "<error message>",
+    "path": "/api/acct/payments"
+}
+```
+
+Add the `GET api/empl/payment` endpoint. It should be available only to authenticated users. It takes the `period` parameter that specifies the period (the month and year) and provides the information for this period. If the parameter `period` is not specified, the endpoint provides information about the employee's salary for each period from the database as an array of objects in descending order by date. JSON representation information about user salary must look like this:
+```json
+{
+   "name": "<user name>",
+   "lastname": "<user lastname>",
+   "period": "<name of month-YYYY>",
+   "salary": "X dollar(s) Y cent(s)"
+}
+```
+
+Error message for a non-authenticated or wrong user should have the `401 (Unauthorized)` status. If data is missing, the service should return an empty JSON array or an empty JSON, respectively. If the period parameter has a wrong format, the service must respond with the `HTTP Bad Request` status (`400`) and the body below. Error messages are up to you:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "<error message>",
+    "path": "api/empl/payment"
+}
+```
+
+### Examples
+
+> [!NOTE]
+> The tests do not check the contents of the `message` field.
+
+**Example 1:** *a POST request for `api/acct/payments` without authentication*
+
+*Request body:*
+```json
+[
+    {
+        "employee": "johndoe@acme.com",
+        "period": "01-2021",
+        "salary": 123456
+    },
+    {
+        "employee": "johndoe@acme.com",
+        "period": "02-2021",
+        "salary": 123456
+    },
+    {
+        "employee": "johndoe@acme.com",
+        "period": "03-2021",
+        "salary": 123456
+    }
+]
+```
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+   "status": "Added successfully!"
+}
+```
+
+**Example 2:** *a POST request for `api/acct/payments` without authentication*
+
+*Request body:*
+```json
+[
+    {
+        "employee": "johndoe@acme.com",
+        "period": "01-2021",
+        "salary": -1
+    },
+    {
+        "employee": "johndoe@acme.com",
+        "period": "13-2021",
+        "salary": 123456
+    },
+    {
+        "employee": "johndoe@acme.com",
+        "period": "03-2021",
+        "salary": 123456
+    }
+]
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "payments[0].salary: Salary must be non negative!, payments[1].period: Wrong date!",
+    "path": "/api/acct/payments"
+}
+```
+
+**Example 3:** *a POST request for `api/acct/payments` without authentication*
+
+*Request body:*
+```json
+[
+    {
+        "employee": "johndoe@acme.com",
+        "period": "01-2021",
+        "salary": 123456
+    },
+    {
+        "employee": "johndoe@acme.com",
+        "period": "01-2021",
+        "salary": 123456
+    }
+]
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<data>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Error!",
+    "path": "/api/acct/payments"
+}
+```
+
+**Example 4:** *a PUT request for `api/acct/payments` without authentication*
+
+*Request body:*
+```json
+{
+    "employee": "johndoe@acme.com",
+    "period": "01-2021",
+    "salary": 123457
+}
+```
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+   "status": "Updated successfully!"
+}
+```
+
+**Example 5:** *a GET request for `api/empl/payment?period=01-2021` with the correct authentication for `johndoe@acme.com`*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+   "name": "John",
+   "lastname": "Doe",
+   "period": "January-2021",
+   "salary": "1234 dollar(s) 56 cent(s)"
+}
+```
+
+**Example 6:** *a GET request for `api/empl/payment` with the correct authentication for `johndoe@acme.com`*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+[
+    {
+       "name": "John",
+       "lastname": "Doe",
+       "period": "March-2021",
+       "salary": "1234 dollar(s) 56 cent(s)"
+    },
+    {
+       "name": "John",
+       "lastname": "Doe",
+       "period": "February-2021",
+       "salary": "1234 dollar(s) 56 cent(s)"
+    },
+    {
+       "name": "John",
+       "lastname": "Doe",
+       "period": "January-2021",
+       "salary": "1234 dollar(s) 56 cent(s)"
+    }
+]
+```
+
+**Example 7:** *a GET request for `api/empl/payment?period=13-2021` with the correct authentication for `johndoe@acme.com`*
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Error!",
+    "path": "/api/empl/payment"
+}
+```

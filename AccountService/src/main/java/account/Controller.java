@@ -1,31 +1,34 @@
 package account;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class Controller {
 
-    private final PasswordEncoder encoder;
-    private final UserRepository repository;
+    private final UserService service;
 
-    public Controller(PasswordEncoder encoder, UserRepository repository) {
-        this.encoder = encoder;
-        this.repository = repository;
+    public Controller(UserService service) {
+        this.service = service;
+    }
+
+    @PostMapping("/auth/changepass")
+    public Map<String, String> changePassword(@Valid @RequestBody PasswordChangeRequest request,
+                                              @AuthenticationPrincipal SecurityUser securityUser) {
+        User updated = service.changePassword(securityUser.getUser(), request.newPassword());
+        return Map.of(
+                "email", updated.getEmail().toLowerCase(), // required by Hyperskill tests
+                "status", "The password has been updated successfully"
+        );
     }
 
     @PostMapping("/auth/signup")
-    public User signup(@Valid @RequestBody User registration) {
-        if (repository.existsByEmailIgnoreCase(registration.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exist!");
-        }
-        registration.setPassword(encoder.encode(registration.getPassword()));
-        return repository.save(registration);
+    public User signup(@Valid @RequestBody User requested) {
+        return service.register(requested);
     }
 
     @GetMapping("/empl/payment")

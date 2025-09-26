@@ -27,7 +27,7 @@ public class User {
     @Email(regexp = "\\w+@acme\\.com")
     private String email;
 
-    @NotBlank
+    @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Setter
     private String password;

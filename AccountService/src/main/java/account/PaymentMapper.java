@@ -1,0 +1,47 @@
+package account;
+
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+public class PaymentMapper {
+
+    private final UserRepository repository;
+
+    public PaymentMapper(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    public Payment convert(PaymentInstruction instruction) {
+        User employee = repository.findByEmailIgnoreCase(instruction.employee())
+                .orElseThrow(() -> new InvalidPaymentException(
+                        "Employee email \"%s\" not found".formatted(instruction.employee())));
+        return new Payment(employee, parsePayPeriod(instruction.period()), instruction.salary());
+    }
+
+    public static PaymentSummary summarize(Payment payment) {
+        return new PaymentSummary(
+                payment.getEmployee().getFirstName(),
+                payment.getEmployee().getLastName(),
+                formatPayPeriod(payment.getPeriod()),
+                formatSalary(payment.getSalary())
+        );
+    }
+
+
+    public static YearMonth parsePayPeriod(String periodString) {
+        try {
+            return YearMonth.parse(periodString, DateTimeFormatter.ofPattern("MM-yyyy"));
+        } catch (DateTimeParseException e) {
+            throw new InvalidPaymentException("Invalid pay period");
+        }
+    }
+
+    public static String formatPayPeriod(YearMonth period) {
+        return period.format(DateTimeFormatter.ofPattern("MMMM-yyyy"));
+    }
+
+    public static String formatSalary(long salary) {
+        return "%d dollar(s) %d cent(s)".formatted(salary / 100, salary % 100);
+    }
+}

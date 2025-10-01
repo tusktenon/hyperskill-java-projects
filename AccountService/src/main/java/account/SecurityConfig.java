@@ -30,6 +30,8 @@ public class SecurityConfig {
                         // for Hyperskill tests
                         .requestMatchers("/actuator/shutdown").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .anyRequest().authenticated()
                 )

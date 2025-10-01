@@ -1,6 +1,9 @@
 package account;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+
+import java.time.YearMonth;
 
 public record PaymentInstruction(
 
@@ -9,8 +12,8 @@ public record PaymentInstruction(
         String employee,
 
         @NotNull(message = "Missing value for \"period\"")
-        @Pattern(regexp = "(0[1-9]|1[0-2])-2\\d{3}", message = "Invalid pay period")
-        String period,
+        @JsonFormat(pattern = "MM-yyyy")
+        YearMonth period,
 
         @NotNull(message = "Missing value for \"salary\"")
         @Min(value = 0, message = "Salary cannot be negative")

@@ -16,18 +16,17 @@ public class PaymentMapper {
         User employee = repository.findByEmailIgnoreCase(instruction.employee())
                 .orElseThrow(() -> new InvalidPaymentException(
                         "Employee email \"%s\" not found".formatted(instruction.employee())));
-        return new Payment(employee, parsePayPeriod(instruction.period()), instruction.salary());
+        return new Payment(employee, instruction.period(), instruction.salary());
     }
 
     public static PaymentSummary summarize(Payment payment) {
         return new PaymentSummary(
                 payment.getEmployee().getFirstName(),
                 payment.getEmployee().getLastName(),
-                formatPayPeriod(payment.getPeriod()),
+                payment.getPeriod(),
                 formatSalary(payment.getSalary())
         );
     }
-
 
     public static YearMonth parsePayPeriod(String periodString) {
         try {
@@ -35,10 +34,6 @@ public class PaymentMapper {
         } catch (DateTimeParseException e) {
             throw new InvalidPaymentException("Invalid pay period");
         }
-    }
-
-    public static String formatPayPeriod(YearMonth period) {
-        return period.format(DateTimeFormatter.ofPattern("MMMM-yyyy"));
     }
 
     public static String formatSalary(long salary) {

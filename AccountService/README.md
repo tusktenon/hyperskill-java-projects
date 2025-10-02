@@ -840,3 +840,375 @@ Error message for a non-authenticated or wrong user should have the `401 (Unauth
     "path": "/api/empl/payment"
 }
 ```
+
+
+## Stage 5/7: The authorization
+
+### Description
+
+Our service is almost ready; only the roles remain. We need to add the **authorization**. Authorization is a process when the system decides whether an authenticated client has permission to access the requested resource. Authorization always follows authentication.
+
+Our service should implement the role model that we have developed earlier:
+
+|                            | Anonymous | User  | Accountant | Administrator |
+| :------------------------- | :-------: | :---: | :--------: | :-----------: |
+| `POST api/auth/signup`     | +         | +     | +          | +             |
+| `POST api/auth/changepass` | -         | +     | +          | +             |
+| `GET api/empl/payment`     | -         | +     | +          | -             |
+| `POST api/acct/payments`   | -         | -     | +          | -             |
+| `PUT api/acct/payments`    | -         | -     | +          | -             |
+| `GET api/admin/user`       | -         | -     | -          | +             |
+| `DELETE api/admin/user`    | -         | -     | -          | +             |
+| `PUT api/admin/user/role`  | -         | -     | -          | +             |
+
+**Tip:** You can use the article [Spring Security Roles and Permissions](https://www.javadevjournal.com/spring-security/spring-security-roles-and-permissions/) by JavadevJournal and [Introduction to Spring Method Security](https://www.baeldung.com/spring-security-method-security) by Baeldung to learn more about the authorization in Spring Boot.
+
+We also advise you to take a look at the following articles; they may help you a lot: [Spring Security – Customize the 403 Forbidden/Access Denied Page](https://www.baeldung.com/spring-security-custom-access-denied-page) and [Hibernate could not initialize proxy – no Session](https://www.baeldung.com/hibernate-initialize-proxy-exception) by Baeldung.
+
+**Tip:** Some hints on how to create a table with user roles at the start of the service:
+```java
+@Component
+public class DataLoader {
+
+    private GroupRepository groupRepository;
+
+    @Autowired
+    public DataLoader(GroupRepository groupRepository) {
+        this.groupRepository = groupRepository;
+        createRoles();
+    }
+
+    private void createRoles() {
+        try {
+            groupRepository.save(new Group("ROLE_ADMINISTRATOR"));
+            groupRepository.save(new Group("ROLE_USER"));
+            groupRepository.save(new Group("ROLE_ACCOUNTANT"));
+        } catch (Exception e) {
+
+        }
+    }
+}
+```
+
+The ACME Security Department imposes the new security requirements for our service! They are based on the [ASVS](https://github.com/OWASP/ASVS). Your task is to implement the following requirements from the **V4. Access Control Verification Requirements** paragraph:
+
+- Verify that all user and data attributes and policy information used by access controls cannot be manipulated by end users unless specifically authorized.
+
+- Verify that the principle of least privilege exists - users should only be able to access functions, data files, URLs, controllers, services, and other resources, for which they possess specific authorization. This implies protection against spoofing and elevation of privilege.
+
+- Verify that the principle of deny by default exists whereby new users/roles start with minimal or no permissions and users/roles do not receive access to new features until access is explicitly assigned. 
+
+Let's talk about roles. The `Administrator` is the user who registered first, all other users should receive the `User` role. The `Accountant` role should be assigned by the Administrator to one of the users later.
+
+To assign the roles and manage users, you will need to implement the following service endpoints:
+
+1. `PUT api/admin/user/role` sets the roles;
+2. `DELETE api/admin/user` deletes users;
+3. `GET api/admin/user` obtains information about all users; the information should not be sensitive.
+
+The roles should be divided into 2 groups: administrative (`Administrator`) and business users (`Accountant`, `User`).
+Do not mix up the groups; a user can be either from the administrative or business group. A user with an administrative role should not have access to business functions and vice versa.
+
+### Objectives
+
+- Add the authorization to the service and implement the role model shown in the table above. The first registered user should receive the `Administrator` role, the rest — `Users`. In case of authorization violation, respond with `HTTP Forbidden` status (`403`) and the following body:
+    ```json
+    {
+      "timestamp" : "<date>",
+      "status" : 403,
+      "error" : "Forbidden",
+      "message" : "Access Denied!",
+      "path" : "/api/admin/user/role"
+    }
+    ```
+
+- Change the response for the `POST api/auth/signup` endpoint. It should respond with `HTTP OK` status (`200`) and the body with a JSON object with the information about a user. Add the `roles` field that contains an array with roles, sorted in ascending order:
+    ```json
+    {
+       "id": "<Long value, not empty>",   
+       "name": "<String value, not empty>",
+       "lastname": "<String value, not empty>",
+       "email": "<String value, not empty>",
+       "roles": "<[User roles]>"
+    }
+    ```
+
+- Add the `GET api/admin/user` endpoint. It must respond with an array of objects representing the users sorted by ID in ascending order. Return an empty JSON array if there's no information.
+    ```json
+    [
+        {
+            "id": "<user1 id>",
+            "name": "<user1 name>",
+            "lastname": "<user1 last name>",
+            "email": "<user1 email>",
+            "roles": "<[user1 roles]>"
+        },
+         ...
+        {
+            "id": "<userN id>",
+            "name": "<userN name>",
+            "lastname": "<userN last name>",
+            "email": "<userN email>",
+            "roles": "<[userN roles]>"
+        }
+    ]
+    ```
+
+- Add the `DELETE api/admin/user/{user email}` endpoint, where `{user email}` specifies the user that should be deleted. The endpoint must delete the user and respond with `HTTP OK` status (`200`) and body like this:
+    ```json
+    {
+       "user": "<user email>",
+       "status": "Deleted successfully!"
+    }
+    ```
+
+    If a user is not found, respond with `HTTP Not Found` status (`404`) and the following body:
+    ```json
+    {
+        "timestamp": "<date>",
+        "status": 404,
+        "error": "Not Found",
+        "message": "User not found!",
+        "path": "<api + parameter>"
+    }
+    ```
+
+    The `Administrator` should not be able to delete himself. In that case, respond with the `HTTP Bad Request` status (`400`) and the following body:
+    ```json
+    {
+        "timestamp": "<date>",
+        "status": 400,
+        "error": "Bad Request",
+        "message": "Can't remove ADMINISTRATOR role!",
+        "path": "<api + path>"
+    }
+    ```
+
+- Add the `PUT api/admin/user/role` endpoint that changes user roles. It must accept the following JSON body:
+    ```json
+    {
+       "user": "<String value, not empty>",
+       "role": "<User role>",
+       "operation": "<[GRANT, REMOVE]>"
+    }
+    ```
+
+    The `operation` field above determines whether the role will be provided or removed. If successful, respond with the `HTTP OK` status (`200`) and the body like this:
+    ```json
+    {
+       "id": "<Long value, not empty>",   
+       "name": "<String value, not empty>",
+       "lastname": "<String value, not empty>",
+       "email": "<String value, not empty>",
+       "roles": "[<User roles>]"
+    }
+    ```
+
+    In case of violation of the rules, the service must respond in the following way:
+
+    - If a user is not found, respond with the `HTTP Not Found` status (`404`) and the following body:
+        ```json
+        {
+            "timestamp": "<date>",
+            "status": 404,
+            "error": "Not Found",
+            "message": "User not found!",
+            "path": "/api/admin/user/role"
+        }
+        ```
+
+    - If a role is not found, respond with `HTTP Not Found` status (`404`) and the following body:
+        ```json
+        {
+            "timestamp": "<date>",
+            "status": 404,
+            "error": "Not Found",
+            "message": "Role not found!",
+            "path": "/api/admin/user/role"
+        }
+        ```
+
+    - If you want to delete a role that has not been provided to a user, respond with the `HTTP Bad Request` status (`400`) and body like this:
+        ```json
+        {
+            "timestamp": "<date>",
+            "status": 400,
+            "error": "Bad Request",
+            "message": "The user does not have a role!",
+            "path": "/api/admin/user/role"
+        }
+        ```
+
+    - If you want to remove the only existing role of a user, respond with the `HTTP Bad Request` status (`400`) and the following body:
+        ```json
+        {
+            "timestamp": "<date>",
+            "status": 400,
+            "error": "Bad Request",
+            "message": "The user must have at least one role!",
+            "path": "/api/admin/user/role"
+        }
+        ```
+
+    - If you try to remove the Administrator role, respond with the `HTTP Bad Request` status (`400`) and the following body:
+        ```json
+        {
+            "timestamp": "<date>",
+            "status": 400,
+            "error": "Bad Request",
+            "message": "Can't remove ADMINISTRATOR role!",
+            "path": "/api/admin/user/role"
+        }
+        ```
+
+    - If an administrative user is granted a business role or vice versa, respond with the `HTTP Bad Request` status (`400`) and the following body:
+        ```json
+        {
+            "timestamp": "<date>",
+            "status": 400,
+            "error": "Bad Request",
+            "message": "The user cannot combine administrative and business roles!",
+            "path": "/api/admin/user/role"
+        }
+        ```
+
+### Examples
+
+**Example 1:** *a PUT request for `/api/admin/user/role` with the correct authentication under the Administrator role*
+
+*Request:*
+```json
+{
+   "user": "ivanivanov@acme.com",
+   "role": "ACCOUNTANT",
+   "operation": "GRANT"
+}
+```
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+    "id": 2,
+    "name": "Ivan",
+    "lastname": "Ivanov",
+    "email": "ivanivanov@acme.com",
+    "roles": [
+        "ROLE_ACCOUNTANT",
+        "ROLE_USER"
+    ]
+}
+```
+
+**Example 2:** *a GET request for `/api/admin/user` with the correct authentication under the Administrator role*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+[
+    {
+        "id": 1,
+        "name": "John",
+        "lastname": "Doe",
+        "email": "johndoe@acme.com",
+        "roles": [
+            "ROLE_ADMINISTRATOR"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Ivan",
+        "lastname": "Ivanov",
+        "email": "ivanivanov@acme.com",
+        "roles": [
+            "ROLE_ACCOUNTANT",
+            "ROLE_USER"
+        ]
+    }
+]
+```
+
+**Example 3:** *a PUT request for `/api/admin/user/role` with the correct authentication under the Administrator role*
+
+*Request:*
+```json
+{
+   "user": "ivanivanov@acme.com",
+   "role": "ACCOUNTANT",
+   "operation": "REMOVE"
+}
+```
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+    "id": 2,
+    "name": "Ivan",
+    "lastname": "Ivanov",
+    "email": "ivanivanov@acme.com",
+    "roles": [
+        "ROLE_USER"
+    ]
+}
+```
+
+**Example 4:** *a GET request for `/api/admin/user/role` with the correct authentication under the User role*
+
+*Response:* `403 Forbidden`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 403,
+    "error": "Forbidden",
+    "message": "Access Denied!",
+    "path": "/api/admin/user/"
+}
+```
+
+**Example 5:** *a DELETE request for `/api/admin/user/ivanivanov@acme.com` with the correct authentication under the Administrator role*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+    "user": "ivanivanov@acme.com",
+    "status": "Deleted successfully!"
+}
+```
+
+**Example 6:** *a DELETE request for `/api/admin/user/johndoe@acme.com` with the correct authentication under the Administrator role*
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Can't remove ADMINISTRATOR role!",
+    "path": "/api/admin/user/johndoe@acme.com"
+}
+```
+
+**Example 7:** *a DELETE request for `/api/admin/user/ivanivanov@acme.com` with the correct authentication under the Administrator role*
+
+*Response:* `404 Not Found`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 404,
+    "error": "Not Found",
+    "message": "User not found!",
+    "path": "/api/admin/user/ivanivanov@acme.com"
+}
+```

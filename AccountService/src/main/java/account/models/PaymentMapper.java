@@ -1,4 +1,7 @@
-package account;
+package account.models;
+
+import account.exceptions.InvalidPaymentException;
+import account.repositories.UserRepository;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;

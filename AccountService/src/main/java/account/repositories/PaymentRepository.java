@@ -1,5 +1,7 @@
-package account;
+package account.repositories;
 
+import account.models.Payment;
+import account.models.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.YearMonth;

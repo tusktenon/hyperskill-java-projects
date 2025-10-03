@@ -1,4 +1,4 @@
-package account;
+package account.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;

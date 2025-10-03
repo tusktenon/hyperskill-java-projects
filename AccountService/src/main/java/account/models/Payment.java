@@ -1,4 +1,4 @@
-package account;
+package account.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

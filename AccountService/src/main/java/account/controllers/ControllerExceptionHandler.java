@@ -1,4 +1,4 @@
-package account;
+package account.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;

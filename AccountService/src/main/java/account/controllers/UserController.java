@@ -1,5 +1,9 @@
-package account;
+package account.controllers;
 
+import account.models.PasswordChangeRequest;
+import account.models.User;
+import account.security.SecurityUser;
+import account.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;

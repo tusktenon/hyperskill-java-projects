@@ -1,5 +1,9 @@
-package account;
+package account.services;
 
+import account.models.User;
+import account.repositories.UserRepository;
+import account.exceptions.InvalidPasswordException;
+import account.exceptions.UserRegistrationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

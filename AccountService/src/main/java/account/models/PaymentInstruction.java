@@ -1,4 +1,4 @@
-package account;
+package account.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;

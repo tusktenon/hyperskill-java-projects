@@ -1,5 +1,9 @@
-package account;
+package account.services;
 
+import account.exceptions.InvalidPaymentException;
+import account.models.*;
+import account.repositories.PaymentRepository;
+import account.repositories.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 

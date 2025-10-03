@@ -3,7 +3,6 @@ package account.services;
 import account.exceptions.InvalidPaymentException;
 import account.models.*;
 import account.repositories.PaymentRepository;
-import account.repositories.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +16,9 @@ public class PaymentService {
     private final PaymentMapper mapper;
     private final PaymentRepository repository;
 
-    public PaymentService(PaymentRepository paymentRepository, UserRepository userRepository) {
-        mapper = new PaymentMapper(userRepository);
-        repository = paymentRepository;
+    public PaymentService(PaymentMapper mapper, PaymentRepository repository) {
+        this.mapper = mapper;
+        this.repository = repository;
     }
 
     public void addPayments(List<PaymentInstruction> instructions) {

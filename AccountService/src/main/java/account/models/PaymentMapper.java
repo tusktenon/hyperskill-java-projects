@@ -2,11 +2,13 @@ package account.models;
 
 import account.exceptions.InvalidPaymentException;
 import account.repositories.UserRepository;
+import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+@Component
 public class PaymentMapper {
 
     private final UserRepository repository;

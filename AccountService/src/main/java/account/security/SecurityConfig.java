@@ -1,6 +1,5 @@
 package account.security;
 
-import account.models.ErrorResponseBody;
 import account.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,12 +22,8 @@ public class SecurityConfig {
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
-        return (request, response, accessDeniedException) -> {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json");
-            String responseBody = ErrorResponseBody.forbidden(request).toJson();
-            response.getWriter().write(responseBody);
-        };
+        return (request, response, accessDeniedException) ->
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied!");
     }
 
     @Bean
@@ -49,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyRole(
-                            "USER", "ACCOUNTANT")
+                                "USER", "ACCOUNTANT")
                 )
                 // use custom AccessDeniedHandler
                 .exceptionHandling(exceptionHandling -> exceptionHandling

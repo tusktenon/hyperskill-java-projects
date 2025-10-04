@@ -1212,3 +1212,265 @@ Do not mix up the groups; a user can be either from the administrative or busine
     "path": "/api/admin/user/ivanivanov@acme.com"
 }
 ```
+
+
+## Stage 6/7: Logging events
+
+### Description
+
+The security department has put forward new requirements. The service must log **information security events**. Take a look at what they include:
+
+| Description                                                  | Event Name        |
+| ------------------------------------------------------------ | ----------------- |
+| A user has been successfully registered                      | `CREATE_USER`     |
+| A user has changed the password successfully                 | `CHANGE_PASSWORD` |
+| A user is trying to access a resource without access rights  | `ACCESS_DENIED`   |
+| Failed authentication                                        | `LOGIN_FAILED`    |
+| A role is granted to a user                                  | `GRANT_ROLE`      |
+| A role has been revoked                                      | `REMOVE_ROLE`     |
+| The Administrator has locked the user                        | `LOCK_USER`       |
+| The Administrator has unlocked a user                        | `UNLOCK_USER`     |
+| The Administrator has deleted a user                         | `DELETE_USER`     |
+| A user has been blocked on suspicion of a brute force attack | `BRUTE_FORCE`     |
+
+The composition of the security event fields is presented below:
+```json
+{
+    "date": "<date>",
+    "action": "<event_name from table>",
+    "subject": "<The user who performed the action>",
+    "object": "<The object on which the action was performed>",
+    "path": "<api>"
+}
+```
+
+If it is impossible to determine a user, output `Anonymous` in the `subject` field. All examples of events are provided in the Examples.
+
+Also, you need to add the role of the `auditor`. The auditor is an employee of the security department who analyzes information security events and identifies incidents. You need to add the appropriate endpoint for this. A user with the auditor role should be able to receive all events using the endpoint. The auditor is a part of the business group. We suggest that you implement the storage of information security events in the database, although you can choose another solution. Make sure it is persistent.
+
+Let's also discuss what a security incident is. For example, if a user made a mistake in entering a password. This is a minor user error, but numerous repeated attempts to log in with the wrong password can be evidence of a **brute-force attack**. In this case, it is necessary to register the incident and conduct an investigation. Information security events are collected in our service to serve as a basis for identifying incidents in the future after transmission to the **Security Information and Event Management** systems (SIEM).
+
+Let's implement a simple rule for detecting a brute force attack. If there are more than 5 consecutive attempts to enter an incorrect password, an entry about this should appear in the security events. Also, the user account must be blocked.
+
+To unlock a user, you will need to add a new administrative endpoint: `api/admin/user/access`.
+
+**Tip:** The following articles can help you with these tasks: [Prevent Brute Force Authentication Attempts with Spring Security](https://www.baeldung.com/spring-security-block-brute-force-authentication-attempts) by Baeldung and [Spring Security Limit Login Attempts Example](https://www.codejava.net/frameworks/spring-boot/spring-security-limit-login-attempts-example) by CodeJava.
+
+### Objectives
+
+Implement logging security events in the application following the requirements described above.
+
+Implement a mechanism to block the user after 5 consecutive failed logins. In a case like this, the next events should be logged: `LOGIN_FAILED` -> `BRUTE_FORCE` -> `LOCK_USER`. In case of a successful login, reset the counter of the failed attempt.
+
+Add the `PUT api/admin/user/access` endpoint that locks/unlocks users. It accepts the following JSON body:
+```json
+{
+   "user": "<String value, not empty>",
+   "operation": "<[LOCK, UNLOCK]>" 
+}
+```
+
+Where `operation` determines whether the user will be locked or unlocked. If successful, respond with the `HTTP OK` status (`200`) and the following body:
+```json
+{
+    "status": "User <username> <[locked, unlocked]>!"
+}
+```
+
+For safety reasons, the Administrator cannot be blocked. In this case, respond with the `HTTP Bad Request` status (`400`) and the following body:
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Can't lock the ADMINISTRATOR!",
+    "path": "<api>"
+}
+```
+
+For other errors, return responses like in the previous stage.
+
+Add the `GET api/security/events` endpoint that must respond with an array of objects representing the security events of the service sorted in ascending order by ID. If no data is found, the service should return an empty JSON array.
+```json
+[
+    {
+        "date": "<date>",
+        "action": "<event_name for event1>",
+        "subject": "<The user who performed the action>",
+        "object": "<The object on which the action was performed>",
+        "path": "<api>"
+    },
+     ...
+    {
+        "date": "<date>",
+        "action": "<event_name for eventN>",
+        "subject": "<The user who performed the action>",
+        "object": "<The object on which the action was performed>",
+        "path": "<api>"
+    }
+]
+```
+
+Update the role model:
+
+|                             | Anonymous | User  | Accountant | Administrator | Auditor |
+| :-------------------------- | :-------: | :---: | :--------: | :-----------: | :-----: |
+| `POST api/auth/signup`      | +         | +     | +          | +             | +       |
+| `POST api/auth/changepass`  | -         | +     | +          | +             | -       |
+| `GET api/empl/payment`      | -         | +     | +          | -             | -       |
+| `POST api/acct/payments`    | -         | -     | +          | -             | -       |
+| `PUT api/acct/payments`     | -         | -     | +          | -             | -       |
+| `GET api/admin/user`        | -         | -     | -          | +             | -       |
+| `DELETE api/admin/user`     | -         | -     | -          | +             | -       |
+| `PUT api/admin/user/role`   | -         | -     | -          | +             | -       |
+| `PUT api/admin/user/access` | -         | -     | -          | +             | -       |
+| `GET api/security/events`   | -         | -     | -          | -             | +       |
+
+### Examples
+
+**Example 1:** *a GET request for `api/auth/signup` under the Auditor role*
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+[
+{
+  "id" : 1,
+  "date" : "<date>",
+  "action" : "CREATE_USER",
+  "subject" : "Anonymous", \\ A User is not defined, fill with Anonymous
+  "object" : "johndoe@acme.com",
+  "path" : "/api/auth/signup"
+}, {
+  "id" : 6,
+  "date" : "<date>",
+  "action" : "LOGIN_FAILED",
+  "subject" : "maxmustermann@acme.com",
+  "object" : "/api/empl/payment", \\ the endpoint where the event occurred
+  "path" : "/api/empl/payment"
+}, {
+  "id" : 9,
+  "date" : "<date>",
+  "action" : "GRANT_ROLE",
+  "subject" : "johndoe@acme.com",
+  "object" : "Grant role ACCOUNTANT to petrpetrov@acme.com",
+  "path" : "/api/admin/user/role"
+}, {
+  "id" : 10,
+  "date" : "<date>",
+  "action" : "REMOVE_ROLE",
+  "subject" : "johndoe@acme.com",
+  "object" : "Remove role ACCOUNTANT from petrpetrov@acme.com",
+  "path" : "/api/admin/user/role"
+}, {
+  "id" : 11,
+  "date" : "<date>",
+  "action" : "DELETE_USER",
+  "subject" : "johndoe@acme.com",
+  "object" : "petrpetrov@acme.com",
+  "path" : "/api/admin/user"
+}, {
+  "id" : 12,
+  "date" : "<date>",
+  "action" : "CHANGE_PASSWORD",
+  "subject" : "johndoe@acme.com",
+  "object" : "johndoe@acme.com",
+  "path" : "/api/auth/changepass"
+}, {
+  "id" : 16,
+  "date" : "<date>",
+  "action" : "ACCESS_DENIED",
+  "subject" : "johndoe@acme.com",
+  "object" : "/api/acct/payments", \\ the endpoint where the event occurred
+  "path" : "/api/acct/payments"
+}, {
+  "id" : 25,
+  "date" : "<date>",
+  "action" : "BRUTE_FORCE",
+  "subject" : "maxmustermann@acme.com",
+  "object" : "/api/empl/payment", \\ the endpoint where the event occurred
+  "path" : "/api/empl/payment"
+}, {
+  "id" : 26,
+  "date" : "<date>",
+  "action" : "LOCK_USER",
+  "subject" : "maxmustermann@acme.com",
+  "object" : "Lock user maxmustermann@acme.com",
+  "path" : "/api/empl/payment" \\ the endpoint where the lock occurred
+}, {
+  "id" : 27,
+  "date" : "<date>",
+  "action" : "UNLOCK_USER",
+  "subject" : "johndoe@acme.com",
+  "object" : "Unlock user maxmustermann@acme.com",
+  "path" : "/api/admin/user/access"
+}
+]
+```
+
+**Example 2:** *a POST request for `/api/admin/user/role`*
+
+*Request body:*
+```json
+{
+   "user": "administrator@acme.com",
+   "role": "AUDITOR",
+   "operation": "GRANT" 
+}
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "The user cannot combine administrative and business roles!",
+    "path": "/api/admin/user/role"
+}
+```
+
+**Example 3:** *a PUT request for `api/admin/user/access`*
+
+*Request body:*
+```json
+{
+   "user": "administrator@acme.com",
+   "operation": "LOCK" 
+}
+```
+
+*Response:* `400 Bad Request`
+
+*Response body:*
+```json
+{
+    "timestamp": "<date>",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Can't lock the ADMINISTRATOR!",
+    "path": "/api/admin/user/access"
+}
+```
+
+**Example 4:** *a PUT request for `api/admin/user/access`*
+
+*Request body:*
+```json
+{
+   "user": "user@acme.com",
+   "operation": "LOCK" 
+}
+```
+
+*Response:* `200 OK`
+
+*Response body:*
+```json
+{
+    "status": "User user@acme.com locked!"
+}
+```

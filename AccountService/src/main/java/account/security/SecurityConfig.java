@@ -1,6 +1,8 @@
 package account.security;
 
+import account.models.ErrorResponseBody;
 import account.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +16,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 @Configuration
 public class SecurityConfig {
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            String responseBody = ErrorResponseBody.forbidden(request).toJson();
+            response.getWriter().write(responseBody);
+        };
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(@Value("${security.bcrypt-strength}") int strength) {
@@ -31,10 +44,16 @@ public class SecurityConfig {
                         // for Hyperskill tests
                         .requestMatchers("/actuator/shutdown").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
+                        .requestMatchers("/api/acct/payments").hasRole("ACCOUNTANT")
+                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
+                        .requestMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyRole(
+                            "USER", "ACCOUNTANT")
+                )
+                // use custom AccessDeniedHandler
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(accessDeniedHandler())
                 )
                 // for Postman
                 .csrf(AbstractHttpConfigurer::disable)

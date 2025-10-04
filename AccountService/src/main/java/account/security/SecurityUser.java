@@ -2,10 +2,11 @@ package account.security;
 
 import account.models.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
 public class SecurityUser implements UserDetails {
 
@@ -21,7 +22,9 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.toStringWithPrefix()))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override

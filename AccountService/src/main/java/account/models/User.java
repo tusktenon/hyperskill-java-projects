@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.*;
+
 @Entity
 @Table(name = "USERS") // "USER" is a SQL reserved word
 @Getter
@@ -23,12 +25,22 @@ public class User {
     @JsonProperty("lastname")
     private String lastName;
 
+    @Column(unique = true)
     @NotNull
     @Email(regexp = "\\w+@acme\\.com")
+    @Setter
     private String email;
 
     @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Setter
     private String password;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private final Set<Role> roles = EnumSet.noneOf(Role.class);
+
+    @JsonProperty("roles")
+    public List<String> getRolesSorted() {
+        return roles.stream().map(Role::toStringWithPrefix).sorted().toList();
+    }
 }

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static account.models.LockRequest.Operation.LOCK;
+
 @RestController
 @RequestMapping("/api")
 @Validated
@@ -22,7 +24,7 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping("/admin/user/") // Hyperskill tests require "user/", not "user"
+    @GetMapping("/admin/user/")
     public List<User> getUsers() {
         return service.getUsers();
     }
@@ -34,6 +36,13 @@ public class UserController {
                 "user", email,
                 "status", "Deleted successfully!"
         );
+    }
+
+    @PutMapping("/admin/user/access")
+    public Map<String, String> changeLockedStatus(@Valid @RequestBody LockRequest request) {
+        User updated = service.changeLockedStatus(request);
+        return Map.of("status", "User %s %s!".formatted(updated.getEmail(),
+                request.operation() == LOCK ? "locked" : "unlocked"));
     }
 
     @PutMapping("/admin/user/role")
@@ -52,7 +61,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/signup")
-    public User signup(@Valid @RequestBody User requested) {
-        return service.register(requested);
+    public User signup(@Valid @RequestBody User request) {
+        return service.register(request);
     }
 }

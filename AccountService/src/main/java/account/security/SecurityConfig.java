@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -27,6 +28,12 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) ->
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder(@Value("${security.bcrypt-strength}") int strength) {
         return new BCryptPasswordEncoder(strength);
     }
@@ -34,7 +41,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(config -> config.authenticationEntryPoint(authenticationEntryPoint()))
+                .exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler()))
                 .authorizeHttpRequests(auth -> auth
                         // for Hyperskill tests
                         .requestMatchers("/actuator/shutdown").permitAll()
@@ -45,10 +53,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyRole(
                                 "USER", "ACCOUNTANT")
-                )
-                // use custom AccessDeniedHandler
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(accessDeniedHandler())
+                        .requestMatchers("/api/security/**").hasRole("AUDITOR")
                 )
                 // for Postman
                 .csrf(AbstractHttpConfigurer::disable)

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
+import static account.models.LockRequest.Operation.LOCK;
 import static account.models.Role.ADMINISTRATOR;
 import static account.models.Role.USER;
 import static account.models.RoleChangeRequest.Operation.GRANT;
@@ -18,19 +19,24 @@ import static account.models.RoleChangeRequest.Operation.GRANT;
 @Service
 public class UserService {
 
+    private final UserRepository repository;
+    private final SecurityEventLogger logger;
+    private final PasswordEncoder encoder;
     private final int minPasswordLength;
     private final Set<String> breachedPasswords;
-    private final PasswordEncoder encoder;
-    private final UserRepository repository;
 
-    public UserService(@Value("${security.min-password-length}") int minPasswordLength,
-                       @Value("${security.breached-passwords}") Set<String> breachedPasswords,
-                       PasswordEncoder encoder,
-                       UserRepository repository) {
+    public UserService(
+            UserRepository repository,
+            SecurityEventLogger logger,
+            PasswordEncoder encoder,
+            @Value("${security.min-password-length}") int minPasswordLength,
+            @Value("${security.breached-passwords}") Set<String> breachedPasswords
+    ) {
+        this.repository = repository;
+        this.logger = logger;
+        this.encoder = encoder;
         this.minPasswordLength = minPasswordLength;
         this.breachedPasswords = breachedPasswords;
-        this.encoder = encoder;
-        this.repository = repository;
     }
 
     public User register(User requested) {
@@ -41,7 +47,10 @@ public class UserService {
         requested.setEmail(requested.getEmail().toLowerCase()); // required by Hyperskill tests
         requested.setPassword(encoder.encode(requested.getPassword()));
         requested.getRoles().add(repository.count() == 0 ? ADMINISTRATOR : USER);
-        return repository.save(requested);
+        requested.setNonLocked(true);
+        User created = repository.save(requested);
+        logger.logCreateUser(created);
+        return created;
     }
 
     public User changePassword(User user, String newPassword) {
@@ -50,7 +59,9 @@ public class UserService {
             throw new BadRequestException("The passwords must be different!");
         }
         user.setPassword(encoder.encode(newPassword));
-        return repository.save(user);
+        User changed = repository.save(user);
+        logger.logChangePassword(changed);
+        return changed;
     }
 
     private void validatePassword(String password) {
@@ -68,11 +79,11 @@ public class UserService {
     }
 
     public User changeRole(RoleChangeRequest request) {
-        User user = repository.findByEmailIgnoreCase(request.user())
+        User target = repository.findByEmailIgnoreCase(request.user())
                 .orElseThrow(() -> new NotFoundException("User not found!"));
         try {
             Role role = Role.valueOf(request.role());
-            return request.operation() == GRANT ? addRole(user, role) : removeRole(user, role);
+            return request.operation() == GRANT ? addRole(target, role) : removeRole(target, role);
         } catch (IllegalArgumentException ex) {
             throw new NotFoundException("Role not found!");
         }
@@ -84,7 +95,9 @@ public class UserService {
                     "The user cannot combine administrative and business roles!");
         }
         user.getRoles().add(role);
-        return repository.save(user);
+        User updated = repository.save(user);
+        logger.logGrantRole(updated, role);
+        return updated;
     }
 
     private User removeRole(User user, Role role) {
@@ -98,15 +111,42 @@ public class UserService {
             throw new BadRequestException("The user must have at least one role!");
         }
         user.getRoles().remove(role);
-        return repository.save(user);
+        User updated = repository.save(user);
+        logger.logRemoveRole(updated, role);
+        return updated;
     }
 
-    public void removeUser(String email) {
-        User user = repository.findByEmailIgnoreCase(email)
+    public User changeLockedStatus(LockRequest request) {
+        User target = repository.findByEmailIgnoreCase(request.user())
                 .orElseThrow(() -> new NotFoundException("User not found!"));
+        return request.operation() == LOCK ? lockUser(target) : unlockUser(target);
+    }
+
+    private User lockUser(User user) {
         if (user.getRoles().contains(ADMINISTRATOR)) {
+            throw new BadRequestException("Can't lock the ADMINISTRATOR!");
+        }
+        user.setNonLocked(false);
+        User locked = repository.save(user);
+        logger.logLockUserManual(locked);
+        return locked;
+    }
+
+    private User unlockUser(User user) {
+        user.setNonLocked(true);
+        user.resetLoginAttempts();
+        User unlocked = repository.save(user);
+        logger.logUnlockUser(unlocked);
+        return unlocked;
+    }
+
+    public void removeUser(String request) {
+        User target = repository.findByEmailIgnoreCase(request)
+                .orElseThrow(() -> new NotFoundException("User not found!"));
+        if (target.getRoles().contains(ADMINISTRATOR)) {
             throw new BadRequestException("Can't remove ADMINISTRATOR role!");
         }
-        repository.delete(user);
+        repository.delete(target);
+        logger.logDeleteUser(target);
     }
 }

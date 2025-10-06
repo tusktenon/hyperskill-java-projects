@@ -1,5 +1,6 @@
 package account.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -39,8 +40,23 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private final Set<Role> roles = EnumSet.noneOf(Role.class);
 
+    @JsonIgnore
+    private int failedLoginAttempts;
+
+    @JsonIgnore
+    @Setter
+    private boolean isNonLocked;
+
     @JsonProperty("roles")
     public List<String> getRolesSorted() {
         return roles.stream().map(Role::toStringWithPrefix).sorted().toList();
+    }
+
+    public void resetLoginAttempts() {
+        failedLoginAttempts = 0;
+    }
+
+    public void incrementLoginAttempts() {
+        failedLoginAttempts++;
     }
 }

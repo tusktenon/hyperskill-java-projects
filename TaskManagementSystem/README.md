@@ -7,6 +7,7 @@ Have you ever used any task management systems like Jira or Trello? This project
 - [View more](https://hyperskill.org/projects/423) (official project page)
 - [My notes](./NOTES.md) on this project
 
+
 ## Stage 1/5: Registering users
 
 ### Description

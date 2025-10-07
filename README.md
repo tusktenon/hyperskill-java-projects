@@ -54,6 +54,7 @@ Each project falls into one of three groups:
 
 - [Account Service](https://hyperskill.org/projects/217)
 - [Fitness Tracker API](https://hyperskill.org/projects/408)
+- [Recipe Management System](https://hyperskill.org/projects/180)
 - [Task Management System](https://hyperskill.org/projects/423)
 - [Web Quiz Engine with Java](https://hyperskill.org/projects/91)
 

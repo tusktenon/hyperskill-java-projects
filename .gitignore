@@ -9,6 +9,9 @@ service_db.mv.db
 # H2 data file for Fitness Tracker API project
 fitness_db.mv.db
 
+# H2 data file for Recipe Management System project
+recipes_db.mv.db
+
 # H2 data file for Task Management System project
 tms_db.mv.db
 

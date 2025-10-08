@@ -38,4 +38,9 @@ public class Recipe {
     @NotNull
     @Size(min = 1)
     private String[] directions;
+
+    @ManyToOne(optional = false)
+    @JsonIgnore
+    @Setter
+    private Chef author;
 }

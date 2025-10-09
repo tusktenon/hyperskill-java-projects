@@ -1,13 +1,16 @@
 package recipes;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/recipe")
@@ -26,11 +29,10 @@ public class RecipeController {
 
     @PutMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("@recipeAuthorIsPrincipal.test(#id, principal)")
     public void update(@PathVariable long id,
                        @Valid @RequestBody Recipe updated,
                        @AuthenticationPrincipal SecurityChef securityChef) {
-        Recipe current = findByIdOrThrowNotFound(id);
-        principalIsAuthorOrThrowForbidden(securityChef, current);
         updated.setId(id);
         updated.setAuthor(securityChef.getChef());
         repository.save(updated);
@@ -38,10 +40,9 @@ public class RecipeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void delete(@PathVariable long id, @AuthenticationPrincipal SecurityChef securityChef) {
-        Recipe recipe = findByIdOrThrowNotFound(id);
-        principalIsAuthorOrThrowForbidden(securityChef, recipe);
-        repository.delete(recipe);
+    @PreAuthorize("@recipeAuthorIsPrincipal.test(#id, principal)")
+    public void delete(@PathVariable long id) {
+        repository.delete(findByIdOrThrowNotFound(id));
     }
 
     @PostMapping("/new")
@@ -65,11 +66,5 @@ public class RecipeController {
     private Recipe findByIdOrThrowNotFound(long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-    }
-
-    private void principalIsAuthorOrThrowForbidden(SecurityChef securityChef, Recipe recipe) {
-        if (!Objects.equals(securityChef.getChef().getId(), recipe.getAuthor().getId())) {
-            throw new ResponseStatusException(FORBIDDEN);
-        }
     }
 }

@@ -5,7 +5,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
 import java.util.*;
 
 import static org.springframework.http.HttpStatus.*;
@@ -34,7 +33,6 @@ public class RecipeController {
         principalIsAuthorOrThrowForbidden(securityChef, current);
         updated.setId(id);
         updated.setAuthor(securityChef.getChef());
-        updated.setDate(Instant.now());
         repository.save(updated);
     }
 
@@ -50,7 +48,6 @@ public class RecipeController {
     public Map<String, Long> add(@Valid @RequestBody Recipe recipe,
                                  @AuthenticationPrincipal SecurityChef securityChef) {
         recipe.setAuthor(securityChef.getChef());
-        recipe.setDate(Instant.now());
         Recipe added = repository.save(recipe);
         return Map.of("id", added.getId());
     }

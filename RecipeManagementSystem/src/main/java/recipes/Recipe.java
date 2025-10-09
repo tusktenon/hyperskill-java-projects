@@ -24,9 +24,7 @@ public class Recipe {
     @NotBlank
     private String category;
 
-    @Column(nullable = false)
-    @Setter
-    private Instant date;
+    private final Instant date = Instant.now();
 
     @NotBlank
     private String description;

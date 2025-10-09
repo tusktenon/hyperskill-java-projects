@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 public class Comment {
@@ -24,7 +24,7 @@ public class Comment {
     @ManyToOne
     private Account author;
 
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final Instant createdAt = Instant.now();
 
     public Comment() {
     }

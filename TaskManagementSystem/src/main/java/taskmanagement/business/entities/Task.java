@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import taskmanagement.presentation.Views;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,7 +43,7 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private final Set<Comment> comments = new HashSet<>();
 
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final Instant createdAt = Instant.now();
 
     public Task() {
     }

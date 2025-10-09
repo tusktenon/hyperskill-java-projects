@@ -25,26 +25,36 @@ public class TaskService {
         this.commentRepository = commentRepository;
     }
 
-    public List<Task> get(String author, String assignee) {
+    public List<Task> getAll() {
+        return taskRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public List<Task> getByAuthor(String authorEmail) {
         try {
-            if (assignee != null) {
-                Account assigneeAccount = findAssigneeAccountByUsername(assignee);
-                if (author != null) {
-                    Account authorAccount = findAccountByUsername(author);
-                    return taskRepository.findByAuthorAndAssigneeOrderByCreatedAtDesc(
-                            authorAccount, assigneeAccount);
-                } else {
-                    return taskRepository.findByAssigneeOrderByCreatedAtDesc(assigneeAccount);
-                }
-            }
-            if (author != null) {
-                Account authorAccount = findAccountByUsername(author);
-                return taskRepository.findByAuthorOrderByCreatedAtDesc(authorAccount);
-            }
+            Account author = findAccountByUsername(authorEmail);
+            return taskRepository.findByAuthorOrderByCreatedAtDesc(author);
         } catch (NotFoundException e) {
             return Collections.emptyList();
         }
-        return taskRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public List<Task> getByAssignee(String assigneeEmail) {
+        try {
+            Account assignee = findAssigneeAccountByUsername(assigneeEmail);
+            return taskRepository.findByAssigneeOrderByCreatedAtDesc(assignee);
+        } catch (NotFoundException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Task> getByAuthorAndAssignee(String authorEmail, String assigneeEmail) {
+        try {
+            Account author = findAccountByUsername(authorEmail);
+            Account assignee = findAssigneeAccountByUsername(assigneeEmail);
+            return taskRepository.findByAuthorAndAssigneeOrderByCreatedAtDesc(author, assignee);
+        } catch (NotFoundException e) {
+            return Collections.emptyList();
+        }
     }
 
     public List<Comment> getComments(long taskId) {

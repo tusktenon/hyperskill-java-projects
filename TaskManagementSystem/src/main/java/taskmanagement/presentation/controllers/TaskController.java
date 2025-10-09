@@ -24,9 +24,26 @@ public class TaskController {
 
     @GetMapping
     @JsonView(Views.TaskViews.WithCommentCount.class)
-    List<Task> get(@RequestParam(required = false) String author,
-                   @RequestParam(required = false) String assignee) {
-        return service.get(author, assignee);
+    List<Task> getAll() {
+        return service.getAll();
+    }
+
+    @GetMapping(params = "author")
+    @JsonView(Views.TaskViews.WithCommentCount.class)
+    List<Task> getByAuthor(@RequestParam String author) {
+        return service.getByAuthor(author);
+    }
+
+    @GetMapping(params = "assignee")
+    @JsonView(Views.TaskViews.WithCommentCount.class)
+    List<Task> getByAssignee(@RequestParam String assignee) {
+        return service.getByAssignee(assignee);
+    }
+
+    @GetMapping(params = {"author", "assignee"})
+    @JsonView(Views.TaskViews.WithCommentCount.class)
+    List<Task> getByAuthorAndAssignee(@RequestParam String author, @RequestParam String assignee) {
+        return service.getByAuthorAndAssignee(author, assignee);
     }
 
     @PostMapping

@@ -10,13 +10,13 @@ import java.time.temporal.ChronoUnit;
 @Service
 public class TokenService {
 
-    @Value("${authentication.tokenExpiration}")
-    private long tokenExpiration;
-
+    private final long tokenExpiration;
     private final JwtEncoder encoder;
 
-    public TokenService(JwtEncoder encoder) {
+    public TokenService(JwtEncoder encoder,
+                        @Value("${authentication.tokenExpiration}") long tokenExpiration) {
         this.encoder = encoder;
+        this.tokenExpiration = tokenExpiration;
     }
 
     public String generateToken(String username) {

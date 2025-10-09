@@ -59,3 +59,12 @@ Each project falls into one of three groups:
 - [Web Quiz Engine with Java](https://hyperskill.org/projects/91)
 
 *All Challenging projects use Spring Boot, Spring Data JPA, Spring Security and Spring Web MVC.*
+
+
+## Spring Initializr Settings
+
+I used the excellent [Spring Initializr](https://start.spring.io/) to generate the basic structure for all the Spring Boot projects. For reference, I've taken [screenshots](./SPRING_INITIALIZR) of the settings used. Keep in mind:
+
+- Even with these settings, I always did some manual adjustments to the generated structure, removing unneeded directories, renaming the `@SpringBootApplication` class to match Hyperskill's choice, and editing the `build.gradle`, `settings.gradle` and `application.properties` files.
+
+- The goal was to create a project structure that matched Hyperskill's as closely as possible. This applies to the dependencies listed in `build.gradle`, which at the start of a project, usually includes only those required to complete Stage 1. As such, I often omitted dependencies that Spring Initializr can provide (e.g., H2 Database, Lombok, Validation, Spring Data JPA, Spring Security), and added them manually in later stages as needed.

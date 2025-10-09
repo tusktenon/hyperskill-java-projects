@@ -240,6 +240,8 @@ Also, the service should support the following endpoints:
 
     If no recipes are found, the program should return an empty JSON array. If 0 parameters were passed, or more than 1, the server should return `400 (Bad Request)`. The same response should follow if the specified parameters are not valid. If everything is correct, it should return `200 (OK)`.
 
+    ***My Note:*** The actual URI for the search endpoint (required by the Hyperskill tests) is `GET /api/recipe/search/` (with the `/` at the end). See Example 3 below.
+
 There are a couple of ways to do that. Check the examples below for details. If you need more theory on how to get data from a database or how to process query parameters, take a look at [Query Methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html) paragraph in the Official Documentation (check the table), or the `@RequestParam` [annotation](https://www.baeldung.com/spring-request-param).
 
 ### Examples

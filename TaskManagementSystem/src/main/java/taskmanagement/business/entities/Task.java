@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import taskmanagement.presentation.Views;
 
 import java.time.Instant;
@@ -11,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Task {
 
     @JsonView(Views.TaskViews.WithoutCommentCount.class)
@@ -32,46 +35,29 @@ public class Task {
 
     @NotNull
     @JsonView(Views.TaskViews.WithoutCommentCount.class)
+    @Setter
     private Status status = Status.CREATED;
 
     @ManyToOne
+    @JsonIgnore
     private Account author;
 
     @ManyToOne
+    @Setter
+    @JsonIgnore
     private Account assignee;
 
     @OneToMany(mappedBy = "task")
+    @JsonIgnore
     private final Set<Comment> comments = new HashSet<>();
 
+    @JsonIgnore
     private final Instant createdAt = Instant.now();
-
-    public Task() {
-    }
 
     public Task(String title, String description, Account author) {
         this.title = title;
         this.description = description;
         this.author = author;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     @JsonProperty("author")
@@ -84,10 +70,6 @@ public class Task {
     @JsonView(Views.TaskViews.WithoutCommentCount.class)
     public String getAssigneeEmail() {
         return assignee == null ? "none" : assignee.getEmail();
-    }
-
-    public void setAssignee(Account assignee) {
-        this.assignee = assignee;
     }
 
     @JsonProperty("total_comments")

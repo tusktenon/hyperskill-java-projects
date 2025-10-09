@@ -2,6 +2,7 @@ package taskmanagement.presentation.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import taskmanagement.business.entities.*;
 import taskmanagement.business.services.TaskService;
@@ -14,13 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
+@AllArgsConstructor
 public class TaskController {
 
     private final TaskService service;
-
-    public TaskController(TaskService service) {
-        this.service = service;
-    }
 
     @GetMapping
     @JsonView(Views.TaskViews.WithCommentCount.class)

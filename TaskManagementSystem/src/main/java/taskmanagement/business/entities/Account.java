@@ -3,8 +3,12 @@ package taskmanagement.business.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Account {
 
     @Id
@@ -13,25 +17,14 @@ public class Account {
 
     @Column(unique = true)
     @NotNull
-    @Email(regexp = "\\w+([.-]\\w+)*@\\w+(\\.\\w+)+")
+    @Email
     private String email;
 
     @NotNull
     private String password;
 
-    public Account() {
-    }
-
     public Account(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }

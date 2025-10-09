@@ -1,6 +1,7 @@
 package taskmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,15 +13,11 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
+@AllArgsConstructor
 public class AuthenticationController {
 
     private final AccountService accountService;
     private final TokenService tokenService;
-
-    public AuthenticationController(AccountService accountService, TokenService tokenService) {
-        this.accountService = accountService;
-        this.tokenService = tokenService;
-    }
 
     @PostMapping("/api/accounts")
     void register(@Valid @RequestBody RegistrationRequest request) {

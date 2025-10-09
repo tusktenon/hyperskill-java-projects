@@ -1,5 +1,7 @@
 package taskmanagement.security;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import taskmanagement.business.entities.Account;
@@ -7,17 +9,11 @@ import taskmanagement.business.entities.Account;
 import java.util.Collection;
 import java.util.Collections;
 
+@AllArgsConstructor
+@Getter
 public class AccountAdapter implements UserDetails {
 
     private final Account account;
-
-    public AccountAdapter(Account account) {
-        this.account = account;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

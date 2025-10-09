@@ -1,5 +1,6 @@
 package taskmanagement.business.services;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,18 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TaskService {
 
     private final AccountRepository accountRepository;
     private final TaskRepository taskRepository;
     private final CommentRepository commentRepository;
-
-    public TaskService(AccountRepository accountRepository, TaskRepository taskRepository,
-                       CommentRepository commentRepository) {
-        this.accountRepository = accountRepository;
-        this.taskRepository = taskRepository;
-        this.commentRepository = commentRepository;
-    }
 
     public List<Task> getAll() {
         return taskRepository.findAllByOrderByCreatedAtDesc();

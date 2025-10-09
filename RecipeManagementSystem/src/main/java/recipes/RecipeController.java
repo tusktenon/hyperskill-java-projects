@@ -52,14 +52,14 @@ public class RecipeController {
         return Map.of("id", added.getId());
     }
 
-    @GetMapping("/search/")
-    public List<Recipe> search(@RequestParam(required = false) String category,
-                               @RequestParam(required = false) String name) {
-        if (category != null && name == null)
-            return repository.findByCategoryIgnoreCaseOrderByDateDesc(category);
-        if (category == null && name != null)
-            return repository.findByNameContainingIgnoreCaseOrderByDateDesc(name);
-        throw new ResponseStatusException(BAD_REQUEST);
+    @GetMapping(path = "/search/", params = "category")
+    public List<Recipe> searchByCategory(@RequestParam String category) {
+        return repository.findByCategoryIgnoreCaseOrderByDateDesc(category);
+    }
+
+    @GetMapping(path = "/search/", params = "name")
+    public List<Recipe> searchByName(@RequestParam String name) {
+        return repository.findByNameContainingIgnoreCaseOrderByDateDesc(name);
     }
 
     private Recipe findByIdOrThrowNotFound(long id) {

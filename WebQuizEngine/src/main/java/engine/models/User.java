@@ -2,8 +2,7 @@ package engine.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,7 +10,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@Table(name = "ACCOUNT") // "USER" is a SQL reserved word
+@Table(name = "USERS") // "USER" is a SQL reserved word
+@NoArgsConstructor
 @Getter
 @Setter
 public class User implements UserDetails {

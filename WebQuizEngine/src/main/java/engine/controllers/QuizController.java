@@ -4,6 +4,7 @@ import engine.models.*;
 import engine.repositories.CompletionRepository;
 import engine.repositories.QuizRepository;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,18 +17,13 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/quizzes")
+@AllArgsConstructor
 public class QuizController {
 
     private static final int PAGE_SIZE = 10;
 
     private final QuizRepository quizRepository;
     private final CompletionRepository completionRepository;
-
-    public QuizController(QuizRepository quizRepository,
-                          CompletionRepository completionRepository) {
-        this.quizRepository = quizRepository;
-        this.completionRepository = completionRepository;
-    }
 
     @GetMapping
     public Page<Quiz> getAll(@RequestParam int page) {

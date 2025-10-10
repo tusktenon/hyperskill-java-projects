@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @NoArgsConstructor
@@ -26,12 +26,11 @@ public class Completion {
     @JsonIgnore
     private Quiz quiz;
 
-    private LocalDateTime completedAt;
+    private final Instant completedAt = Instant.now();
 
-    public Completion(User user, Quiz quiz, LocalDateTime completedAt) {
+    public Completion(User user, Quiz quiz) {
         this.user = user;
         this.quiz = quiz;
-        this.completedAt = completedAt;
     }
 
     @JsonProperty("id")

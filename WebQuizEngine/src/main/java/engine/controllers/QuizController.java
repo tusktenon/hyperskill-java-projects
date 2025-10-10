@@ -11,8 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
@@ -55,7 +53,7 @@ public class QuizController {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         if (solution.solves(quiz)) {
-            completionRepository.save(new Completion(user, quiz, LocalDateTime.now()));
+            completionRepository.save(new Completion(user, quiz));
             return new Feedback(true, "Congratulations, you're right!");
         }
         return new Feedback(false, "Wrong answer! Please, try again.");

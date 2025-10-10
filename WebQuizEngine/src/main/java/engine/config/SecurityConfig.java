@@ -26,10 +26,12 @@ public class SecurityConfig {
         return http.httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable) // for POST requests via Postman
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/actuator/shutdown").permitAll() // required for testing
+                        // required for testing
+                        .requestMatchers(HttpMethod.POST, "/actuator/shutdown").permitAll()
+                        // expose the /error endpoint to send expected response errors
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
-                        .requestMatchers("/api/quizzes/**").authenticated()
-                        .anyRequest().denyAll()
+                        .anyRequest().authenticated()
                 )
                 .build();
     }

@@ -2,6 +2,7 @@ package account.models;
 
 import account.exceptions.InvalidPaymentException;
 import account.repositories.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
@@ -9,13 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 @Component
+@AllArgsConstructor
 public class PaymentMapper {
 
     private final UserRepository repository;
-
-    public PaymentMapper(UserRepository repository) {
-        this.repository = repository;
-    }
 
     public Payment convert(PaymentInstruction instruction) {
         User employee = repository.findByEmailIgnoreCase(instruction.employee())

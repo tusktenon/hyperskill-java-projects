@@ -3,6 +3,7 @@ package account.services;
 import account.exceptions.InvalidPaymentException;
 import account.models.*;
 import account.repositories.PaymentRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -11,15 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class PaymentService {
 
     private final PaymentMapper mapper;
     private final PaymentRepository repository;
-
-    public PaymentService(PaymentMapper mapper, PaymentRepository repository) {
-        this.mapper = mapper;
-        this.repository = repository;
-    }
 
     public void addPayments(List<PaymentInstruction> instructions) {
         try {

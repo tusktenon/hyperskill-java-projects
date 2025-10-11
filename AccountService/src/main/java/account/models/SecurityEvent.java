@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 
 @Entity
-@Getter
 @NoArgsConstructor
+@Getter
 public class SecurityEvent {
 
     @Id

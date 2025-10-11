@@ -4,6 +4,7 @@ import account.models.*;
 import account.security.SecurityUser;
 import account.services.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,10 @@ import static account.models.LockRequest.Operation.LOCK;
 @RestController
 @RequestMapping("/api")
 @Validated
+@AllArgsConstructor
 public class UserController {
 
     private final UserService service;
-
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @GetMapping("/admin/user/")
     public List<User> getUsers() {

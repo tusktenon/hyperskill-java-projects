@@ -10,8 +10,8 @@ import java.util.*;
 
 @Entity
 @Table(name = "USERS") // "USER" is a SQL reserved word
-@Getter
 @NoArgsConstructor
+@Getter
 public class User {
 
     @Id

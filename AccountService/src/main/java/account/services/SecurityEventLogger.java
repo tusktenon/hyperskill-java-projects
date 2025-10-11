@@ -3,20 +3,17 @@ package account.services;
 import account.models.*;
 import account.repositories.SecurityEventRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static account.models.SecurityEvent.Action.*;
 
 @Service
+@AllArgsConstructor
 public class SecurityEventLogger {
 
     private final SecurityEventRepository repository;
     private final HttpServletRequest request;
-
-    public SecurityEventLogger(SecurityEventRepository repository, HttpServletRequest request) {
-        this.repository = repository;
-        this.request = request;
-    }
 
     public void logCreateUser(User created) {
         logEvent(CREATE_USER, "Anonymous", created.getEmail());

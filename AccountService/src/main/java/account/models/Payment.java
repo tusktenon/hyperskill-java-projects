@@ -9,8 +9,8 @@ import java.time.YearMonth;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"EMPLOYEE_ID", "PERIOD"}))
-@Getter
 @NoArgsConstructor
+@Getter
 public class Payment {
 
     @Id

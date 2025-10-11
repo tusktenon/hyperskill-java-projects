@@ -8,8 +8,8 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Getter
 @NoArgsConstructor
+@Getter
 public class Session {
 
     @Id

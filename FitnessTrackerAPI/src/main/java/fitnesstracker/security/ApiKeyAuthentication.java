@@ -1,20 +1,17 @@
 package fitnesstracker.security;
 
 import fitnesstracker.models.Application;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
+@AllArgsConstructor
 public class ApiKeyAuthentication implements Authentication {
 
     private final Application application;
     private final UUID key;
-
-    ApiKeyAuthentication(Application application, UUID key) {
-        this.application = application;
-        this.key = key;
-    }
 
     ApiKeyAuthentication(UUID key) {
         this(null, key);

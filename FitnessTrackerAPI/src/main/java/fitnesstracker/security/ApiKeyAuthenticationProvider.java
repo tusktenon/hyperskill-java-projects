@@ -2,6 +2,7 @@ package fitnesstracker.security;
 
 import fitnesstracker.models.Application;
 import fitnesstracker.repositories.ApplicationRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -9,13 +10,10 @@ import org.springframework.security.core.AuthenticationException;
 
 import java.util.UUID;
 
+@AllArgsConstructor
 public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     private final ApplicationRepository repository;
-
-    public ApiKeyAuthenticationProvider(ApplicationRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

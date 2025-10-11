@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class ApiKeyFilter extends OncePerRequestFilter {
 
     // AntPathRequestMatcher is deprecated in Spring Security 6.5. If Hyperskill updates the
@@ -32,10 +34,6 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     };
 
     private final AuthenticationManager manager;
-
-    public ApiKeyFilter(AuthenticationManager manager) {
-        this.manager = manager;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,

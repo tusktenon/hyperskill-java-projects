@@ -4,6 +4,7 @@ import fitnesstracker.models.Application;
 import fitnesstracker.models.Session;
 import fitnesstracker.ratelimiting.ApplicationRequestRateLimiter;
 import fitnesstracker.repositories.SessionRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tracker")
+@AllArgsConstructor
 public class SessionController {
 
     private final SessionRepository repository;
     private final ApplicationRequestRateLimiter limiter;
-
-    public SessionController(SessionRepository repository, ApplicationRequestRateLimiter limiter) {
-        this.repository = repository;
-        this.limiter = limiter;
-    }
 
     @GetMapping
     public List<Session> getSessions(@AuthenticationPrincipal Application application) {

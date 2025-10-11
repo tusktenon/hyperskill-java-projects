@@ -5,6 +5,7 @@ import fitnesstracker.models.*;
 import fitnesstracker.repositories.ApplicationRepository;
 import fitnesstracker.security.SecurityDeveloper;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,13 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@AllArgsConstructor
 public class ApplicationController {
 
     private final ApplicationRepository repository;
-
-    public ApplicationController(ApplicationRepository repository) {
-        this.repository = repository;
-    }
 
     @PostMapping("/api/applications/register")
     @JsonView(Views.ApplicationViews.RegistrationSummary.class)

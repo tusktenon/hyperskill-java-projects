@@ -2,6 +2,7 @@ package fitnesstracker.security;
 
 import fitnesstracker.repositories.ApplicationRepository;
 import fitnesstracker.repositories.DeveloperRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,16 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
     private final ApplicationRepository applicationRepository;
     private final DeveloperRepository developerRepository;
-
-    public SecurityConfig(ApplicationRepository applicationRepository,
-                          DeveloperRepository developerRepository) {
-        this.applicationRepository = applicationRepository;
-        this.developerRepository = developerRepository;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

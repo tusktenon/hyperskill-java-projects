@@ -8,8 +8,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Getter
 @NoArgsConstructor
+@Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Application {
 

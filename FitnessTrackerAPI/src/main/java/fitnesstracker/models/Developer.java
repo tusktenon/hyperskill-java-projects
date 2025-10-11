@@ -8,8 +8,8 @@ import lombok.*;
 import java.util.*;
 
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
 public class Developer {
 
     @Id

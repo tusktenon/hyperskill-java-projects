@@ -1,23 +1,19 @@
 package fitnesstracker.security;
 
 import fitnesstracker.models.Developer;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@AllArgsConstructor
+@Getter
 public class SecurityDeveloper implements UserDetails {
 
     private final Developer developer;
-
-    public SecurityDeveloper(Developer developer) {
-        this.developer = developer;
-    }
-
-    public Developer getDeveloper() {
-        return developer;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

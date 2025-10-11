@@ -5,6 +5,7 @@ import fitnesstracker.repositories.DeveloperRepository;
 import fitnesstracker.security.SecurityDeveloper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +17,11 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/developers")
+@AllArgsConstructor
 public class DeveloperController {
 
     private final DeveloperRepository repository;
     private final DeveloperMapper mapper;
-
-    public DeveloperController(DeveloperRepository repository, DeveloperMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
 
     @GetMapping("/{id}")
     @PreAuthorize("#securityDeveloper.developer.id == #id")

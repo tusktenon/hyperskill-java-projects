@@ -1,6 +1,7 @@
 package recipes;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,10 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/recipe")
+@AllArgsConstructor
 public class RecipeController {
 
     private final RecipeRepository repository;
-
-    public RecipeController(RecipeRepository repository) {
-        this.repository = repository;
-    }
 
     @GetMapping("/{id}")
     public Recipe retrieve(@PathVariable long id) {

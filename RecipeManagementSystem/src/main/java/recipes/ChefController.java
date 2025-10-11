@@ -1,21 +1,18 @@
 package recipes;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@AllArgsConstructor
 public class ChefController {
 
     private final ChefRepository repository;
     private final PasswordEncoder encoder;
-
-    public ChefController(ChefRepository repository, PasswordEncoder encoder) {
-        this.repository = repository;
-        this.encoder = encoder;
-    }
 
     @PostMapping("/api/register")
     public void register(@Valid @RequestBody Chef chef) {

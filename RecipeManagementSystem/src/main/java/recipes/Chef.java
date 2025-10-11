@@ -7,8 +7,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
-@Getter
 @NoArgsConstructor
+@Getter
 public class Chef {
 
     @Id
